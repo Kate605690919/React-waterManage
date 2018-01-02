@@ -1,0 +1,91 @@
+@font-size: 14px;
+@font-size-middle: 16px;
+@font-color: rgba(0,0,0,.65);
+@dark-font-color: rgba(255, 255, 255, 0.67);
+@darkColor: #404040;
+@primaryColor: #108ee9;
+
+a:hover,a:focus,a:active,a:visited,a.active {
+    text-decoration: none!important;
+    color: @primaryColor!important;
+}
+.ant-dropdown-menu {
+    top: 5px;
+}
+li.ant-dropdown-menu-item {
+    padding: 10px 20px;
+    a {
+        font-size: @font-size;
+    }
+}
+header.navbar-fixed-top {
+    .ant-menu-dark.ant-menu-vertical{
+        display: none;
+    }
+    font-size: 14px;
+    background: #fff;
+    padding: 0;
+    .navbar-header {
+        background: @darkColor;
+        height: 50px;
+        padding: 10px 20px;
+        display: flex;
+        justify-content: space-between;
+        .navbar-brand {
+            color: #fff;
+            font-size: 18px;
+            line-height: 30px;
+        }
+    }
+    .nav-info {
+        display: none;
+    }
+    .ant-menu-itemSelf {
+        color: @dark-font-color;
+    }
+    .item-2 {
+        float: right;
+        line-height: 42px;
+    }
+}
+@media screen and (min-width: 768px) {
+    header.navbar-fixed-top {
+        display: flex;
+        justify-content: space-between;
+        padding: 0 20px 0 0;
+        .navbar-header {
+            background: #fff;
+            .collapse-button {
+                display: none;
+            }
+            .navbar-brand {
+                color: @primaryColor;
+            }
+        }
+        .navbar-collapse {
+            display: none;
+        }
+        .nav-info-menu {
+            display: flex;
+        }
+        .nav-info {
+            flex-grow: 1;
+            align-items: center;
+            display: flex;
+            li {
+                margin-right: 10px;
+                font-size: @font-size-middle;
+                a {
+                    color: @font-color;
+                }
+            }
+            .nav-menu {
+                display: flex;
+                flex-grow: 1;
+                li {
+                    margin: 0 15px;
+                }
+            }
+        }
+    }
+}
