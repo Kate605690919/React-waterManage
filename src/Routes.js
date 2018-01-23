@@ -1,14 +1,20 @@
 import React from 'react';
 import { Router, Route, hashHistory, IndexRoute } from 'react-router';
 import App from './App.js';
-import { DeviceApp } from './pages/Device';
+import { DeviceApp, DeviceFMDetail, DevicePMDetail } from './pages/Device';
 // import { ClientApp, ClientList, ClientAdd, ClientDetail, ClientBase, ClientFM } from './pages/Client';
 // import { StaffApp, StaffList, StaffAdd, StaffDetail, StaffBase } from './pages/Staff';
 import { FeedBackApp } from './pages/FeedBack';
 const Routes = () => (
-    <Router history={ hashHistory }>
-        <Route path="/" component={App}>
+    <Router history={hashHistory}>
+        <Route path="/" component={App} breadcrumbName="首页">
             <IndexRoute component={DeviceApp}></IndexRoute>
+            <Route path="/flowmeter/detail/:uid" component={DeviceFMDetail} breadcrumbName="流量计详情"></Route>
+            <Route path="/pressuremeter/detail/:uid" component={DevicePMDetail } breadcrumbName="压力计详情"></Route>
+            {/* <Route path="devices" component={DeviceApp}>
+                <Route path="/flowmeter" component={FMList}></Route>
+                <Route path="/pressuremeter" component={PMList}></Route>
+            </Route> */}
             {/* <IndexRoute component={HomeApp}></IndexRoute>
             <Route path="devices" component={DeviceApp}>
                 <Route path="/flowmeter/detail/:uid" component={DeviceFMDetail}></Route>

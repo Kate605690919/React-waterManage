@@ -2,6 +2,7 @@
 @font-size-middle: 16px;
 @font-color: rgba(0,0,0,.65);
 @dark-font-color: rgba(255, 255, 255, 0.67);
+@dark-brand-color: #fff;
 @darkColor: #404040;
 @primaryColor: #108ee9;
 
@@ -18,12 +19,13 @@ li.ant-dropdown-menu-item {
         font-size: @font-size;
     }
 }
+
 header.navbar-fixed-top {
     .ant-menu-dark.ant-menu-vertical{
         display: none;
     }
     font-size: 14px;
-    background: #fff;
+    background: @darkColor;
     padding: 0;
     border-bottom: 1px solid #f0f0f0;
     box-shadow: 0 2px 8px #f0f1f2;
@@ -56,12 +58,12 @@ header.navbar-fixed-top {
         justify-content: space-between;
         padding: 0 20px 0 0;
         .navbar-header {
-            background: #fff;
+            // background: #fff;
             .collapse-button {
                 display: none;
             }
             .navbar-brand {
-                color: @primaryColor;
+                color: @dark-brand-color;
             }
         }
         .navbar-collapse {
@@ -78,7 +80,7 @@ header.navbar-fixed-top {
                 margin-right: 10px;
                 font-size: @font-size-middle;
                 a {
-                    color: @font-color;
+                    color: @dark-font-color;
                 }
             }
             .nav-menu {

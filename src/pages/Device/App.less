@@ -1,10 +1,71 @@
+@font-size: 14px;
+@font-size-middle: 16px;
+@font-color: rgba(0,0,0,.65);
+@dark-font-color: rgba(255, 255, 255, 0.67);
+@darkColor: #404040;
+@primaryColor: #108ee9;
+
 .deviceApp {
     padding: 20px;
     .ant-table-wrapper {
         padding-left: 20px;
+    }
+    .deviceTable {
         border-left: 1px solid #e6e6e6;
     }
     .editable-row-operations a {
-			margin-right: 8px;
-		}
+        margin-right: 8px;
+    }
+    .a-btn.ant-btn-primary {
+        color: #fff !important;
+    }
+    .a-btn {
+        line-height: 26px;
+        color: hsla(205, 87%, 40%, 1) !important;
+    }
+    .ant-radio-group {
+        padding: 10px 20px;
+    }
+    .ant-card-wider-padding .ant-card-body {
+        padding: 20px;
+    }
+}
+.detailApp {
+    padding: 20px;
+    position: relative;
+    .ant-breadcrumb {
+        font-size: @font-size;
+    }
+    .ant-table-small {
+        border: none;
+        border-radius: 0;
+        box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px;
+        border-radius: 2px;
+    }
+    .ant-card-grid {
+        padding: 10px;
+        width: 100%;
+    }
+    .ant-card-wider-padding .ant-card-body {
+        padding: 15px;
+    }
+    .gutter-row {
+        // padding-bottom: 10px;
+        padding-top: 20px;
+    }
+    .littleCard .ant-card-body{
+        padding: 0px;
+    }
+    .ant-table-small .ant-table-thead > tr > th {
+        font-size: 14px;
+    }
+    .deviceBlock {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        span {
+            margin-left: 10px;
+            font-size: 14px;
+        }
+    }
 }

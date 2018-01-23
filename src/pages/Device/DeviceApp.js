@@ -1,93 +1,69 @@
 import React from 'react';
-import { Tree, Affix } from 'antd';
-import { Table, Input, Popconfirm } from 'antd';
-import { Row, Col } from 'antd';
+import { Tree, Affix, Row, Col, Card } from 'antd';
 // import $Fetch from '../../util/fetch.js';
+import { Radio } from 'antd';
+import FMList from './components/FMList';
+import PMList from './components/PMList';
+import ClientList from './components/ClientList';
 import './App.less';
 
-const EditableCell = ({ editable, value, onChange }) => (
-	<div>
-		{editable
-		? <Input style={{ margin: '-5px 0' }} value={value} onChange={e => onChange(e.target.value)} />
-		: value
-		}
-	</div>
-);
-
 const TreeNode = Tree.TreeNode;
+const RadioGroup = Radio.Group;
 
 class DeviceApp extends React.Component {
 	constructor(props) {
 		super(props);
-		this.columns = [{
-      title: '流量计编码',
-      dataIndex: 'flowmeter.FM_Code',
-      width: '10%',
-      render: (text, record) => this.renderColumns(text, record, 'name'),
-    }, {
-      title: '描述',
-      dataIndex: 'flowmeter.FM_Description',
-      width: '20%',
-      render: (text, record) => this.renderColumns(text, record, 'name'),
-    }, {
-      title: '区域',
-      dataIndex: 'area.Ara_Name',
-      width: '20%',
-      render: (text, record) => this.renderColumns(text, record, 'name'),
-    }, {
-      title: '更新',
-      dataIndex: 'flowmeter.FM_FlowCountLast',
-      width: '20%',
-      render: (text, record) => this.renderColumns(text, record, 'age'),
-    }, {
-      title: '流量异常',
-      dataIndex: 'flowmeter.FM_Flag',
-      width: '15%',
-      render: (text, record) => this.renderColumns(text, record, 'flag'),
-    }, {
-      title: '操作',
-      dataIndex: 'operation',
-      render: (text, record) => {
-        const { editable } = record;
-        return (
-          <div className="editable-row-operations">
-            {
-              editable ?
-                <span>
-                  <a onClick={() => this.save(record.key)}>保存</a>
-                  <Popconfirm title="Sure to cancel?" onConfirm={() => this.cancel(record.key)}>
-                    <a>取消</a>
-                  </Popconfirm>
-                </span>
-                : 
-								<span>
-									<a onClick={() => this.edit(record.key)}>编辑</a>
-									<a onClick={() => this.delete(record.key)}>删除</a>
-								</span> 
-            }
-          </div>
-        );
-      },
-		}];
-
+		// 函数的this绑定
+		this.onRadioChange = this.onRadioChange.bind(this);
+		// 获取区域树数据
 		this.fetch({
 			url: `http://rap2api.taobao.org/app/mock/2966/GET/area/AreaTree`,
 			success: (res) => {
-				this.setState({ treeData: res.data });
+				this.getTableData(res.data[0].id);//加载table的数据
+				this.setState({ treeData: res.data, currentTreeKey: res.data[0].id });
 			}
 		});
-		// this.getTableData();
 	}
+
 	state = {
 		treeData: [],
+		currentTreeKey: null,
 		data: [],
 		pagination: {},
-    loading: false,
+		loading: false,
+		radioValue: 'FM',
 	}
-	//获取流量计数据
-	getTableData(areaUid) {
+	//获取设备表格数据
+	getTableData(areaUid, radioValue = 'FM') {
+		let url;
+		switch (radioValue) {
+			case 'FM': {
+				url = 'http://rap2api.taobao.org/app/mock/2966/POST/Area/GetFlowMeterByUid';
+				break;
+			}
+			case 'PM': {
+				url = 'http://rap2api.taobao.org/app/mock/2966/POST/Area/GetPressureMeterByAreaUid';
+				break;
+			}
+			case 'QM': {
+				url = 'GetQualityMeterByAreaUid';
+				break;
+			}
+			case 'Client': {
+				url = 'http://rap2api.taobao.org/app/mock/2966/GET/Client/getAll';
+				break;
+			}
+			case 'Staff': {
+				url = 'GetQualityMeterByAreaUid';
+				break;
+			}
+			default: {
+				alert('请选择一种设备！');
+				return false;
+			}
+		}
 		this.fetch_Post({
-			url: `http://rap2api.taobao.org/app/mock/2966/POST/FlowMeter/GetFlowMeterByUid`,
+			url: url,
 			data: `areaUid=${areaUid}`,
 			success: (res) => {
 				this.setState({ loading: true });
@@ -100,12 +76,13 @@ class DeviceApp extends React.Component {
 					loading: false,
 					data: res.data,
 					pagination,
+					radioValue
 				});
 			}
 		})
 	}
 	//fetch的get方法封装
-	fetch({url, success}) {
+	fetch({ url, success }) {
 		fetch(url).then((response) => {
 			if (response.status !== 200) {
 				throw new Error('Fail to get response with status ' + response.status);
@@ -119,11 +96,12 @@ class DeviceApp extends React.Component {
 			console.error(error);
 		});
 	}
-	fetch_Post({url, data, success}) {
+	fetch_Post({ url, data, success }) {
 		fetch(url, {
-                method: 'POST',
-                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: data}).then((response) => {
+			method: 'POST',
+			headers: { "Content-Type": "application/x-www-form-urlencoded" },
+			body: data
+		}).then((response) => {
 			if (response.status !== 200) {
 				throw new Error('Fail to get response with status ' + response.status);
 			}
@@ -136,53 +114,7 @@ class DeviceApp extends React.Component {
 			console.error(error);
 		});
 	}
-	//设备表
-	renderColumns(text, record, column) {
-    return (
-      <EditableCell
-        editable={record.editable}
-        value={text}
-        onChange={value => this.handleChange(value, record.key, column)}
-      />
-    );
-	}
-	handleChange(value, key, column) {
-    const newData = [...this.state.data];
-    const target = newData.filter(item => key === item.key)[0];
-    if (target) {
-      target[column] = value;
-      this.setState({ data: newData });
-    }
-	}
-	edit(key) {
-    const newData = [...this.state.data];
-    const target = newData.filter(item => key === item.key)[0];
-    if (target) {
-      target.editable = true;
-      this.setState({ data: newData });
-    }
-  }
-  save(key) {
-    const newData = [...this.state.data];
-    const target = newData.filter(item => key === item.key)[0];
-    if (target) {
-      delete target.editable;
-      this.setState({ data: newData });
-      this.cacheData = newData.map(item => ({ ...item }));
-    }
-  }
-  cancel(key) {
-    const newData = [...this.state.data];
-    const target = newData.filter(item => key === item.key)[0];
-    if (target) {
-      Object.assign(target, this.cacheData.filter(item => key === item.key)[0]);
-      delete target.editable;
-      this.setState({ data: newData });
-    }
-	}
-	delete(key) {
 
-	}
 	//区域树
 	renderTreeNodes = (data) => {
 		return data.map((item) => {
@@ -199,32 +131,55 @@ class DeviceApp extends React.Component {
 	}
 	onSelect = (selectedKeys, info) => {
 		console.log('selected', selectedKeys, info);
-		this.getTableData(selectedKeys);
+		this.getTableData(selectedKeys, this.state.radioValue);
+	}
+	//toolbar的单选按钮组
+	onRadioChange(e) {
+		const areaUid = this.state.currentTreeKey;
+		// window.location.hash = '#/' + e.target.value;
+		// this.setState({
+		// 	radioValue: e.target.value,
+		// });
+
+		this.getTableData(areaUid, e.target.value)
 	}
 	render() {
-		console.log(this.state.treeData);
+		// debugger;
+		// console.log(this.state.radioValue, 'Client');
+		let Device = null;
+		if (this.state.radioValue === 'FM') {
+			Device = <FMList tableData={this.state.data} cacheData={this.cacheData} loading={this.state.loading} pagination={this.state.pagination} />
+		} else if (this.state.radioValue === 'PM') {
+			Device = <PMList tableData={this.state.data} cacheData={this.cacheData} loading={this.state.loading} pagination={this.state.pagination} />
+		} else if (this.state.radioValue === 'Client') {
+			Device = <ClientList tableData={this.state.data} cacheData={this.cacheData} loading={this.state.loading} pagination={this.state.pagination} />
+		}
 		return (
 			<div className="content deviceApp">
 				<Row>
 					<Col className="deviceTree" xs={24} sm={24} md={24} lg={5} xl={5}>
 						<Affix>
-						{this.state.treeData.length
-							? <Tree showLine
-							defaultExpandAll
-								defaultExpandedKeys={['0-0-0']}
-								onSelect={this.onSelect}
-							>
-								{this.renderTreeNodes(this.state.treeData)}
-							</Tree>
-							: 'loading tree'}
+							{this.state.treeData.length
+								? <Tree showLine
+									defaultExpandAll
+									defaultSelectedKeys={[this.state.currentTreeKey]}
+									onSelect={this.onSelect}
+								>
+									{this.renderTreeNodes(this.state.treeData)}
+								</Tree>
+								: 'loading tree'}
 						</Affix>
 					</Col>
 					<Col className="deviceTable" xs={24} sm={24} md={24} lg={19} xl={19}>
-						<Table rowKey={data => data.flowmeter.FM_UId} 
-							dataSource={this.state.data} 
-							columns={this.columns} 
-							loading={this.state.loading}
-						/>
+						<Card>
+							<RadioGroup onChange={this.onRadioChange} value={this.state.radioValue}>
+								<Radio value='FM'>流量计</Radio>
+								<Radio value='PM'>压力计</Radio>
+								<Radio value='Client'>客户</Radio>
+								<Radio value='Staff'>职员</Radio>
+							</RadioGroup>
+							{Device}
+						</Card>
 					</Col>
 				</Row>
 			</div>
