@@ -195,12 +195,4 @@ class DevicePMDetail extends React.Component {
         )
     }
 }
-function select(arr, key) {
-    var ret = [];
-    for (var index in arr) {
-        if (arr[index][key] !== undefined)
-            ret.push(arr[index][key]);
-    }
-    return ret;
-}
 export default DevicePMDetail;

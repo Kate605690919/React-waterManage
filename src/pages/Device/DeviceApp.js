@@ -5,6 +5,8 @@ import { Radio } from 'antd';
 import FMList from './components/FMList';
 import PMList from './components/PMList';
 import ClientList from './components/ClientList';
+import StaffList from './components/StaffList';
+import util from '../../util/util';
 import './App.less';
 
 const TreeNode = Tree.TreeNode;
@@ -17,9 +19,10 @@ class DeviceApp extends React.Component {
 		this.onRadioChange = this.onRadioChange.bind(this);
 		// 获取区域树数据
 		this.fetch({
-			url: `http://localhost:64915/area/AreaTree`,
+			url: `http://localhost:2051/area/AreaTree`,
 			success: (res) => {
 				res = [res];
+				util.setSessionStorate('areatree',res);
 				this.getTableData(res[0].id);//加载table的数据
 				this.setState({ treeData: res, currentTreeKey: res[0].id });
 			}
@@ -32,10 +35,10 @@ class DeviceApp extends React.Component {
 		data: [],
 		pagination: {},
 		loading: false,
-		radioValue: 'FM',
+		radioValue: 'Client',
 	}
 	//获取设备表格数据
-	getTableData(areaUid, radioValue = 'FM') {
+	getTableData(areaUid, radioValue = 'Client') {
 		this.setState({ loading: true });
 		let url;
 		switch (radioValue) {
@@ -52,11 +55,11 @@ class DeviceApp extends React.Component {
 				break;
 			}
 			case 'Client': {
-				url = 'http://localhost:64915/Client/getAll';
+				url = 'http://localhost:2051/Client/getAll';
 				break;
 			}
 			case 'Staff': {
-				url = 'GetQualityMeterByAreaUid';
+				url = 'http://localhost:2051/Staff/getAll';
 				break;
 			}
 			default: {
@@ -155,6 +158,8 @@ class DeviceApp extends React.Component {
 			Device = <PMList tableData={this.state.data} cacheData={this.cacheData} loading={this.state.loading} pagination={this.state.pagination} />
 		} else if (this.state.radioValue === 'Client') {
 			Device = <ClientList tableData={this.state.data} cacheData={this.cacheData} loading={this.state.loading} pagination={this.state.pagination} />
+		} else if (this.state.radioValue === 'Staff') {
+			Device = <StaffList tableData={this.state.data} cacheData={this.cacheData} loading={this.state.loading} pagination={this.state.pagination} />
 		}
 		return (
 			<div className="content deviceApp">

@@ -9,6 +9,14 @@ class Util {
         for (var i = 0; i < ar_date.length; i++) ar_date[i] = dFormat(ar_date[i]);
         return ar_date.join('/');
     }
+    setSessionStorate(key, data) {
+        data = JSON.stringify(data);
+        sessionStorage.setItem(key, data);
+    }
+    getSessionStorate(key) {
+        let res = sessionStorage.getItem(key);
+        return JSON.parse(res);
+    }
 }
 
 const util = new Util();
