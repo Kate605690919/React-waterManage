@@ -20,11 +20,12 @@ class FMList extends React.Component {
 		}, {
 			title: '描述',
 			dataIndex: 'flowmeter.FM_Description',
-			width: '20%'
+			width: '20%',
+			render: (text, record) => this.renderColumns(text, record, 'flowmeter.FM_Description')
 		}, {
 			title: '区域',
 			dataIndex: 'area.Ara_Name',
-			width: '20%'
+			width: '20%',
 		}, {
 			title: '更新',
 			dataIndex: 'flowmeter.FM_FlowCountLast',
@@ -47,7 +48,9 @@ class FMList extends React.Component {
 								:
 								<span>
 									<a onClick={() => this.edit(record.flowmeter.FM_UId)}>编辑</a>
-									<a onClick={() => this.delete(record.flowmeter.FM_UId)}>删除</a>
+									<Popconfirm title="Sure to delete?" onConfirm={() => this.delete(record.flowmeter.FM_UId)}>
+										<a>删除</a>
+									</Popconfirm>
 								</span>
 						}
 					</div>
@@ -107,7 +110,6 @@ class FMList extends React.Component {
 	}
 	cancel(key) {
         const newData = [...this.state.data];
-        debugger;
 		const target = newData.filter(item => key === item.flowmeter.FM_UId)[0];
 		if (target) {
 			Object.assign(target, this.cacheData.filter(item => key === item.flowmeter.FM_UId)[0]);
@@ -116,7 +118,8 @@ class FMList extends React.Component {
 		}
 	}
 	delete(key) {
-        
+        const newdata = [...this.state.data];
+		this.setState({ data: newdata.filter(item => item.flowmeter.FM_UId !== key) });
 	}
     render() {
         return (

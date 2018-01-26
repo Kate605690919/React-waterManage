@@ -1,18 +1,27 @@
 import React from 'react'
-import { Table, Popconfirm } from 'antd';
+import { Table, Input, Popconfirm } from 'antd';
 
+const EditableCell = ({ editable, value, onChange }) => (
+	<div>
+		{editable
+			? <Input style={{ margin: '-5px 0' }} value={value} onChange={e => onChange(e.target.value)} />
+			: value
+		}
+	</div>
+);
 class PMList extends React.Component {
     constructor(props) {
         super(props);
         this.PMColumns = [{
-			title: '流量计编码',
+			title: '压力计编码',
 			dataIndex: 'pressuremeter.PM_Code',
 			width: '10%',
 			render: (text, record) => <a href={`#/pressuremeter/detail/pmUid=${record.pressuremeter.PM_UId}`}>{text}</a>,
 		}, {
 			title: '描述',
 			dataIndex: 'pressuremeter.PM_Description',
-			width: '20%'
+			width: '20%',
+			render: (text, record) => this.renderColumns(text, record, 'pressuremeter.PM_Description')			
 		}, {
 			title: '区域',
 			dataIndex: 'area.Ara_Name',
@@ -38,8 +47,10 @@ class PMList extends React.Component {
 								</span>
 								:
 								<span>
-									<a onClick={() => {}}>编辑</a>
-									<a onClick={() => this.delete(record.pressuremeter.PM_UId)}>删除</a>
+									<a onClick={() => this.edit(record.pressuremeter.PM_UId)}>编辑</a>
+									<Popconfirm title="Sure to delete?" onConfirm={() => this.delete(record.pressuremeter.PM_UId)}>
+										<a>删除</a>
+									</Popconfirm>
 								</span>
 						}
 					</div>
@@ -61,10 +72,55 @@ class PMList extends React.Component {
             loading,
             pagination,
         });
-    }
-    
+	}
+	renderColumns(text, record, column) {
+		return (
+			<EditableCell
+				editable={record.editable}
+				value={text}
+				onChange={value => this.handleChange(value, record.key, column)}
+			/>
+		);
+	}
+	handleChange(value, key, column) {
+		const newData = [...this.state.data];
+		const target = newData.filter(item => key === item.key)[0];
+		if (target) {
+			target[column] = value;
+			this.setState({ data: newData });
+		}
+	}
+	edit(key) {
+		const newData = [...this.state.data];
+		console.log(newData);
+		const target = newData.filter(item => key === item.pressuremeter.PM_UId)[0];
+		if (target) {
+			target.editable = true;
+			this.setState({ data: newData });
+		}
+	}
+	save(key) {
+		const newData = [...this.state.data];
+		const target = newData.filter(item => key === item.pressuremeter.PM_UId)[0];
+		if (target) {
+			delete target.editable;
+			this.setState({ data: newData });
+			this.cacheData = newData.map(item => ({ ...item }));
+		}
+	}
+	cancel(key) {
+        const newData = [...this.state.data];
+		const target = newData.filter(item => key === item.pressuremeter.PM_UId)[0];
+		if (target) {
+			debugger;
+			Object.assign(target, this.cacheData.filter(item => key === item.pressuremeter.PM_UId)[0]);
+			delete target.editable;
+			this.setState({ data: newData });
+		}
+	}
 	delete(key) {
-        
+        const newdata = [...this.state.data];
+		this.setState({ data: newdata.filter(item => item.pressuremeter.PM_UId !== key) });
 	}
     render() {
 
