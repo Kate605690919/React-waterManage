@@ -1,5 +1,7 @@
 import React from 'react'
 import { Table, Popconfirm } from 'antd';
+import util from '../../../util/util';
+
 
 class PMList extends React.Component {
     constructor(props) {
@@ -7,7 +9,7 @@ class PMList extends React.Component {
         this.PMColumns = [{
 			title: '流量计编码',
 			dataIndex: 'pressuremeter.PM_Code',
-			width: '10%',
+			width: '15%',
 			render: (text, record) => <a href={`#/pressuremeter/detail/pmUid=${record.pressuremeter.PM_UId}`}>{text}</a>,
 		}, {
 			title: '描述',
@@ -20,7 +22,8 @@ class PMList extends React.Component {
 		}, {
 			title: '更新',
 			dataIndex: 'status.PMS_UpdateDt',
-            width: '20%'
+            width: '15%',
+			render: (text, record) => util.dateFormat(text, 7)
 		}, {
 			title: '操作',
 			dataIndex: 'operation',

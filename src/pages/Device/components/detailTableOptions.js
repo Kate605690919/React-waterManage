@@ -22,23 +22,23 @@ const columnsStatus = [{
 
 const columnsAnalysis = [{
     title: '昨日总流量',
-    dataIndex: 'lastday',
+    dataIndex: 'lastday_flow',
 }, {
     title: '昨日变化趋势',
-    dataIndex: 'lastdayproportion',
+    dataIndex: 'lastday_flow_proportion',
 }, {
     title: '上月总流量',
-    dataIndex: 'monthflow',
+    dataIndex: 'month_flow',
 }, {
     title: '上月变化趋势',
-    dataIndex: 'result',
+    dataIndex: 'month_flow_proportion',
 }];
 const columnsNight = [{
     title: '昨日凌晨2点-4点流量均值',
-    dataIndex: 'lastdaytotal',
+    dataIndex: 'night_flow',
 }, {
     title: '夜间用水量*24*30/总用水量',
-    dataIndex: 'nightproportion',
+    dataIndex: 'night_flow_proportion',
 }];
 
 const columnsFlow = [{

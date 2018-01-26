@@ -1,5 +1,6 @@
 import React from 'react'
 import { Table, Input, Popconfirm } from 'antd';
+import util from '../../../util/util';
 
 const EditableCell = ({ editable, value, onChange }) => (
 	<div>
@@ -15,7 +16,7 @@ class FMList extends React.Component {
         this.FMColumns = [{
 			title: '流量计编码',
 			dataIndex: 'flowmeter.FM_Code',
-			width: '10%',
+			width: '15%',
 			render: (text, record) => <a href={`#/flowmeter/detail/uid=${record.flowmeter.FM_UId}`}>{text}</a>,
 		}, {
 			title: '描述',
@@ -28,7 +29,8 @@ class FMList extends React.Component {
 		}, {
 			title: '更新',
 			dataIndex: 'flowmeter.FM_FlowCountLast',
-			width: '20%'
+			width: '15%',
+			render: (text, record) => util.dateFormat(text, 7)
 		}, {
 			title: '操作',
 			dataIndex: 'operation',

@@ -17,10 +17,11 @@ class DeviceApp extends React.Component {
 		this.onRadioChange = this.onRadioChange.bind(this);
 		// 获取区域树数据
 		this.fetch({
-			url: `http://rap2api.taobao.org/app/mock/2966/GET/area/AreaTree`,
+			url: `http://localhost:64915/area/AreaTree`,
 			success: (res) => {
-				this.getTableData(res.data[0].id);//加载table的数据
-				this.setState({ treeData: res.data, currentTreeKey: res.data[0].id });
+				res = [res];
+				this.getTableData(res[0].id);//加载table的数据
+				this.setState({ treeData: res, currentTreeKey: res[0].id });
 			}
 		});
 	}
@@ -35,14 +36,15 @@ class DeviceApp extends React.Component {
 	}
 	//获取设备表格数据
 	getTableData(areaUid, radioValue = 'FM') {
+		this.setState({ loading: true });
 		let url;
 		switch (radioValue) {
 			case 'FM': {
-				url = 'http://rap2api.taobao.org/app/mock/2966/POST/Area/GetFlowMeterByUid';
+				url = 'http://localhost:64915/Area/GetFlowMeterByAreaUid';
 				break;
 			}
 			case 'PM': {
-				url = 'http://rap2api.taobao.org/app/mock/2966/POST/Area/GetPressureMeterByAreaUid';
+				url = 'http://localhost:64915/Area/GetPressureMeterByAreaUid';
 				break;
 			}
 			case 'QM': {
@@ -50,7 +52,7 @@ class DeviceApp extends React.Component {
 				break;
 			}
 			case 'Client': {
-				url = 'http://rap2api.taobao.org/app/mock/2966/GET/Client/getAll';
+				url = 'http://localhost:64915/Client/getAll';
 				break;
 			}
 			case 'Staff': {
@@ -66,15 +68,15 @@ class DeviceApp extends React.Component {
 			url: url,
 			data: `areaUid=${areaUid}`,
 			success: (res) => {
-				this.setState({ loading: true });
-				this.cacheData = res.data.map(item => ({ ...item }));
+				if(radioValue === 'FM' || radioValue === 'PM')	res = JSON.parse(res);
+				this.cacheData = res.map(item => ({ ...item }));
 				const pagination = { ...this.state.pagination };
 				// Read total count from server
 				// pagination.total = data.totalCount;
 				pagination.total = 200;
 				this.setState({
 					loading: false,
-					data: res.data,
+					data: res,
 					pagination,
 					radioValue
 				});
