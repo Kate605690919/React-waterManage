@@ -20,7 +20,7 @@ class HeaderTop extends React.Component {
         this._roleName = 'hkAdmin';
     }
     state = {
-        collapsed: false,
+        collapsed: true,
     }
     toggleCollapsed = () => {
         this.setState({

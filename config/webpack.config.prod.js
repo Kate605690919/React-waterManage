@@ -186,6 +186,9 @@ module.exports = {
                       },
                     },
                     {
+                      loader: require.resolve('less-loader') // compiles Less to CSS
+                    },
+                    {
                       loader: require.resolve('postcss-loader'),
                       options: {
                         // Necessary for external CSS imports to work

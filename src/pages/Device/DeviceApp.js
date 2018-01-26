@@ -157,7 +157,7 @@ class DeviceApp extends React.Component {
 		return (
 			<div className="content deviceApp">
 				<Row>
-					<Col className="deviceTree" xs={24} sm={24} md={24} lg={5} xl={5}>
+					<Col className="deviceTree" xs={24} sm={24} md={5} lg={5} xl={5}>
 						<Affix>
 							{this.state.treeData.length
 								? <Tree showLine
@@ -170,7 +170,7 @@ class DeviceApp extends React.Component {
 								: 'loading tree'}
 						</Affix>
 					</Col>
-					<Col className="deviceTable" xs={24} sm={24} md={24} lg={19} xl={19}>
+					<Col className="deviceTable" xs={24} sm={24} md={19} lg={19} xl={19}>
 						<Card>
 							<RadioGroup onChange={this.onRadioChange} value={this.state.radioValue}>
 								<Radio value='FM'>流量计</Radio>
