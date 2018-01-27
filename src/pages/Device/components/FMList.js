@@ -86,6 +86,7 @@ class FMList extends React.Component {
 	handleChange(value, key, column) {
 		const newData = [...this.state.data];
 		const target = newData.filter(item => key === item.flowmeter.FM_UId)[0];
+		// const newTarget = update(target, {flowmeter: {$set: }})
 		if (target) {
 			eval(`target.${column}=value`);
 			this.setState({ data: newData });
@@ -105,16 +106,15 @@ class FMList extends React.Component {
 		if (target) {
 			delete target.editable;
 			this.setState({ data: newData });
-			this.cacheData = newData.map(item => ({ ...item }));
+			// this.cacheData = newData.map(item => ({ ...item }));
+			this.cacheData = JSON.parse(JSON.stringify(newData));
 		}
 	}
 	cancel(key) {
 		const newData = [...this.state.data];
 		const target = newData.filter(item => key === item.flowmeter.FM_UId)[0];
 		if (target) {
-			console.log(this.cacheData);
 			Object.assign(target, this.cacheData.filter(item => key === item.flowmeter.FM_UId)[0]);
-			
 			delete target.editable;
 			this.setState({ data: newData });
 		}

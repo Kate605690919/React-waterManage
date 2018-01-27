@@ -57,7 +57,7 @@ class PMList extends React.Component {
 				);
 			},
 		}];
-		this.cacheData = this.props.tableData.map(item => ({ ...item }));
+		this.cacheData = this.props.cacheData;
     }
     
 	state = {
@@ -66,7 +66,7 @@ class PMList extends React.Component {
 		loading: false,
     }
     componentWillReceiveProps(nextProps) {
-        let {tableData, loading, pagination} = nextProps;
+        let {tableData, loading, pagination, cacheData} = nextProps;
         // this.cacheData = cacheData;
         this.setState({
             data: tableData,
@@ -87,13 +87,12 @@ class PMList extends React.Component {
 		const newData = [...this.state.data];
 		const target = newData.filter(item => key === item.pressuremeter.PM_UId)[0];
 		if (target) {
-			target[column] = value;
+			eval(`target.${column}=value`);
 			this.setState({ data: newData });
 		}
 	}
 	edit(key) {
 		const newData = [...this.state.data];
-		console.log(newData);
 		const target = newData.filter(item => key === item.pressuremeter.PM_UId)[0];
 		if (target) {
 			target.editable = true;
@@ -106,14 +105,14 @@ class PMList extends React.Component {
 		if (target) {
 			delete target.editable;
 			this.setState({ data: newData });
-			this.cacheData = newData.map(item => ({ ...item }));
+			// this.cacheData = newData.map(item => ({ ...item }));
+			this.cacheData = JSON.parse(JSON.stringify(newData));			
 		}
 	}
 	cancel(key) {
         const newData = [...this.state.data];
 		const target = newData.filter(item => key === item.pressuremeter.PM_UId)[0];
 		if (target) {
-			console.log(this.cacheData);
 			Object.assign(target, this.cacheData.filter(item => key === item.pressuremeter.PM_UId)[0]);
 			delete target.editable;
 			this.setState({ data: newData });
@@ -124,7 +123,6 @@ class PMList extends React.Component {
 		this.setState({ data: newdata.filter(item => item.pressuremeter.PM_UId !== key) });
 	}
     render() {
-
         return (
             <Table rowKey={data => data.pressuremeter.PM_UId}
                 dataSource={this.state.data}

@@ -67,7 +67,9 @@ class DeviceApp extends React.Component {
 			data: `areaUid=${areaUid}`,
 			success: (res) => {
 				this.setState({ loading: true });
-				this.cacheData = res.data.map(item => ({ ...item }));
+				this.cacheData = JSON.parse(JSON.stringify(res.data));
+				// this.cacheData = res.data.map(item => ({ ...item }));
+				// this.cacheData = update(res.data);
 				const pagination = { ...this.state.pagination };
 				// Read total count from server
 				// pagination.total = data.totalCount;
