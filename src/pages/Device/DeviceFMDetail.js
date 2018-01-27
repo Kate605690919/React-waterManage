@@ -5,6 +5,8 @@ import moment from 'moment';
 import { columnsStatus, columnsAnalysis, columnsNight, columnsFlow } from './components/detailTableOptions';
 import detailEchartLinesOption from './components/detailEchartLinesOption';
 import detailHeatOption from './components/detailHeatOption';
+import util from '../../util/util';
+
 
 const { RangePicker } = DatePicker;
 const TabPane = Tabs.TabPane;
@@ -30,13 +32,13 @@ class DeviceFMDetail extends React.Component {
         this.setState({ loading: true, analysisLoading: true });
         // 获取当前设备数据
         this.fetch({
-            url: `http://rap2api.taobao.org/app/mock/2966/GET/FlowMeter/Detail`,
+            url: `http://localhost:64915/FlowMeter/Detail?${this._uid}`,
             success: (res) => {
                 // this.getTableData(res.data[0].id);//加载table的数据
-                this.setState({ baseData: [res], loading: false });
+                this.setState({ baseData: res, loading: false });
                 // 获取流量计分析数据
                 this.fetch({
-                    url: `http://rap2api.taobao.org/app/mock/2966/GET/flowmeter/Analysis?${this._uid}&time=${res.flowmeter.FM_FlowCountLast}`,
+                    url: `http://localhost:64915/flowmeter/Analysis?${this._uid}&time=${util.dateFormat(res[0].flowmeter.FM_FlowCountLast, 2)}`,
                     success: (res) => {
                         // this.getTableData(res.data[0].id);//加载table的数据
                         this.setState({ analysisData: [res], analysisLoading: false });
@@ -59,17 +61,17 @@ class DeviceFMDetail extends React.Component {
         heatLoading: false,
         detailHeatOption: null,
     }
-    onTabsChange = (key) => {
-        console.log(key)
-    }
+    // onTabsChange = (key) => {
+    //     console.log(key)
+    // }
     getFlowData = (dateStrings) => {
         this.setState({ flowLoading: true });
         // 获取当前设备数据
         this.fetch({
-            url: `http://rap2api.taobao.org/app/mock/2966/GET/flowmeter/currentData?${this._uid}&startDt=${dateStrings[0]}&endDt=${dateStrings[1]}`,
+            url: `http://localhost:64915/flowmeter/currentData?${this._uid}&startDt=${dateStrings[0]}&endDt=${dateStrings[1]}`,
             success: (res) => {
-                var detailEchartLinesOption = this.detailEchartLinesOption(res.data);
-                this.setState({ flowData: res.data, flowLoading: false, detailEchartLinesOption });
+                var detailEchartLinesOption = this.detailEchartLinesOption(res);
+                this.setState({ flowData: res, flowLoading: false, detailEchartLinesOption });
             }
         });
     }
@@ -77,10 +79,10 @@ class DeviceFMDetail extends React.Component {
         this.setState({ heatLoading: true });
         // 获取当前设备数据
         this.fetch({
-            url: `http://rap2api.taobao.org/app/mock/2966/GET/flowmeter/currentData?${this._uid}`,
+            url: `http://localhost:64915/flowmeter/RecentFlowData?${this._uid}`,
             success: (res) => {
-                let data = { time: select(res.data, 'time'), value: select(res.data, 'value') };
-                var detailHeatOption = this.detailHeatOption(data);
+                // let data = { time: select(res.data, 'time'), value: select(res.data, 'value') };
+                var detailHeatOption = this.detailHeatOption(res);
                 this.setState({ heatLoading: false, detailHeatOption });
             }
         });
@@ -116,6 +118,7 @@ class DeviceFMDetail extends React.Component {
                 <div className="deviceInfo">
                     <span>{baseData.flowmeter.FM_Code}</span>
                     <span>{baseData.flowmeter.FM_Description}</span>
+                    <span>{util.dateFormat(baseData.flowmeter.FM_FlowCountLast, 2)}</span>
                 </div>
             ); 
         } else {
@@ -145,7 +148,7 @@ class DeviceFMDetail extends React.Component {
                                 size="small"
                                 pagination={false}
                                 loading={this.state.analysisLoading}
-                                rowKey={data => data.lastdayproportion} />
+                                rowKey={data => data.lastday_flow} />
                         </Card>
                     </Col>
                     <Col className="gutter-row" span={8}>
@@ -155,7 +158,7 @@ class DeviceFMDetail extends React.Component {
                                 size="small"
                                 pagination={false}
                                 loading={this.state.analysisLoading}
-                                rowKey={data => data.lastdayproportion} />
+                                rowKey={data => data.lastday_flow} />
                         </Card>
                     </Col>
                 </Row>
@@ -205,13 +208,5 @@ class DeviceFMDetail extends React.Component {
             </div>
         )
     }
-}
-function select(arr, key) {
-    var ret = [];
-    for (var index in arr) {
-        if (arr[index][key] !== undefined)
-            ret.push(arr[index][key]);
-    }
-    return ret;
 }
 export default DeviceFMDetail;

@@ -15,12 +15,20 @@ const columnsStatus = [{
 const columnsAnalysis = [{
     title: '昨日总量',
     dataIndex: 'lastday_pressure',
+    render: (text, record) => {
+        text = parseInt(text, 10);
+        return text.toFixed(2);
+    }
 }, {
     title: '昨日变化趋势',
     dataIndex: 'lastday_pressure_proportion',
 }, {
     title: '上月总量',
     dataIndex: 'month_pressure',
+    render: (text, record) => {
+        text = parseInt(text, 10);
+        return text.toFixed(2);
+    }
 }, {
     title: '上月变化趋势',
     dataIndex: 'month_pressure_proportion',
@@ -28,6 +36,10 @@ const columnsAnalysis = [{
 const columnsNight = [{
     title: '昨日凌晨2点-4点均值',
     dataIndex: 'night_pressure',
+    render: (text, record) => {
+        text = parseInt(text, 10);
+        return text.toFixed(2);
+    }
 }, {
     title: '夜间用水量*24*30/总量',
     dataIndex: 'night_pressure_proportion',

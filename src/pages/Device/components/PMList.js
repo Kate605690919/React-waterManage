@@ -1,5 +1,11 @@
 import React from 'react'
+<<<<<<< HEAD
 import { Table, Input, Popconfirm } from 'antd';
+=======
+import { Table, Popconfirm } from 'antd';
+import util from '../../../util/util';
+
+>>>>>>> refs/remotes/origin/master
 
 const EditableCell = ({ editable, value, onChange }) => (
 	<div>
@@ -15,7 +21,7 @@ class PMList extends React.Component {
         this.PMColumns = [{
 			title: '压力计编码',
 			dataIndex: 'pressuremeter.PM_Code',
-			width: '10%',
+			width: '15%',
 			render: (text, record) => <a href={`#/pressuremeter/detail/pmUid=${record.pressuremeter.PM_UId}`}>{text}</a>,
 		}, {
 			title: '描述',
@@ -29,7 +35,8 @@ class PMList extends React.Component {
 		}, {
 			title: '更新',
 			dataIndex: 'status.PMS_UpdateDt',
-            width: '20%'
+            width: '15%',
+			render: (text, record) => util.dateFormat(text, 7)
 		}, {
 			title: '操作',
 			dataIndex: 'operation',

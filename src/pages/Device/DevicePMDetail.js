@@ -5,6 +5,7 @@ import moment from 'moment';
 import { columnsStatus, columnsAnalysis, columnsNight, columnsFlow } from './components/PMTableOptions';
 import detailEchartLinesOption from './components/detailEchartLinesOption';
 import detailHeatOption from './components/detailHeatOption';
+import util from '../../util/util';
 
 const { RangePicker } = DatePicker;
 const TabPane = Tabs.TabPane;
@@ -30,13 +31,13 @@ class DevicePMDetail extends React.Component {
         this.setState({ loading: true, analysisLoading: true });
         // 获取当前设备数据
         this.fetch({
-            url: `http://rap2api.taobao.org/app/mock/2966/GET/PressureMeter/Detail`,
+            url: `http://localhost:64915/PressureMeter/Detail?${this._uid}`,
             success: (res) => {
                 // this.getTableData(res.data[0].id);//加载table的数据
-                this.setState({ baseData: [res], loading: false });
+                this.setState({ baseData: res, loading: false });
                 // 获取流量计分析数据
                 this.fetch({
-                    url: `http://rap2api.taobao.org/app/mock/2966/GET/PressureMeter/PressureAnalysis?${this._uid}&time=${res.pressuremeter.PM_CountLast}`,
+                    url: `http://localhost:64915/PressureMeter/PressureAnalysis?${this._uid}&time=${util.dateFormat(res[0].pressuremeter.PM_CountLast, 2)}`,
                     success: (res) => {
                         // this.getTableData(res.data[0].id);//加载table的数据
                         this.setState({ analysisData: [res], analysisLoading: false });
@@ -66,10 +67,10 @@ class DevicePMDetail extends React.Component {
         this.setState({ flowLoading: true });
         // 获取当前设备数据
         this.fetch({
-            url: `http://rap2api.taobao.org/app/mock/2966/GET/PressureMeter/GetPressureDetailWithTime?${this._uid}&startDt=${dateStrings[0]}&endDt=${dateStrings[1]}`,
+            url: `http://localhost:64915/PressureMeter/GetPressureDetailWithTime?${this._uid}&startDt=${dateStrings[0]}&endDt=${dateStrings[1]}`,
             success: (res) => {
-                var detailEchartLinesOption = this.detailEchartLinesOption(res.data);
-                this.setState({ flowData: res.data, flowLoading: false, detailEchartLinesOption });
+                var detailEchartLinesOption = this.detailEchartLinesOption(res);
+                this.setState({ flowData: res, flowLoading: false, detailEchartLinesOption });
             }
         });
     }
@@ -77,10 +78,10 @@ class DevicePMDetail extends React.Component {
         this.setState({ heatLoading: true });
         // 获取当前设备数据
         this.fetch({
-            url: `http://rap2api.taobao.org/app/mock/2966/GET/PressureMeter/GetPressureDetailWithTime?${this._uid}`,
+            url: `http://localhost:64915/PressureMeter/RecentPressureData?${this._uid}`,
             success: (res) => {
-                let data = { time: select(res.data, 'time'), value: select(res.data, 'value') };
-                var detailHeatOption = this.detailHeatOption(data);
+                // let data = { time: select(res.data, 'time'), value: select(res.data, 'value') };
+                var detailHeatOption = this.detailHeatOption(res);
                 this.setState({ heatLoading: false, detailHeatOption });
             }
         });
@@ -116,6 +117,7 @@ class DevicePMDetail extends React.Component {
                 <div className="deviceInfo">
                     <span>{baseData.pressuremeter.PM_Code}</span>
                     <span>{baseData.pressuremeter.PM_Description}</span>
+                    <span>{util.dateFormat(baseData.pressuremeter.PM_CountLast, 2)}</span>
                 </div>
             ); 
         } else {
@@ -192,13 +194,5 @@ class DevicePMDetail extends React.Component {
             </div>
         )
     }
-}
-function select(arr, key) {
-    var ret = [];
-    for (var index in arr) {
-        if (arr[index][key] !== undefined)
-            ret.push(arr[index][key]);
-    }
-    return ret;
 }
 export default DevicePMDetail;
