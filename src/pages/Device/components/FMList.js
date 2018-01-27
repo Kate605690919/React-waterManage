@@ -11,7 +11,7 @@ const EditableCell = ({ editable, value, onChange }) => (
 );
 class FMList extends React.Component {
     constructor(props) {
-        super(props);
+		super(props);
         this.FMColumns = [{
 			title: '流量计编码',
 			dataIndex: 'flowmeter.FM_Code',
@@ -57,6 +57,7 @@ class FMList extends React.Component {
 				);
 			},
 		}];
+		this.cacheData = this.props.cacheData;
     }
     
 	state = {
@@ -65,7 +66,7 @@ class FMList extends React.Component {
 		loading: false,
     }
     componentWillReceiveProps(nextProps) {
-        let {tableData, loading, pagination, cacheData} = nextProps;
+		let {tableData, loading, pagination, cacheData} = nextProps;
         this.cacheData = cacheData;
         this.setState({
             data: tableData,
@@ -78,21 +79,20 @@ class FMList extends React.Component {
 			<EditableCell
 				editable={record.editable}
 				value={text}
-				onChange={value => this.handleChange(value, record.key, column)}
+				onChange={value => this.handleChange(value, record.flowmeter.FM_UId, column)}
 			/>
 		);
 	}
 	handleChange(value, key, column) {
 		const newData = [...this.state.data];
-		const target = newData.filter(item => key === item.key)[0];
+		const target = newData.filter(item => key === item.flowmeter.FM_UId)[0];
 		if (target) {
-			target[column] = value;
+			eval(`target.${column}=value`);
 			this.setState({ data: newData });
 		}
 	}
 	edit(key) {
 		const newData = [...this.state.data];
-		console.log(newData);
 		const target = newData.filter(item => key === item.flowmeter.FM_UId)[0];
 		if (target) {
 			target.editable = true;
@@ -109,10 +109,12 @@ class FMList extends React.Component {
 		}
 	}
 	cancel(key) {
-        const newData = [...this.state.data];
+		const newData = [...this.state.data];
 		const target = newData.filter(item => key === item.flowmeter.FM_UId)[0];
 		if (target) {
+			console.log(this.cacheData);
 			Object.assign(target, this.cacheData.filter(item => key === item.flowmeter.FM_UId)[0]);
+			
 			delete target.editable;
 			this.setState({ data: newData });
 		}

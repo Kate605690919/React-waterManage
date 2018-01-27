@@ -148,6 +148,7 @@ class DeviceApp extends React.Component {
 		// console.log(this.state.radioValue, 'Client');
 		let Device = null;
 		if (this.state.radioValue === 'FM') {
+			console.log(this.cacheData);
 			Device = <FMList tableData={this.state.data} cacheData={this.cacheData} loading={this.state.loading} pagination={this.state.pagination} />
 		} else if (this.state.radioValue === 'PM') {
 			Device = <PMList tableData={this.state.data} cacheData={this.cacheData} loading={this.state.loading} pagination={this.state.pagination} />

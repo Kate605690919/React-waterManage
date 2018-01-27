@@ -11,7 +11,7 @@ const EditableCell = ({ editable, value, onChange }) => (
 );
 class PMList extends React.Component {
     constructor(props) {
-        super(props);
+		super(props);
         this.PMColumns = [{
 			title: '压力计编码',
 			dataIndex: 'pressuremeter.PM_Code',
@@ -57,6 +57,7 @@ class PMList extends React.Component {
 				);
 			},
 		}];
+		this.cacheData = this.props.tableData.map(item => ({ ...item }));
     }
     
 	state = {
@@ -65,8 +66,8 @@ class PMList extends React.Component {
 		loading: false,
     }
     componentWillReceiveProps(nextProps) {
-        let {tableData, loading, pagination, cacheData} = nextProps;
-        this.cacheData = cacheData;
+        let {tableData, loading, pagination} = nextProps;
+        // this.cacheData = cacheData;
         this.setState({
             data: tableData,
             loading,
@@ -78,13 +79,13 @@ class PMList extends React.Component {
 			<EditableCell
 				editable={record.editable}
 				value={text}
-				onChange={value => this.handleChange(value, record.key, column)}
+				onChange={value => this.handleChange(value, record.pressuremeter.PM_UId, column)}
 			/>
 		);
 	}
 	handleChange(value, key, column) {
 		const newData = [...this.state.data];
-		const target = newData.filter(item => key === item.key)[0];
+		const target = newData.filter(item => key === item.pressuremeter.PM_UId)[0];
 		if (target) {
 			target[column] = value;
 			this.setState({ data: newData });
@@ -112,7 +113,7 @@ class PMList extends React.Component {
         const newData = [...this.state.data];
 		const target = newData.filter(item => key === item.pressuremeter.PM_UId)[0];
 		if (target) {
-			debugger;
+			console.log(this.cacheData);
 			Object.assign(target, this.cacheData.filter(item => key === item.pressuremeter.PM_UId)[0]);
 			delete target.editable;
 			this.setState({ data: newData });
