@@ -1,54 +1,110 @@
 import React from 'react'
-import { Table, Popconfirm, Input, message, Select } from 'antd';
+import { Table, Popconfirm, Input, message, TreeSelect, Button, Modal, Form, Icon } from 'antd';
 import util from '../../../util/util';
-
-const Option = Select.Option;
-
+const TreeNode = TreeSelect.TreeNode;
+const FormItem = Form.Item;
+// const Option = Select.Option;
+const renderTreeNodes = (data) => {
+	return data.map((item) => {
+		//dataRef的数据如何使用：因为dataRef是props，给这个treeNode绑定点击事件,onselect事件即可，然后读取自身的这个dataRef即可？之后绑定的时候试一试
+		if (item.children) {
+			return (
+				<TreeNode title={item.text} key={item.id} value={item.id} dataRef={item.id}>
+					{renderTreeNodes(item.children)}
+				</TreeNode>
+			);
+		}
+		return <TreeNode {...item} dataRef={item} />;
+	});
+};
 const EditableCell = ({ editable, value, onChange, column }) => {
 	if (editable) {
 		if (column === 'area.Ara_Name') {
-			let data = util.getSessionStorate('areatree');
-			let res = [];
-			function formatTree(data) {
-				data.forEach((item)=>{
-					res.push({value: item.id, text: item.text});
-					if(item.children.length > 0) {
-						formatTree(item.children);
-					}
-				});
-				return res;
-			}
-			function findText(key) {
-				let res = data.filter((item) => key===item.value);
-				return res[0].text;
-			}
-			data = formatTree(data);
-			let options = data.map(d => <Option key={d.value}>{d.text}</Option>);
+			let treeData = util.getLocalStorate('areatree');
+			let TreeNodes = renderTreeNodes(treeData);
 			return (
-				<Select
+				<TreeSelect
 					showSearch
-					style={{ width: 200 }}
-					placeholder="Select a person"
-					optionFilterProp="children"
+					style={{ width: 150 }}
 					value={value}
-					filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-					onChange={(val) => {
-						util.setSessionStorate('areaUid', val);
-						let text = findText(val);
-						 return onChange(text);}}
+					dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+					placeholder="Please select"
+					allowClear
+					treeDefaultExpandAll
+					onChange={(val, label) => {
+						util.setLocalStorate('areaUid_New', val);
+						return onChange(label);
+					}
+					}
 				>
-					{options}
-				</Select>
+					{TreeNodes}
+				</TreeSelect>
 			)
 		} else {
 			return <Input style={{ margin: '-5px 0' }} value={value} onChange={e => onChange(e.target.value)} />
-			
+
 		}
 	} else {
 		return (<div>{value}</div>);
 	}
 };
-
+const CollectionCreateForm = Form.create()(
+	(props) => {
+		const treeData = util.getLocalStorate('areatree');
+		const TreeNodes = renderTreeNodes(treeData);
+		const { visible, onCancel, onCreate, form } = props;
+		const { getFieldDecorator } = form;
+		return (
+			<Modal
+				visible={visible}
+				title="添加客户"
+				okText="Create"
+				onCancel={onCancel}
+				onOk={onCreate}
+			>
+				<Form layout="vertical">
+					<FormItem label="客户名">
+						{getFieldDecorator('Member_Name', {
+							rules: [{ required: true, message: '请输入客户名!' }],
+						})(
+							<Input />
+							)}
+					</FormItem>
+					<FormItem label="所属区域">
+						{getFieldDecorator('Member_AreaUid', {
+							rules: [{ required: true, message: '请选择区域!' }],
+						})(
+							<TreeSelect
+								showSearch
+								dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+								placeholder="Please select"
+								allowClear
+								treeDefaultExpandAll
+							>
+								{TreeNodes}
+							</TreeSelect>
+							)}
+					</FormItem>
+					<FormItem label="真实姓名或公司名">
+						{getFieldDecorator('Member_RealName')(
+							<Input />
+						)}
+					</FormItem>
+					<FormItem label="电话号码">
+						{getFieldDecorator('Member_Phone')(
+							<Input />
+						)}
+					</FormItem>
+					<FormItem label="备注">
+						{getFieldDecorator('Member_Memo')(
+							<Input />
+						)}
+					</FormItem>
+				</Form>
+			</Modal>
+		);
+	}
+);
 class ClientList extends React.Component {
 	constructor(props) {
 		super(props);
@@ -56,10 +112,11 @@ class ClientList extends React.Component {
 			title: '客户名',
 			dataIndex: 'Name',
 			width: '15%',
-			render: (text, record) => {
-				if (record.editable) return this.renderColumns(text, record, 'Name');
-				else return (<a href={`#/client/detail/uid=${record.Uid}`}>{text}</a>);
-			},
+			render: (text, record) => this.renderColumns(text, record, 'Name')
+			// {
+			// 	if (record.editable) return 
+			// 	else return (<a href={`#/client/detail/uid=${record.Uid}`}>{text}</a>);
+			// },
 		}, {
 			title: '真实姓名或公司名',
 			dataIndex: 'RealName',
@@ -73,12 +130,12 @@ class ClientList extends React.Component {
 		}, {
 			title: '电话号码',
 			dataIndex: 'Phone',
-			width: '20%',
+			width: '15%',
 			render: (text, record) => this.renderColumns(text, record, 'Phone'),
 		}, {
 			title: '备注',
 			dataIndex: 'Memo',
-			width: '20%',
+			width: '15%',
 			render: (text, record) => this.renderColumns(text, record, 'Memo'),
 		}, {
 			title: '操作',
@@ -98,7 +155,8 @@ class ClientList extends React.Component {
 								:
 								<span>
 									<a onClick={() => this.edit(record.Uid)}>编辑</a>
-									<a onClick={() => this.delete(record.Uid)}>删除</a>
+									<a onClick={() => this.delete(record.Id)}>删除</a>
+									<a onClick={() => this.bindFlowMeter(record.Id)}>绑定流量计</a>
 								</span>
 						}
 					</div>
@@ -106,12 +164,18 @@ class ClientList extends React.Component {
 			},
 		}];
 		this.cacheData = this.props.cacheData;
+		this.expandDetail = this.expandDetail.bind(this);
 	}
 
 	state = {
 		data: this.props.tableData,
 		pagination: {},
 		loading: false,
+		count: this.props.tableData.length,
+		visible: false,
+		detailLoading: false,
+		visibleFM: false,
+		confirmLoadingFM: false,
 	}
 	componentWillReceiveProps(nextProps) {
 		let { tableData, loading, pagination, cacheData } = nextProps;
@@ -120,8 +184,10 @@ class ClientList extends React.Component {
 			data: tableData,
 			loading,
 			pagination,
+			count: tableData.length
 		});
 	}
+	// 表格的删和改
 	handleChange(value, key, column) {
 		const newData = [...this.state.data];
 		const target = newData.filter(item => key === item.Uid)[0];
@@ -153,34 +219,91 @@ class ClientList extends React.Component {
 	save(key) {
 		const newData = [...this.state.data];
 		const target = newData.filter(item => key === item.Uid)[0];
-		const areaUid = util.getSessionStorate('areaUid');
+		// 流量计所属区域Uid
+		const areaUid_New = util.getLocalStorate('areaUid_New');
+		// 当前areaTree所选中区域Uid
+		const areaUid = util.getLocalStorate('areaUid');
 		if (target) {
 			delete target.editable;
 			this.fetch_Post({
 				url: 'http://localhost:2051/client/ModifyClient',
-				data: `Member_Name=${target.Name}&Member_RealName=${target.RealName}
-				&Member_Phone=${target.Phone}&Member_Memo=${target.Memo}
-				&Member_AreaUid=${areaUid}&Member_UserUid=${target.Uid}`,
+				data: `Member_Name=${target.Name ? target.Name : ''}&Member_RealName=${target.RealName ? target.RealName : ''}
+				&Member_Phone=${target.Phone ? target.Phone : ''}&Member_Memo=${target.Memo ? target.Memo : ''}
+				&Member_AreaUid=${areaUid_New}&Member_UserUid=${target.Uid ? target.Uid : ''}`,
 				success: (res) => {
-					if (res) message.success('修改成功！');
-					else message.error('修改失败，请重试！');
+					if (res) {
+						message.success('修改成功！');
+						this.props.renderTable(areaUid);// 从父组件处获取数据
+					}
+					else {
+						message.error('修改失败，请重试！');
+						this.setState({ data: newData });
+						this.cacheData = JSON.parse(JSON.stringify(newData));
+					}
 				}
 			})
-			this.setState({ data: newData });
-			this.cacheData = newData.map(item => ({ ...item }));
 		}
 	}
 	cancel(key) {
 		const newData = [...this.state.data];
 		const target = newData.filter(item => key === item.Uid)[0];
 		if (target) {
+			util.setLocalStorate('areaUid', target.area.Ara_UId);
 			Object.assign(target, this.cacheData.filter(item => key === item.Uid)[0]);
 			delete target.editable;
 			this.setState({ data: newData });
 		}
 	}
-	delete(key) {
-
+	// 删除客户
+	delete(Id) {
+		this.fetch_Post({
+			url: 'http://localhost:2051/client/DeleteClient',
+			data: `id=${Id}`,
+			success: (res) => {
+				if (res) {
+					const areaUid = util.getLocalStorate('areaUid');// 当前areaTree所选中区域Uid
+					message.success('删除成功！');
+					this.props.renderTable(areaUid);// 从父组件处获取数据
+				}
+				else {
+					message.error('删除失败，请重试！');
+				}
+			}
+		})
+	}
+	// 绑定流量计
+	bindFlowMeter(key) {
+		this.setState({
+			visibleFM: true,
+		  });
+	}
+	// 绑定流量计详情
+	expandDetail = (expanded, record) => {
+		if (expanded) {
+			this.setState({ detailLoading: true });
+			util.fetch({
+				url: `http://localhost:2051/client/GetDetail?uid=${record.Uid}`,
+				success: (res) => {
+					const newData = [...this.state.data];
+					const target = newData.filter(item => record.Uid === item.Uid)[0];
+					if (target) {
+						util.setLocalStorate('areaUid', target.area.Ara_UId);
+						Object.assign(target, this.cacheData.filter(item => record.Uid === item.Uid)[0]);
+						target.flowmeter = res.flowmeter;
+						this.setState({ data: newData, detailLoading: false });
+					}
+				}
+			});
+		}
+	}
+	// 流量计详情
+	renderFlowMeter = (record) => {
+		if (record.flowmeter) {
+			let res = record.flowmeter.map(item => <p key={item.FM_UId}><span style={{ 'marginRight': '20px' }}>{item.FM_Code}</span><span>{item.FM_Description}</span></p>)
+			return res;
+		} else if (this.state.detailLoading) {
+			return <Icon type="loading" />
+		} else return null;
 	}
 	// post方法封装
 	fetch_Post({ url, data, success }) {
@@ -201,14 +324,74 @@ class ClientList extends React.Component {
 			console.error(error);
 		});
 	}
-	render() {
 
+	// 添加客户模态框
+	showModal = () => {
+		this.setState({
+			visible: true,
+		});
+	}
+	handleCancel = () => {
+		this.setState({ visible: false });
+	}
+	handleCreate = () => {
+		const form = this.form;
+		form.validateFields((err, values) => {
+			if (err) {
+				return;
+			}
+			if (!values.Member_AreaUid) {
+				return message.error('请选择所属区域！');
+			}
+			message.loading('添加中...,请稍后');
+			let formData = util.objToStr(values);
+			this.fetch_Post({
+				url: 'http://localhost:2051/client/AddClient',
+				data: formData,
+				success: (res) => {
+					message.destroy();
+					if (res) message.success('添加成功！请跳转到添加区域查看');
+					else message.error('添加失败，请重试！');
+				}
+			})
+			form.resetFields();
+			this.setState({ visible: false });
+		});
+	}
+	saveFormRef = (form) => {
+		this.form = form;
+	}
+	// 绑定流量计Modal
+	handleCancelFM = () => {
+		this.setState({visibleFM: false});
+	}
+	render() {
 		return (
-			<Table rowKey={data => data.Uid}
-				dataSource={this.state.data}
-				columns={this.columns}
-				loading={this.state.loading}
-			/>
+			<div className="ClientList">
+				<Button type="primary" onClick={this.showModal}>添加</Button>
+				<CollectionCreateForm
+					ref={this.saveFormRef}
+					visible={this.state.visible}
+					onCancel={this.handleCancel}
+					onCreate={this.handleCreate}
+				/>
+				<Modal title="Title"
+					visible={this.state.visibleFM}
+					onOk={this.handleOk}
+					confirmLoading={this.state.confirmLoadingFM}
+					onCancel={this.handleCancelFM}
+				>
+					<p>{this.ModalText}</p>
+				</Modal>
+				<Table rowKey={data => data.Uid}
+					dataSource={this.state.data}
+					columns={this.columns}
+					loading={this.state.loading}
+					// expandRowByClick={true}
+					onExpand={this.expandDetail}
+					expandedRowRender={record => this.renderFlowMeter(record)}
+				/>
+			</div>
 		)
 	}
 }
