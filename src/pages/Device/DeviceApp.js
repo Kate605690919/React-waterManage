@@ -43,11 +43,11 @@ class DeviceApp extends React.Component {
 		let url;
 		switch (radioValue) {
 			case 'FM': {
-				url = 'http://localhost:64915/Area/GetFlowMeterByAreaUid';
+				url = 'http://localhost:2051/Area/GetFlowMeterByAreaUid';
 				break;
 			}
 			case 'PM': {
-				url = 'http://localhost:64915/Area/GetPressureMeterByAreaUid';
+				url = 'http://localhost:2051/Area/GetPressureMeterByAreaUid';
 				break;
 			}
 			case 'QM': {
@@ -71,15 +71,13 @@ class DeviceApp extends React.Component {
 			url: url,
 			data: `areaUid=${areaUid}`,
 			success: (res) => {
-<<<<<<< HEAD
 				this.setState({ loading: true });
-				this.cacheData = JSON.parse(JSON.stringify(res.data));
-				// this.cacheData = res.data.map(item => ({ ...item }));
-				// this.cacheData = update(res.data);
-=======
-				if(radioValue === 'FM' || radioValue === 'PM')	res = JSON.parse(res);
-				this.cacheData = res.map(item => ({ ...item }));
->>>>>>> refs/remotes/origin/master
+				if(radioValue === 'FM' || radioValue === 'PM'){
+					res = JSON.parse(JSON.parse(res).data);
+					this.cacheData = JSON.parse(JSON.stringify(res));
+				} else {
+					this.cacheData = JSON.parse(JSON.stringify(res));
+				}
 				const pagination = { ...this.state.pagination };
 				// Read total count from server
 				// pagination.total = data.totalCount;

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Table, Input, Popconfirm } from 'antd';
+import { Table, Input, Popconfirm, message, Button } from 'antd';
 import util from '../../../util/util';
 
 const EditableCell = ({ editable, value, onChange }) => (
@@ -31,7 +31,13 @@ class FMList extends React.Component {
 			title: '更新',
 			dataIndex: 'flowmeter.FM_FlowCountLast',
 			width: '15%',
-			render: (text, record) => util.dateFormat(text, 7)
+			render: (text, record) => {
+				let result = null;
+				if(text){
+					result = util.dateFormat(text, 7);
+				}
+				return result;
+			}
 		}, {
 			title: '操作',
 			dataIndex: 'operation',
@@ -107,6 +113,17 @@ class FMList extends React.Component {
 		const target = newData.filter(item => key === item.flowmeter.FM_UId)[0];
 		if (target) {
 			delete target.editable;
+			this.fetch_Post({
+				url: 'http://localhost:2051/FlowMeter/ModifyFlowMeter',
+				data: `FM_Code=${target.flowmeter.FM_Code}&FM_Description=${target.flowmeter.FM_Description}
+				&FM_UId=${target.flowmeter.FM_UId}&FM_Id=${target.flowmeter.FM_Id}`,
+				// data: target.flowmeter,
+				success: (res) => {
+					console.log(res);
+					if(res) message.success('修改成功！');
+					else message.error('修改失败，请重试！');
+				}
+			})
 			this.setState({ data: newData });
 			// this.cacheData = newData.map(item => ({ ...item }));
 			this.cacheData = JSON.parse(JSON.stringify(newData));
@@ -122,16 +139,60 @@ class FMList extends React.Component {
 		}
 	}
 	delete(key) {
-        const newdata = [...this.state.data];
-		this.setState({ data: newdata.filter(item => item.flowmeter.FM_UId !== key) });
+		const newData = [...this.state.data];
+		const target = newData.filter(item => key === item.flowmeter.FM_UId)[0];
+		if(target){
+			this.fetch_Post({
+				url: 'http://localhost:2051/FlowMeter/DeleteFlowMeter',
+				// data: `&FM_UId=${target.flowmeter.FM_UId}&FM_Id=${target.flowmeter.FM_Id}`,
+				data: JSON.stringify(target.flowmeter),
+				success: (res) => {
+					console.log(res);
+					if(res) message.success('删除成功！');
+					else message.error('删除失败，请重试！');
+				}
+			});
+			this.setState({ data: newData.filter(item => item.flowmeter.FM_UId !== key) });
+		}
+	}
+	//添加流量计
+	add(){
+		// const newItem = [];
+		// const newData = [newItem, ...this.state.data];
+		// this.setState({
+		// 	data: newData
+		// });
+		// fetch_Post
+	}
+	//post方法封装
+	fetch_Post({url, data, success}){
+		fetch(url, {
+			method: 'POST',
+			headers: {"Content-Type": "application/x-www-form-urlencoded"},
+			body: data
+		}).then((response) => {
+			if (response.status !== 200) {
+				throw new Error('Fail to get response with status ' + response.status);
+			}
+			response.json().then((res) => {
+				success(res);
+			}).catch((error) => {
+				console.error(error);
+			});
+		}).catch((error) => {
+			console.error(error);
+		});
 	}
     render() {
         return (
-            <Table rowKey={data => data.flowmeter.FM_UId}
+			<div>
+				<Button className="editable-add-btn" onClick={this.add}>Add</Button>
+				<Table rowKey={data => data.flowmeter.FM_UId}
                 dataSource={this.state.data}
                 columns={this.FMColumns}
                 loading={this.state.loading}
-            />
+            	/>
+			</div>
         )
     }
 }

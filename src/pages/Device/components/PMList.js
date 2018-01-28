@@ -1,11 +1,7 @@
 import React from 'react'
-<<<<<<< HEAD
-import { Table, Input, Popconfirm } from 'antd';
-=======
-import { Table, Popconfirm } from 'antd';
+import { Table,Input, Popconfirm, message, Button } from 'antd';
 import util from '../../../util/util';
 
->>>>>>> refs/remotes/origin/master
 
 const EditableCell = ({ editable, value, onChange }) => (
 	<div>
@@ -74,7 +70,7 @@ class PMList extends React.Component {
     }
     componentWillReceiveProps(nextProps) {
         let {tableData, loading, pagination, cacheData} = nextProps;
-        // this.cacheData = cacheData;
+        this.cacheData = cacheData;
         this.setState({
             data: tableData,
             loading,
@@ -111,6 +107,17 @@ class PMList extends React.Component {
 		const target = newData.filter(item => key === item.pressuremeter.PM_UId)[0];
 		if (target) {
 			delete target.editable;
+			console.log(target);
+			this.fetch_Post({
+				url: 'http://localhost:2051/PressureMeter/ModifyPressureMeter',
+				data: `PM_Code=${target.pressuremeter.PM_Code}&PM_Description=${target.pressuremeter.PM_Description}
+				&PM_Id=${target.pressuremeter.PM_Id}`,
+				success: (res) => {
+					console.log(res);
+					if(res) message.success('修改成功！');
+					else message.error('修改失败，请重试！');
+				}
+			})
 			this.setState({ data: newData });
 			// this.cacheData = newData.map(item => ({ ...item }));
 			this.cacheData = JSON.parse(JSON.stringify(newData));			
@@ -126,8 +133,42 @@ class PMList extends React.Component {
 		}
 	}
 	delete(key) {
-        const newdata = [...this.state.data];
-		this.setState({ data: newdata.filter(item => item.pressuremeter.PM_UId !== key) });
+		const newData = [...this.state.data];
+		const target = newData.filter(item => key === item.pressuremeter.PM_UId)[0];
+		if(target){
+			this.fetch_Post({
+				url: 'http://localhost:2051/PressureMeter/DeletePressureMeter',
+				data: `&PM_UId=${target.pressuremeter.PM_UId}`,
+				success: (res) => {
+					if(res) message.success('删除成功！');
+					else message.error('删除失败，请重试！');
+				}
+			})
+			this.setState({ data: newData.filter(item => item.pressuremeter.PM_UId !== key) });			
+		}
+	}
+	//添加压力计
+	add(){
+
+	}
+	// post方法封装
+	fetch_Post({ url, data, success }) {
+		fetch(url, {
+			method: 'POST',
+			headers: { "Content-Type": "application/x-www-form-urlencoded" },
+			body: data
+		}).then((response) => {
+			if (response.status !== 200) {
+				throw new Error('Fail to get response with status ' + response.status);
+			}
+			response.json().then((res) => {
+				success(res);
+			}).catch((error) => {
+				console.error(error);
+			});
+		}).catch((error) => {
+			console.error(error);
+		});
 	}
     render() {
         return (

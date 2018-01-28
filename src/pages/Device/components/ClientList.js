@@ -167,7 +167,7 @@ class ClientList extends React.Component {
 				}
 			})
 			this.setState({ data: newData });
-			this.cacheData = newData.map(item => ({ ...item }));
+			this.cacheData = JSON.parse(JSON.stringify(newData));
 		}
 	}
 	cancel(key) {
