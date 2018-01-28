@@ -30,7 +30,12 @@ class Util {
     objToStr(obj) {
         let res = [];
         for (let key in obj) {
-            res.push(`${key}=${obj[key]}`);
+            let item = obj[key];
+            if(Array.isArray(item)) {
+                item.forEach(item => {
+                    res.push(`${key}=${item}`);
+                })
+            } else  res.push(`${key}=${obj[key]}`);
         }
         return res.join('&');
     }
@@ -48,6 +53,33 @@ class Util {
         }).catch((error) => {
             console.error(error);
         });
+    }
+    // post方法封装
+    fetch_Post({ url, data, success }) {
+		fetch(url, {
+			method: 'POST',
+			headers: { "Content-Type": "application/x-www-form-urlencoded" },
+			body: data
+		}).then((response) => {
+			if (response.status !== 200) {
+				throw new Error('Fail to get response with status ' + response.status);
+			}
+			response.json().then((res) => {
+				success(res);
+			}).catch((error) => {
+				console.error(error);
+			});
+		}).catch((error) => {
+			console.error(error);
+		});
+	}
+    // array(对象数组) 设定key值
+    arraySetKey(array, key) {
+        // debugger;
+        let res = array.map(item =>  {
+            return {...item, key: item[key]}
+        });
+        return res;
     }
 }
 

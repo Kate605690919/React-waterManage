@@ -1,5 +1,5 @@
 import React from 'react'
-import { Table, Popconfirm, Input, message, TreeSelect, Button, Modal, Form, Icon } from 'antd';
+import { Table, Popconfirm, Input, message, TreeSelect, Button, Modal, Form, Icon, Transfer } from 'antd';
 import util from '../../../util/util';
 const TreeNode = TreeSelect.TreeNode;
 const FormItem = Form.Item;
@@ -156,7 +156,7 @@ class ClientList extends React.Component {
 								<span>
 									<a onClick={() => this.edit(record.Uid)}>编辑</a>
 									<a onClick={() => this.delete(record.Id)}>删除</a>
-									<a onClick={() => this.bindFlowMeter(record.Id)}>绑定流量计</a>
+									<a onClick={() => this.bindFlowMeter(record.Uid)}>绑定流量计</a>
 								</span>
 						}
 					</div>
@@ -176,6 +176,8 @@ class ClientList extends React.Component {
 		detailLoading: false,
 		visibleFM: false,
 		confirmLoadingFM: false,
+		transferData: [],
+		targetKeys: [],
 	}
 	componentWillReceiveProps(nextProps) {
 		let { tableData, loading, pagination, cacheData } = nextProps;
@@ -273,9 +275,43 @@ class ClientList extends React.Component {
 	}
 	// 绑定流量计
 	bindFlowMeter(key) {
-		this.setState({
-			visibleFM: true,
-		  });
+		util.setLocalStorate('currentKey', key);
+		const newData = [...this.state.data];
+		let target = newData.filter(item => key === item.Uid)[0];
+		this.setState({ visibleFM: true });
+		util.fetch({
+			url: 'http://localhost:2051/client/GetFlowMeter',
+			success: (res) => {
+				let unbinded = res
+				if (Array.isArray(target.flowmeter)) {
+					let keys = target.flowmeter.map(item => item.FM_Id);
+					let binded = target.flowmeter;
+					this.setState({
+						transferData: [...binded, ...unbinded],
+						targetKeys: keys,
+					});
+				}
+
+				else {
+					util.fetch({
+						url: `http://localhost:2051/client/GetDetail?uid=${key}`,
+						success: (binded) => {
+							binded = binded.flowmeter
+							let keys = binded.map(item => item.FM_Id);
+							target.flowmeter = binded;
+							this.setState({
+								transferData: [...binded, ...unbinded,],
+								targetKeys: keys,
+								data: newData,
+							});
+						}
+					})
+				}
+			}
+		})
+	}
+	handleTransfChange = (targetKeys) => {
+		this.setState({ targetKeys });
 	}
 	// 绑定流量计详情
 	expandDetail = (expanded, record) => {
@@ -363,7 +399,47 @@ class ClientList extends React.Component {
 	}
 	// 绑定流量计Modal
 	handleCancelFM = () => {
-		this.setState({visibleFM: false});
+		this.setState({
+			visibleFM: false,
+			transferData: [],
+			targetKeys: [],
+		});
+	}
+	handleOk = (e) => {
+		const key = util.getLocalStorate('currentKey')
+		let obj = {uid: key, id: this.state.targetKeys};
+		const newData = [...this.state.data];
+		const dataFM = util.objToStr(obj);
+		let target = newData.filter(item => key === item.Uid)[0];
+		util.fetch_Post({
+			url: 'http://localhost:2051/client/ModifyClientFlowMeter',
+			data: dataFM,
+			success: (res) => {
+				if (res) {
+					message.success('绑定成功！');
+					target.flowmeter = null;
+					this.setState({ data: newData, visibleFM: false });
+				}
+				else {
+					message.error('绑定失败，请重试！');
+				}
+			}
+		})
+	}
+	renderTransferItem = (item) => {
+		const customLabel = (
+			<span className="custom-item">
+				{item.FM_Code} - {item.FM_Description}
+			</span>
+		);
+
+		return {
+			label: customLabel, // for displayed item
+			value: item.FM_Description, // for title and filter matching
+		};
+	}
+	filterFMOption = (inputValue, option) => {
+		return option.FM_Description.indexOf(inputValue) > -1 || option.FM_Code.indexOf(inputValue) > -1;
 	}
 	render() {
 		return (
@@ -375,19 +451,30 @@ class ClientList extends React.Component {
 					onCancel={this.handleCancel}
 					onCreate={this.handleCreate}
 				/>
-				<Modal title="Title"
+				<Modal title="绑定流量计"
 					visible={this.state.visibleFM}
 					onOk={this.handleOk}
 					confirmLoading={this.state.confirmLoadingFM}
 					onCancel={this.handleCancelFM}
 				>
-					<p>{this.ModalText}</p>
+					<Transfer
+						dataSource={this.state.transferData}
+						showSearch
+						listStyle={{'width': '45%'}}
+						rowKey={record => record.FM_Id}
+						filterOption={this.filterFMOption}
+						notFoundContent={'暂无数据'}
+						titles={['未绑定流量计', '已绑定流量计']}
+						searchPlaceholder={'搜索'}
+						targetKeys={this.state.targetKeys}
+						onChange={this.handleTransfChange}
+						render={this.renderTransferItem}
+					/>
 				</Modal>
 				<Table rowKey={data => data.Uid}
 					dataSource={this.state.data}
 					columns={this.columns}
 					loading={this.state.loading}
-					// expandRowByClick={true}
 					onExpand={this.expandDetail}
 					expandedRowRender={record => this.renderFlowMeter(record)}
 				/>
