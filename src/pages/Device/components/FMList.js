@@ -1,6 +1,7 @@
 import React from 'react'
-import { Table, Input, Popconfirm, message, Button } from 'antd';
+import { Table, Input, Popconfirm, message, Button, Modal } from 'antd';
 import util from '../../../util/util';
+import AddForm from './AddForm';
 
 const EditableCell = ({ editable, value, onChange }) => (
 	<div>
@@ -72,6 +73,8 @@ class FMList extends React.Component {
         data: this.props.tableData,
 		pagination: {},
 		loading: false,
+		visible: false,
+		confirmAddLoading: false,
     }
     componentWillReceiveProps(nextProps) {
 		let {tableData, loading, pagination, cacheData} = nextProps;
@@ -115,9 +118,9 @@ class FMList extends React.Component {
 			delete target.editable;
 			this.fetch_Post({
 				url: 'http://localhost:2051/FlowMeter/ModifyFlowMeter',
-				data: `FM_Code=${target.flowmeter.FM_Code}&FM_Description=${target.flowmeter.FM_Description}
-				&FM_UId=${target.flowmeter.FM_UId}&FM_Id=${target.flowmeter.FM_Id}`,
-				// data: target.flowmeter,
+				// data: `FM_Code=${target.flowmeter.FM_Code}&FM_Description=${target.flowmeter.FM_Description}
+				// &FM_UId=${target.flowmeter.FM_UId}&FM_Id=${target.flowmeter.FM_Id}`,
+				data: util.objToStr(target.flowmeter),
 				success: (res) => {
 					console.log(res);
 					if(res) message.success('修改成功！');
@@ -145,7 +148,7 @@ class FMList extends React.Component {
 			this.fetch_Post({
 				url: 'http://localhost:2051/FlowMeter/DeleteFlowMeter',
 				// data: `&FM_UId=${target.flowmeter.FM_UId}&FM_Id=${target.flowmeter.FM_Id}`,
-				data: JSON.stringify(target.flowmeter),
+				data: util.objToStr(target.flowmeter),
 				success: (res) => {
 					console.log(res);
 					if(res) message.success('删除成功！');
@@ -155,14 +158,57 @@ class FMList extends React.Component {
 			this.setState({ data: newData.filter(item => item.flowmeter.FM_UId !== key) });
 		}
 	}
+	showModal(){
+		console.log(this);
+		this.setState({
+			visible: true,
+			confirmAddLoading: false
+		});
+	}
 	//添加流量计
-	add(){
+	handleAdd(newFlowData){
+		console.log('submit');
+		console.log(newFlowData);
+		this.setState({
+			confirmAddLoading: true
+		})
+		this.fetch_Post({
+			url: 'http://localhost:2051/FlowMeter/AddFlowMeter',
+			data: util.objToStr(newFlowData),
+			success: (res) => {
+				if(res){
+					message.success('添加成功！');
+					this.setState({
+						visible: false,
+						confirmAddLoading: false
+					})
+					console.log(res);
+					//重新加载
+					this.props.onAddDevice();
+					// this.setState({
+					// 	visible: false,
+					// 	confirmAddLoading: false
+					// })
+				} else{
+					message.error('添加失败，请重试！');
+					this.setState({
+						visible: false,
+						confirmAddLoading: false
+					})
+				}
+			}
+		})
 		// const newItem = [];
 		// const newData = [newItem, ...this.state.data];
 		// this.setState({
 		// 	data: newData
 		// });
 		// fetch_Post
+	}
+	handleModalCancel(){
+		this.setState({
+			visible: false,
+		});
 	}
 	//post方法封装
 	fetch_Post({url, data, success}){
@@ -186,7 +232,21 @@ class FMList extends React.Component {
     render() {
         return (
 			<div>
-				<Button className="editable-add-btn" onClick={this.add}>Add</Button>
+				<Button type="primary" onClick={this.showModal.bind(this)}>添加流量计</Button>
+				<Modal width="60%"
+					title="添加流量计"
+					visible={this.state.visible}
+					// onOk = {this.handleAdd.bind(this)}
+					confirmLoading = {this.state.confirmAddLoading}
+					onCancel = {this.handleModalCancel.bind(this)}
+					footer = {null}
+				>
+				{this.state.confirmAddLoading ?
+					<p>流量计添加中</p>
+					:
+					<AddForm onAddSubmit={this.handleAdd.bind(this)} />
+				}
+				</Modal>
 				<Table rowKey={data => data.flowmeter.FM_UId}
                 dataSource={this.state.data}
                 columns={this.FMColumns}

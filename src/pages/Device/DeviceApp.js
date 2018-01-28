@@ -35,10 +35,10 @@ class DeviceApp extends React.Component {
 		data: [],
 		pagination: {},
 		loading: false,
-		radioValue: 'Client',
+		radioValue: 'FM',
 	}
 	//获取设备表格数据
-	getTableData(areaUid, radioValue = 'Client') {
+	getTableData(areaUid, radioValue = 'FM') {
 		this.setState({ loading: true });
 		let url;
 		switch (radioValue) {
@@ -153,13 +153,17 @@ class DeviceApp extends React.Component {
 
 		this.getTableData(areaUid, e.target.value)
 	}
+	//添加流量计、压力计后刷新表格
+	getNewTableData(){
+		console.log(this);
+		this.getTableData(this.state.currentTreeKey, this.state.radioValue);
+	}
 	render() {
 		// debugger;
 		// console.log(this.state.radioValue, 'Client');
 		let Device = null;
 		if (this.state.radioValue === 'FM') {
-			console.log(this.cacheData);
-			Device = <FMList tableData={this.state.data} cacheData={this.cacheData} loading={this.state.loading} pagination={this.state.pagination} />
+			Device = <FMList tableData={this.state.data} cacheData={this.cacheData} loading={this.state.loading} pagination={this.state.pagination} onAddDevice={this.getNewTableData.bind(this)}/>
 		} else if (this.state.radioValue === 'PM') {
 			Device = <PMList tableData={this.state.data} cacheData={this.cacheData} loading={this.state.loading} pagination={this.state.pagination} />
 		} else if (this.state.radioValue === 'Client') {

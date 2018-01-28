@@ -17,6 +17,14 @@ class Util {
         let res = sessionStorage.getItem(key);
         return JSON.parse(res);
     }
+    // object to FormStr
+    objToStr(obj) {
+        let res = [];
+        for (let key in obj) {
+            res.push(`${key}=${obj[key]}`);
+        }
+        return res.join('&');
+    }
 }
 
 const util = new Util();
