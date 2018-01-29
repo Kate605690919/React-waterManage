@@ -1,7 +1,7 @@
 import React from 'react'
-import { Table,Input, Popconfirm, message, Button } from 'antd';
+import { Table,Input, Popconfirm, message, Button, Modal } from 'antd';
 import util from '../../../util/util';
-
+import AddForm from './AddForm';
 
 const EditableCell = ({ editable, value, onChange }) => (
 	<div>
@@ -11,6 +11,122 @@ const EditableCell = ({ editable, value, onChange }) => (
 		}
 	</div>
 );
+const pressuremeterLabelData = [
+	{
+		id: 0,
+		key: 'Ara_UId',
+		name: '区域选择',
+		type: 'cascader',
+		value: ''
+	},
+    {
+        id: 1,
+        key: "PM_Code",
+        name: '压力计编码',
+        type: 'text',
+        value: ''
+    },
+    {
+        id: 2,
+        key: "PM_AlarmNumber",
+        name: '报警号码',
+        type: 'text',
+        value: ''
+    },
+    {
+        id: 3,
+        key: 'PM_AlarmThreshold',
+        name: '报警阈值',
+        type: 'text',
+        value: ''
+    },
+    {
+        id: 4,
+        key: 'PM_AlarmTimeOut',
+        name: '超时阈值',
+        type: 'text',
+        value: ''
+    },
+    {
+        id: 5,
+        key: 'PM_AlarmMode',
+        name: '报警模式',
+        type: 'radio',
+        value: '',
+        option: [
+            {
+                name: '自动',
+                value: 1
+            },
+            {
+                name: '默认',
+                value: 0
+            }
+        ]
+    },
+    {
+        id: 6,
+        key: 'PM_Class',
+        name: '用户类型',
+        type: 'radio',
+        value: '',
+        option: [
+            {
+                name: '手抄压力计',
+                value: 2
+            },
+            {
+                name: '普通',
+                value: 0
+            }
+        ]
+    },
+    {
+        id: 7,
+        key: 'PM_Description',
+        name: '压力计描述',
+        type: 'text',
+        value: ''
+    },
+    {
+        id: 8,
+        key: 'PM_BatteryAlarmThreshold',
+        name: '设备电池报警阈值',
+        type: 'text',
+        value: ''
+    },
+    {
+        id: 9,
+        key: 'PM_ModemAlarmThreshold',
+        name: '通信电池报警阈值',
+        type: 'text',
+        value: ''
+    },
+    {
+        id: 10,
+        key: 'PM_Enable',
+        name: '是否可用',
+        type: 'radio',
+        value: '',
+        option: [
+            {
+                name: '是',
+                value: 1
+            },
+            {
+                name: '否',
+                value: 0
+            }
+        ]
+    },
+    {
+        id: 11,
+        key: 'PM_DeviceAlarmNumber',
+        name: '压力计手机号码',
+        type: 'text',
+        value: ''
+    }
+]
 class PMList extends React.Component {
     constructor(props) {
 		super(props);
@@ -67,6 +183,8 @@ class PMList extends React.Component {
         data: this.props.tableData,
 		pagination: {},
 		loading: false,
+		visible: false,
+		confirmAddLoading: false,
     }
     componentWillReceiveProps(nextProps) {
         let {tableData, loading, pagination, cacheData} = nextProps;
@@ -147,9 +265,53 @@ class PMList extends React.Component {
 			this.setState({ data: newData.filter(item => item.pressuremeter.PM_UId !== key) });			
 		}
 	}
+	showModal(){
+		this.setState({
+			visible: true,
+			confirmAddLoading: false
+		});
+	}
 	//添加压力计
-	add(){
-
+	handleAdd(newPressureData){
+		this.setState({
+			confirmAddLoading: true
+		})
+		this.fetch_Post({
+			url: 'http://localhost:2051/PressureMeter/AddPressureMeter',
+			data: util.objToStr(newPressureData),
+			success: (res) => {
+				if(res){
+					message.success('添加成功！');
+					this.setState({
+						visible: false,
+						confirmAddLoading: false
+					})
+					//重新加载
+					this.props.onAddDevice();
+					// this.setState({
+					// 	visible: false,
+					// 	confirmAddLoading: false
+					// })
+				} else{
+					message.error('添加失败，请重试！');
+					this.setState({
+						visible: false,
+						confirmAddLoading: false
+					})
+				}
+			}
+		})
+		// const newItem = [];
+		// const newData = [newItem, ...this.state.data];
+		// this.setState({
+		// 	data: newData
+		// });
+		// fetch_Post
+	}
+	handleModalCancel(){
+		this.setState({
+			visible: false,
+		});
 	}
 	// post方法封装
 	fetch_Post({ url, data, success }) {
@@ -172,11 +334,33 @@ class PMList extends React.Component {
 	}
     render() {
         return (
-            <Table rowKey={data => data.pressuremeter.PM_UId}
+			<div>
+				<div style={{paddingLeft: '20px', paddingBottom: '10px'}}>
+					<Button type="primary" onClick={this.showModal.bind(this)}>添加压力计</Button>
+				</div>
+				<Modal width="60%"
+					title="添加压力计"
+					visible={this.state.visible}
+					// onOk = {this.handleAdd.bind(this)}
+					confirmLoading = {this.state.confirmAddLoading}
+					onCancel = {this.handleModalCancel.bind(this)}
+					footer = {null}
+				>
+				{this.state.confirmAddLoading ?
+					<h3 style={{textAlign: 'center'}}>
+						<Button type="primary" shape="circle" loading></Button>
+						<span>压力计添加中</span>
+					</h3>
+					:
+					<AddForm labelData={pressuremeterLabelData} onAddSubmit={this.handleAdd.bind(this)} />
+				}
+				</Modal>
+				<Table rowKey={data => data.pressuremeter.PM_UId}
                 dataSource={this.state.data}
                 columns={this.PMColumns}
                 loading={this.state.loading}
-            />
+            	/>
+			</div>
         )
     }
 }

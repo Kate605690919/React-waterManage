@@ -11,8 +11,8 @@ const EditableCell = ({ editable, value, onChange }) => (
 		}
 	</div>
 );
-const flowmeterLabelData = [
-	{
+const qualitymeterLabelData = [
+    {
 		id: 0,
 		key: 'areaUid',
 		name: '区域选择',
@@ -21,35 +21,35 @@ const flowmeterLabelData = [
 	},
     {
         id: 1,
-        key: "FM_Code",
-        name: '流量计编码',
+        key: "QM_Code",
+        name: '水质计编码',
         type: 'text',
         value: ''
     },
     {
         id: 2,
-        key: "FM_AlarmNumber",
+        key: "QM_AlarmNumber",
         name: '报警号码',
         type: 'text',
         value: ''
     },
     {
         id: 3,
-        key: 'FM_AlarmThreshold',
+        key: 'QM_AlarmThreshold',
         name: '报警阈值',
         type: 'text',
         value: ''
     },
     {
         id: 4,
-        key: 'FM_AlarmTimeOut',
+        key: 'QM_AlarmTimeOut',
         name: '超时阈值',
         type: 'text',
         value: ''
     },
     {
         id: 5,
-        key: 'FM_AlarmMode',
+        key: 'QM_AlarmMode',
         name: '报警模式',
         type: 'radio',
         value: '',
@@ -66,13 +66,13 @@ const flowmeterLabelData = [
     },
     {
         id: 6,
-        key: 'FM_Class',
+        key: 'QM_Class',
         name: '用户类型',
         type: 'radio',
         value: '',
         option: [
             {
-                name: '手抄流量计',
+                name: '手抄水质计',
                 value: 2
             },
             {
@@ -83,28 +83,28 @@ const flowmeterLabelData = [
     },
     {
         id: 7,
-        key: 'FM_Description',
-        name: '流量计描述',
+        key: 'QM_Description',
+        name: '水质计描述',
         type: 'text',
         value: ''
     },
     {
         id: 8,
-        key: 'FM_BatteryAlarmThreshold',
+        key: 'QM_BatteryAlarmThreshold',
         name: '设备电池报警阈值',
         type: 'text',
         value: ''
     },
     {
         id: 9,
-        key: 'FM_ModemAlarmThreshold',
+        key: 'QM_ModemAlarmThreshold',
         name: '通信电池报警阈值',
         type: 'text',
         value: ''
     },
     {
         id: 10,
-        key: 'FM_Enable',
+        key: 'QM_Enable',
         name: '是否可用',
         type: 'radio',
         value: '',
@@ -121,32 +121,32 @@ const flowmeterLabelData = [
     },
     {
         id: 11,
-        key: 'FM_DeviceAlarmNumber',
-        name: '流量计手机号码',
+        key: 'QM_DeviceAlarmNumber',
+        name: '水质计手机号码',
         type: 'text',
         value: ''
     }
 ]
-class FMList extends React.Component {
+class QMList extends React.Component {
     constructor(props) {
 		super(props);
-        this.FMColumns = [{
-			title: '流量计编码',
-			dataIndex: 'flowmeter.FM_Code',
+        this.QMColumns = [{
+			title: '水质计编码',
+			dataIndex: 'qualitymeter.QM_Code',
 			width: '15%',
-			render: (text, record) => <a href={`#/flowmeter/detail/uid=${record.flowmeter.FM_UId}`}>{text}</a>,
+			render: (text, record) => <a href={`#/qualitymeter/detail/uid=${record.qualitymeter.QM_UId}`}>{text}</a>,
 		}, {
 			title: '描述',
-			dataIndex: 'flowmeter.FM_Description',
+			dataIndex: 'qualitymeter.QM_Description',
 			width: '20%',
-			render: (text, record) => this.renderColumns(text, record, 'flowmeter.FM_Description')
+			render: (text, record) => this.renderColumns(text, record, 'qualitymeter.QM_Description')
 		}, {
 			title: '区域',
 			dataIndex: 'area.Ara_Name',
 			width: '20%',
 		}, {
 			title: '更新',
-			dataIndex: 'flowmeter.FM_FlowCountLast',
+			dataIndex: 'qualitymeter.QM_QualityCountLast',
 			width: '15%',
 			render: (text, record) => {
 				let result = null;
@@ -165,15 +165,15 @@ class FMList extends React.Component {
 						{
 							editable ?
 								<span>
-									<a onClick={() => this.save(record.flowmeter.FM_UId)}>保存</a>
-									<Popconfirm title="Sure to cancel?" onConfirm={() => this.cancel(record.flowmeter.FM_UId)}>
+									<a onClick={() => this.save(record.qualitymeter.QM_UId)}>保存</a>
+									<Popconfirm title="Sure to cancel?" onConfirm={() => this.cancel(record.qualitymeter.QM_UId)}>
 										<a>取消</a>
 									</Popconfirm>
 								</span>
 								:
 								<span>
-									<a onClick={() => this.edit(record.flowmeter.FM_UId)}>编辑</a>
-									<Popconfirm title="Sure to delete?" onConfirm={() => this.delete(record.flowmeter.FM_UId)}>
+									<a onClick={() => this.edit(record.qualitymeter.QM_UId)}>编辑</a>
+									<Popconfirm title="Sure to delete?" onConfirm={() => this.delete(record.qualitymeter.QM_UId)}>
 										<a>删除</a>
 									</Popconfirm>
 								</span>
@@ -206,14 +206,14 @@ class FMList extends React.Component {
 			<EditableCell
 				editable={record.editable}
 				value={text}
-				onChange={value => this.handleChange(value, record.flowmeter.FM_UId, column)}
+				onChange={value => this.handleChange(value, record.qualitymeter.QM_UId, column)}
 			/>
 		);
 	}
 	handleChange(value, key, column) {
 		const newData = [...this.state.data];
-		const target = newData.filter(item => key === item.flowmeter.FM_UId)[0];
-		// const newTarget = update(target, {flowmeter: {$set: }})
+		const target = newData.filter(item => key === item.qualitymeter.QM_UId)[0];
+		// const newTarget = update(target, {qualitymeter: {$set: }})
 		if (target) {
 			eval(`target.${column}=value`);
 			this.setState({ data: newData });
@@ -221,7 +221,7 @@ class FMList extends React.Component {
 	}
 	edit(key) {
 		const newData = [...this.state.data];
-		const target = newData.filter(item => key === item.flowmeter.FM_UId)[0];
+		const target = newData.filter(item => key === item.qualitymeter.QM_UId)[0];
 		if (target) {
 			target.editable = true;
 			this.setState({ data: newData });
@@ -229,14 +229,14 @@ class FMList extends React.Component {
 	}
 	save(key) {
 		const newData = [...this.state.data];
-		const target = newData.filter(item => key === item.flowmeter.FM_UId)[0];
+		const target = newData.filter(item => key === item.qualitymeter.QM_UId)[0];
 		if (target) {
 			delete target.editable;
 			this.fetch_Post({
-				url: 'http://localhost:2051/FlowMeter/ModifyFlowMeter',
-				// data: `FM_Code=${target.flowmeter.FM_Code}&FM_Description=${target.flowmeter.FM_Description}
-				// &FM_UId=${target.flowmeter.FM_UId}&FM_Id=${target.flowmeter.FM_Id}`,
-				data: util.objToStr(target.flowmeter),
+				url: 'http://localhost:2051/qualitymeter/Modifyqualitymeter',
+				// data: `FM_Code=${target.qualitymeter.FM_Code}&FM_Description=${target.qualitymeter.FM_Description}
+				// &QM_UId=${target.qualitymeter.QM_UId}&FM_Id=${target.qualitymeter.FM_Id}`,
+				data: util.objToStr(target.qualitymeter),
 				success: (res) => {
 					console.log(res);
 					if(res) message.success('修改成功！');
@@ -250,28 +250,28 @@ class FMList extends React.Component {
 	}
 	cancel(key) {
 		const newData = [...this.state.data];
-		const target = newData.filter(item => key === item.flowmeter.FM_UId)[0];
+		const target = newData.filter(item => key === item.qualitymeter.QM_UId)[0];
 		if (target) {
-			Object.assign(target, this.cacheData.filter(item => key === item.flowmeter.FM_UId)[0]);
+			Object.assign(target, this.cacheData.filter(item => key === item.qualitymeter.QM_UId)[0]);
 			delete target.editable;
 			this.setState({ data: newData });
 		}
 	}
 	delete(key) {
 		const newData = [...this.state.data];
-		const target = newData.filter(item => key === item.flowmeter.FM_UId)[0];
+		const target = newData.filter(item => key === item.qualitymeter.QM_UId)[0];
 		if(target){
 			this.fetch_Post({
-				url: 'http://localhost:2051/FlowMeter/DeleteFlowMeter',
-				// data: `&FM_UId=${target.flowmeter.FM_UId}&FM_Id=${target.flowmeter.FM_Id}`,
-				data: util.objToStr(target.flowmeter),
+				url: 'http://localhost:2051/QualityMeter/DeleteQualityMeter',
+				// data: `&QM_UId=${target.qualitymeter.QM_UId}&FM_Id=${target.qualitymeter.FM_Id}`,
+				data: util.objToStr(target.qualitymeter),
 				success: (res) => {
 					console.log(res);
 					if(res) message.success('删除成功！');
 					else message.error('删除失败，请重试！');
 				}
 			});
-			this.setState({ data: newData.filter(item => item.flowmeter.FM_UId !== key) });
+			this.setState({ data: newData.filter(item => item.qualitymeter.QM_UId !== key) });
 		}
 	}
 	showModal(){
@@ -280,15 +280,14 @@ class FMList extends React.Component {
 			confirmAddLoading: false
 		});
 	}
-	//添加流量计
-	handleAdd(newFlowData){
-		console.log(newFlowData);
+	//添加水质计
+	handleAdd(newQualityData){
 		this.setState({
 			confirmAddLoading: true
 		})
 		this.fetch_Post({
-			url: 'http://localhost:2051/FlowMeter/AddFlowMeter',
-			data: util.objToStr(newFlowData),
+			url: 'http://localhost:2051/QualityMeter/AddQualityMeter',
+			data: util.objToStr(newQualityData),
 			success: (res) => {
 				if(res){
 					message.success('添加成功！');
@@ -346,10 +345,10 @@ class FMList extends React.Component {
         return (
 			<div>
 				<div style={{paddingLeft: '20px', paddingBottom: '10px'}}>
-					<Button type="primary" onClick={this.showModal.bind(this)}>添加流量计</Button>
+					<Button type="primary" onClick={this.showModal.bind(this)}>添加水质计</Button>
 				</div>
 				<Modal width="60%"
-					title="添加流量计"
+					title="添加水质计"
 					visible={this.state.visible}
 					// onOk = {this.handleAdd.bind(this)}
 					confirmLoading = {this.state.confirmAddLoading}
@@ -359,19 +358,19 @@ class FMList extends React.Component {
 				{this.state.confirmAddLoading ?
 					<h3 style={{textAlign: 'center'}}>
 						<Button type="primary" shape="circle" loading></Button>
-						<span>流量计添加中</span>
+						<span>水质计添加中</span>
 					</h3>
 					:
-					<AddForm labelData={flowmeterLabelData} onAddSubmit={this.handleAdd.bind(this)} />
+					<AddForm labelData={qualitymeterLabelData} onAddSubmit={this.handleAdd.bind(this)} />
 				}
 				</Modal>
-				<Table rowKey={data => data.flowmeter.FM_UId}
+				<Table rowKey={data => data.qualitymeter.QM_UId}
                 dataSource={this.state.data}
-                columns={this.FMColumns}
+                columns={this.QMColumns}
                 loading={this.state.loading}
             	/>
 			</div>
         )
     }
 }
-export default FMList;
+export default QMList;

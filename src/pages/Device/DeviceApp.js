@@ -4,6 +4,7 @@ import { Tree, Affix, Row, Col, Card } from 'antd';
 import { Radio } from 'antd';
 import FMList from './components/FMList';
 import PMList from './components/PMList';
+import QMList from './components/QMList';
 import ClientList from './components/ClientList';
 import StaffList from './components/StaffList';
 import util from '../../util/util';
@@ -51,7 +52,7 @@ class DeviceApp extends React.Component {
 				break;
 			}
 			case 'QM': {
-				url = 'GetQualityMeterByAreaUid';
+				url = 'http://localhost:2051/Area/GetQualityMeterByAreaUid';
 				break;
 			}
 			case 'Client': {
@@ -72,7 +73,7 @@ class DeviceApp extends React.Component {
 			data: `areaUid=${areaUid}`,
 			success: (res) => {
 				this.setState({ loading: true });
-				if(radioValue === 'FM' || radioValue === 'PM'){
+				if(radioValue === 'FM' || radioValue === 'PM' || radioValue === 'QM'){
 					res = JSON.parse(JSON.parse(res).data);
 					this.cacheData = JSON.parse(JSON.stringify(res));
 				} else {
@@ -165,7 +166,9 @@ class DeviceApp extends React.Component {
 		if (this.state.radioValue === 'FM') {
 			Device = <FMList tableData={this.state.data} cacheData={this.cacheData} loading={this.state.loading} pagination={this.state.pagination} onAddDevice={this.getNewTableData.bind(this)}/>
 		} else if (this.state.radioValue === 'PM') {
-			Device = <PMList tableData={this.state.data} cacheData={this.cacheData} loading={this.state.loading} pagination={this.state.pagination} />
+			Device = <PMList tableData={this.state.data} cacheData={this.cacheData} loading={this.state.loading} pagination={this.state.pagination} onAddDevice={this.getNewTableData.bind(this)} />
+		} else if (this.state.radioValue === 'QM'){
+			Device = <QMList tableData={this.state.data} cacheData={this.cacheData} loading={this.state.loading} pagination={this.state.pagination} onAddDevice={this.getNewTableData.bind(this)} />
 		} else if (this.state.radioValue === 'Client') {
 			Device = <ClientList tableData={this.state.data} cacheData={this.cacheData} loading={this.state.loading} pagination={this.state.pagination} />
 		} else if (this.state.radioValue === 'Staff') {
@@ -192,6 +195,7 @@ class DeviceApp extends React.Component {
 							<RadioGroup onChange={this.onRadioChange} value={this.state.radioValue}>
 								<Radio value='FM'>流量计</Radio>
 								<Radio value='PM'>压力计</Radio>
+								<Radio value='QM'>水质计</Radio>
 								<Radio value='Client'>客户</Radio>
 								<Radio value='Staff'>职员</Radio>
 							</RadioGroup>
