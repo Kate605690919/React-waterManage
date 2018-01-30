@@ -18,7 +18,7 @@ class DeviceApp extends React.Component {
 		// 函数的this绑定
 		this.onRadioChange = this.onRadioChange.bind(this);
 		// 获取区域树数据
-		this.fetch({
+		util.fetch({
 			url: `http://localhost:2051/area/AreaTree`,
 			success: (res) => {
 				let areaUid = util.getLocalStorate('areaUid');
@@ -43,7 +43,7 @@ class DeviceApp extends React.Component {
 		radioValue: 'Client',
 	}
 	//获取设备表格数据
-	getTableData(areaUid, radioValue = 'Client') {
+	getTableData(areaUid, radioValue = 'Staff') {
 		this.setState({ loading: true });
 		let url;
 		switch (radioValue) {
@@ -75,6 +75,7 @@ class DeviceApp extends React.Component {
 		this.fetch_Post({
 			url: url,
 			data: `areaUid=${areaUid}`,
+			token: util.getSessionStorate('token'),
 			success: (res) => {
 				if (radioValue === 'FM' || radioValue === 'PM') res = JSON.parse(res);
 				// this.cacheData = res.map(item => ({ ...item }));
@@ -167,7 +168,7 @@ class DeviceApp extends React.Component {
 		} else if (this.state.radioValue === 'Client') {
 			Device = <ClientList tableData={this.state.data} cacheData={this.cacheData} loading={this.state.loading} pagination={this.state.pagination} renderTable={(areaUid) => this.getTableData(areaUid, 'Client')} />
 		} else if (this.state.radioValue === 'Staff') {
-			Device = <StaffList tableData={this.state.data} cacheData={this.cacheData} loading={this.state.loading} pagination={this.state.pagination} />
+			Device = <StaffList tableData={this.state.data} cacheData={this.cacheData} loading={this.state.loading} pagination={this.state.pagination} renderTable={(areaUid) => this.getTableData(areaUid, 'Staff')}  />
 		}
 		return (
 			<div className="content deviceApp">

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Form, Icon, Input, Button } from 'antd';
 import util from '../../util/util';
+import { location } from 'react-router/lib/PropTypes';
 
 const FormItem = Form.Item;
 
@@ -9,16 +10,40 @@ class NormalLoginForm extends React.Component {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        console.log('Received values of form: ', values);
+        // console.log('Received values of form: ', values);
+        let formData = util.objToStr(values);
+        // let xhr = new XMLHttpRequest();
+        // xhr.onreadystatechange = () => {
+        //   if (xhr.readyState === 4) {
+        //     if((xhr.status >= 200 && xhr.status < 300) || xhr.status === 304) {
+        //       alert(xhr.responseText);
+        //       let headers = xhr.getAllResponseHeaders();
+        //       console.log(headers);
+        //     } else {
+        //       alert('Request was unsuccessful: ' + xhr.status);
+        //     }
+        //   }
+        // }
+        // xhr.open('post', 'http://localhost:64915/home/Login',true);
+        // xhr.withCredentials = true;
+        // xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        // xhr.send(formData);
+        
+        util.fetch_Post({
+          url: 'http://localhost:64915/home/Login',
+          data: formData,
+          token: util.getSessionStorate('token'),
+          success: (res, headers) => {
+            if (res) {
+              util.setSessionStorate('username',headers.get('username'));
+              util.setSessionStorate('useruid', headers.get('useruid'));
+              util.setSessionStorate('token', headers.get('access_token'));
+
+              window.location.hash = '#/device'
+            }
+          } 
+        })
       }
-			let formData = util.objToStr(values);
-      util.fetch_Post({
-        url: 'http://localhost:64915/home/index',
-        data: formData,
-        success: (res) => {
-          debugger;
-        }
-      })
     });
   }
   render() {
@@ -27,17 +52,17 @@ class NormalLoginForm extends React.Component {
       <Form onSubmit={this.handleSubmit} className="login-form">
         <FormItem>
           {getFieldDecorator('userName', {
-            rules: [{ required: true, message: 'Please input your username!' }],
+            rules: [{ required: true, message: '请输入用户名!' }],
           })(
             <Input prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="用户名" />
-          )}
+            )}
         </FormItem>
         <FormItem>
           {getFieldDecorator('password', {
-            rules: [{ required: true, message: 'Please input your Password!' }],
+            rules: [{ required: true, message: '请输入密码!' }],
           })(
             <Input prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />} type="password" placeholder="密码" />
-          )}
+            )}
         </FormItem>
         <FormItem>
           {/* {getFieldDecorator('remember', {

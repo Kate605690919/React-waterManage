@@ -221,13 +221,13 @@ class ClientList extends React.Component {
 	save(key) {
 		const newData = [...this.state.data];
 		const target = newData.filter(item => key === item.Uid)[0];
-		// 流量计所属区域Uid
-		const areaUid_New = util.getLocalStorate('areaUid_New');
 		// 当前areaTree所选中区域Uid
 		const areaUid = util.getLocalStorate('areaUid');
+		// 流量计所属区域Uid
+		const areaUid_New = util.getLocalStorate('areaUid_New') || areaUid;
 		if (target) {
 			delete target.editable;
-			this.fetch_Post({
+			util.fetch_Post({
 				url: 'http://localhost:2051/client/ModifyClient',
 				data: `Member_Name=${target.Name ? target.Name : ''}&Member_RealName=${target.RealName ? target.RealName : ''}
 				&Member_Phone=${target.Phone ? target.Phone : ''}&Member_Memo=${target.Memo ? target.Memo : ''}
@@ -444,7 +444,7 @@ class ClientList extends React.Component {
 	render() {
 		return (
 			<div className="ClientList">
-				<Button type="primary" onClick={this.showModal}>添加</Button>
+				<Button type="primary" onClick={this.showModal}>添加客户</Button>
 				<CollectionCreateForm
 					ref={this.saveFormRef}
 					visible={this.state.visible}
