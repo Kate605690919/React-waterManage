@@ -125,7 +125,21 @@ const qualitymeterLabelData = [
         name: '水质计手机号码',
         type: 'text',
         value: ''
-    }
+	},
+	{
+		id: 12,
+		key: 'QM_Lng',
+		name: '经度',
+		type: 'map',
+		value: ''
+	},
+	{
+		id: 13,
+		key: 'QM_Lat',
+		name: '纬度',
+		type: 'map',
+		value: ''
+	}
 ]
 class QMList extends React.Component {
     constructor(props) {
@@ -361,7 +375,7 @@ class QMList extends React.Component {
 						<span>水质计添加中</span>
 					</h3>
 					:
-					<AddForm labelData={qualitymeterLabelData} onAddSubmit={this.handleAdd.bind(this)} />
+					<AddForm labelData={qualitymeterLabelData} onAddSubmit={this.handleAdd.bind(this)} defaultLngLat={this.props.defaultLngLat}/>
 				}
 				</Modal>
 				<Table rowKey={data => data.qualitymeter.QM_UId}

@@ -3,6 +3,7 @@ import { Table, Input, Popconfirm, message, Button, Modal } from 'antd';
 import util from '../../../util/util';
 import AddForm from './AddForm';
 
+
 const EditableCell = ({ editable, value, onChange }) => (
 	<div>
 		{editable
@@ -125,8 +126,23 @@ const flowmeterLabelData = [
         name: '流量计手机号码',
         type: 'text',
         value: ''
-    }
+	},
+	{
+		id: 12,
+		key: 'FM_Lng',
+		name: '经度',
+		type: 'map',
+		value: ''
+	},
+	{
+		id: 13,
+		key: 'FM_Lat',
+		name: '纬度',
+		type: 'map',
+		value: ''
+	}
 ]
+
 class FMList extends React.Component {
     constructor(props) {
 		super(props);
@@ -191,6 +207,7 @@ class FMList extends React.Component {
 		loading: false,
 		visible: false,
 		confirmAddLoading: false,
+		
     }
     componentWillReceiveProps(nextProps) {
 		let {tableData, loading, pagination, cacheData} = nextProps;
@@ -362,7 +379,7 @@ class FMList extends React.Component {
 						<span>流量计添加中</span>
 					</h3>
 					:
-					<AddForm labelData={flowmeterLabelData} onAddSubmit={this.handleAdd.bind(this)} />
+					<AddForm labelData={flowmeterLabelData} onAddSubmit={this.handleAdd.bind(this)} defaultLngLat={this.props.defaultLngLat}/>
 				}
 				</Modal>
 				<Table rowKey={data => data.flowmeter.FM_UId}

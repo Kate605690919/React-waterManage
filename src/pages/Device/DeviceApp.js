@@ -156,19 +156,23 @@ class DeviceApp extends React.Component {
 	}
 	//添加流量计、压力计后刷新表格
 	getNewTableData(){
-		console.log(this);
 		this.getTableData(this.state.currentTreeKey, this.state.radioValue);
 	}
 	render() {
 		// debugger;
 		// console.log(this.state.radioValue, 'Client');
 		let Device = null;
+		//添加设备时默认经纬应当为当前区域经纬度，这里先用常量
+		const defaultLngLat = {
+			'lng': '114.07900429980464',
+			'lat': '22.553374'
+		}
 		if (this.state.radioValue === 'FM') {
-			Device = <FMList tableData={this.state.data} cacheData={this.cacheData} loading={this.state.loading} pagination={this.state.pagination} onAddDevice={this.getNewTableData.bind(this)}/>
+			Device = <FMList tableData={this.state.data} cacheData={this.cacheData} loading={this.state.loading} pagination={this.state.pagination} onAddDevice={this.getNewTableData.bind(this)} defaultLngLat={defaultLngLat}/>
 		} else if (this.state.radioValue === 'PM') {
-			Device = <PMList tableData={this.state.data} cacheData={this.cacheData} loading={this.state.loading} pagination={this.state.pagination} onAddDevice={this.getNewTableData.bind(this)} />
+			Device = <PMList tableData={this.state.data} cacheData={this.cacheData} loading={this.state.loading} pagination={this.state.pagination} onAddDevice={this.getNewTableData.bind(this)} defaultLngLat={defaultLngLat}/>
 		} else if (this.state.radioValue === 'QM'){
-			Device = <QMList tableData={this.state.data} cacheData={this.cacheData} loading={this.state.loading} pagination={this.state.pagination} onAddDevice={this.getNewTableData.bind(this)} />
+			Device = <QMList tableData={this.state.data} cacheData={this.cacheData} loading={this.state.loading} pagination={this.state.pagination} onAddDevice={this.getNewTableData.bind(this)} defaultLngLat={defaultLngLat}/>
 		} else if (this.state.radioValue === 'Client') {
 			Device = <ClientList tableData={this.state.data} cacheData={this.cacheData} loading={this.state.loading} pagination={this.state.pagination} />
 		} else if (this.state.radioValue === 'Staff') {

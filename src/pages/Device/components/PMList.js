@@ -14,7 +14,7 @@ const EditableCell = ({ editable, value, onChange }) => (
 const pressuremeterLabelData = [
 	{
 		id: 0,
-		key: 'Ara_UId',
+		key: 'areaUid',
 		name: '区域选择',
 		type: 'cascader',
 		value: ''
@@ -125,7 +125,21 @@ const pressuremeterLabelData = [
         name: '压力计手机号码',
         type: 'text',
         value: ''
-    }
+	},
+	{
+		id: 12,
+		key: 'PM_Lng',
+		name: '经度',
+		type: 'map',
+		value: ''
+	},
+	{
+		id: 13,
+		key: 'PM_Lat',
+		name: '纬度',
+		type: 'map',
+		value: ''
+	}
 ]
 class PMList extends React.Component {
     constructor(props) {
@@ -352,7 +366,7 @@ class PMList extends React.Component {
 						<span>压力计添加中</span>
 					</h3>
 					:
-					<AddForm labelData={pressuremeterLabelData} onAddSubmit={this.handleAdd.bind(this)} />
+					<AddForm labelData={pressuremeterLabelData} onAddSubmit={this.handleAdd.bind(this)} defaultLngLat={this.props.defaultLngLat}/>
 				}
 				</Modal>
 				<Table rowKey={data => data.pressuremeter.PM_UId}
