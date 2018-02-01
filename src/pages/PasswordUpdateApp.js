@@ -83,6 +83,7 @@ class UpdateForm extends React.Component{
         };
         return (
             <div style={divStyle}>
+                <h1>修改密码</h1>
                 <Form onSubmit={this.handleSubmit.bind(this)}>
                     <FormItem {...formItemLayout} label="原始密码">
                     {getFieldDecorator('password', {
