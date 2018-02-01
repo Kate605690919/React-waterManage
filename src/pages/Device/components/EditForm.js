@@ -70,17 +70,18 @@ class NewForm extends React.Component{
     //获取所属区域本身和父级区域id，作为Cascader的初始值
     getAreas(){
         //因为区域id只有一个，所以要从区域树查找它的父级区域
+        debugger;
         const aid = this.props.areaid;
         const areatree = util.getSessionStorate('areatree');
         const findArea = (areaid, tree) => {
-            let arr = []
+            let arr = [];
             //先判断当前节点的id是否等于要查找的id
             if(tree.id === areaid){
                 arr = arr.concat(tree.id);
                 return arr;
-            } else if(!tree.children){
+            } else if(tree.children){
                 //有子节点就继续找
-                for(var i = 0; i < tree.children.length - 1; i++){
+                for(let i = 0; i < tree.children.length; i++){
                     let res = findArea(areaid, tree.children[i]);
                     if(res){
                         arr = arr.concat(tree.id);
@@ -124,6 +125,7 @@ class NewForm extends React.Component{
     render(){
         const { getFieldDecorator } = this.props.form;
         const labelData = this.props.labelData;
+        const data = this.props.meterData;
         const formItemLayout = {
             labelCol: {
                 xs: { span: 24 },
@@ -139,31 +141,36 @@ class NewForm extends React.Component{
             //验证编码是否可用
             const target = labelData.filter((item) => item.key.indexOf('Code') !== -1)[0];
             const metertype = target.key;
-            let validateURL = null;
-            if(metertype.indexOf('FM') !== -1){
-                validateURL = 'http://localhost:2051/FlowMeter/ValidateFlowMeterCode';
-                // validateURL = 'http://rap2api.taobao.org/app/mock/5151/POST/FlowMeter/ValidateFlowMeterCode';
-            } else if(metertype.indexOf('PM') !== -1){
-                validateURL = 'http://localhost:2051/PressureMeter/ValidatePressureMeterCode'
-            } else if(metertype.indexOf('QM') !== -1){
-                validateURL = 'http://localhost:2051/QualityMeter/ValidateQualityMeterCode';
-            }
-            if(validateURL !== null){
-                this.fetch_Post({
-                    url: validateURL,
-                    data: util.objToStr(value),
-                    success: (res) => {
-                        if(res){
-                            callback();
-                        } else{
-                            callback('该编码已经存在');
+            const originalValue = data[metertype];
+            if(originalValue !== value){
+                let validateURL = null;
+                if(metertype.indexOf('FM') !== -1){
+                    validateURL = 'http://localhost:2051/FlowMeter/ValidateFlowMeterCode';
+                    // validateURL = 'http://rap2api.taobao.org/app/mock/5151/POST/FlowMeter/ValidateFlowMeterCode';
+                } else if(metertype.indexOf('PM') !== -1){
+                    validateURL = 'http://localhost:2051/PressureMeter/ValidatePressureMeterCode'
+                } else if(metertype.indexOf('QM') !== -1){
+                    validateURL = 'http://localhost:2051/QualityMeter/ValidateQualityMeterCode';
+                }
+                if(validateURL !== null){
+                    this.fetch_Post({
+                        url: validateURL,
+                        data: `${metertype}=${value}`,
+                        success: (res) => {
+                            if(res){
+                                callback();
+                            } else{
+                                callback('该编码已经存在');
+                            }
                         }
-                    }
-                })
+                    })
+                }
+            } else{
+                callback();
             }
         }
-        const data = this.props.meterData;
         const areaData = this.getAreas();
+        console.log(areaData);
         let FormList = labelData.map(function(item){
             let content = null;
             const prop = item.key;

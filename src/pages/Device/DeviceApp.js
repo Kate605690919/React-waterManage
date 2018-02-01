@@ -142,6 +142,11 @@ class DeviceApp extends React.Component {
 	}
 	onSelect = (selectedKeys, info) => {
 		console.log('selected', selectedKeys, info);
+		this.setState({
+			currentTreeKey: selectedKeys[0]
+		})
+		util.setSessionStorate('lng', null);
+		util.setSessionStorate('lat', null);
 		this.getTableData(selectedKeys, this.state.radioValue);
 	}
 	//toolbar的单选按钮组
@@ -158,14 +163,52 @@ class DeviceApp extends React.Component {
 	getNewTableData(){
 		this.getTableData(this.state.currentTreeKey, this.state.radioValue);
 	}
+
+	//获取当前区域经纬度
+	getAreas(){
+		//因为区域id只有一个，所以要从区域树查找它的父级区域
+        const aid = this.state.currentTreeKey;
+        const areatree = util.getSessionStorate('areatree');
+        const findArea = (areaid, tree) => {
+            let arr = null;
+            //先判断当前节点的id是否等于要查找的id
+            if(tree.id === areaid){
+                arr = {
+					'Lng': tree.Lng,
+					'Lat': tree.Lat
+				};
+                return arr;
+            } else if(tree.children){
+                //有子节点就继续找
+                for(var i = 0; i < tree.children.length; i++){
+                    let res = findArea(areaid, tree.children[i]);
+                    if(res){
+                        return res;
+                    }
+                }
+            } else{
+                //没有子节点
+                return false;
+            }
+        }
+        let res = null;
+        for(var i = 0; i < areatree.length; i++){
+            res = findArea(aid, areatree[i]);
+            if(res){
+                return res;
+            }
+        }
+        return false;
+    }
 	render() {
 		// console.log(this.state.radioValue, 'Client');
 		let Device = null;
-		//添加设备时默认经纬度应当为当前区域经纬度，这里先用常量
-		const defaultLngLat = {
-			'lng': '114.07900429980464',
-			'lat': '22.553374'
-		}
+		
+		//添加设备时默认经纬度应当为当前区域经纬度，但是暂时areatree里面只有最大的区域有经纬度，它的子区域没有经纬度，所以这里先用常量
+		const defaultLngLat = this.getAreas() || {
+			'Lng': '114.07900429980464',
+			'Lat': '22.553374'
+		};
 		if (this.state.radioValue === 'FM') {
 			Device = <FMList tableData={this.state.data} cacheData={this.cacheData} loading={this.state.loading} pagination={this.state.pagination} onAddDevice={this.getNewTableData.bind(this)} defaultLngLat={defaultLngLat}/>
 		} else if (this.state.radioValue === 'PM') {

@@ -341,9 +341,6 @@ class QMList extends React.Component {
 	}
 	//添加水质计
 	handleAdd(newQualityData){
-		this.setState({
-			confirmAddLoading: true
-		})
 		this.fetch_Post({
 			url: 'http://localhost:2051/QualityMeter/AddQualityMeter',
 			data: util.objToStr(newQualityData),
@@ -358,10 +355,6 @@ class QMList extends React.Component {
 					this.props.onAddDevice();
 				} else{
 					message.error('添加失败，请重试！');
-					this.setState({
-						visible: false,
-						confirmAddLoading: false
-					})
 				}
 			}
 		})
@@ -399,15 +392,12 @@ class QMList extends React.Component {
 				<Modal width="60%"
 					title="添加水质计"
 					visible={this.state.visible}
-					confirmLoading = {this.state.confirmAddLoading}
+					confirmLoading = {this.state.finishAdd}
 					onCancel = {this.handleModalCancel.bind(this)}
 					footer = {null}
 				>
-				{this.state.confirmAddLoading ?
-					<h3 style={{textAlign: 'center'}}>
-						<Button type="primary" shape="circle" loading></Button>
-						<span>水质计添加中</span>
-					</h3>
+				{this.state.finishAdd ?
+					null
 					:
 					<AddForm labelData={qualitymeterLabelData} onAddSubmit={this.handleAdd.bind(this)} defaultLngLat={this.props.defaultLngLat}/>
 				}

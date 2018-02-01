@@ -122,7 +122,7 @@ class NewForm extends React.Component{
             if(validateURL !== null){
                 this.fetch_Post({
                     url: validateURL,
-                    data: util.objToStr(value),
+                    data: `${metertype}=${value}`,
                     success: (res) => {
                         if(res){
                             callback();
@@ -208,8 +208,8 @@ class NewForm extends React.Component{
         //从缓存中读取经纬度，如果缓存中没有，则取默认值
         const lng = util.getSessionStorate('lng');
         const lat = util.getSessionStorate('lat');
-        const dLng = this.props.defaultLngLat.lng;
-        const dLat = this.props.defaultLngLat.lat;
+        const dLng = this.props.defaultLngLat.Lng;
+        const dLat = this.props.defaultLngLat.Lat;
         const lngValue = (lng !== null) ? Object.values(lng)[0]||dLng : dLng;
         const latValue = (lat !== null) ? Object.values(lat)[0]||dLat : dLat;
         const mapLabelData = labelData.filter((item) => item.type === 'map');

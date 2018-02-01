@@ -316,7 +316,7 @@ class PMList extends React.Component {
 		if(target){
 			this.fetch_Post({
 				url: 'http://localhost:2051/PressureMeter/DeletePressureMeter',
-				data: `&PM_UId=${target.pressuremeter.PM_UId}`,
+				data: util.objToStr(target.pressuremeter),
 				success: (res) => {
 					if(res) message.success('删除成功！');
 					else message.error('删除失败，请重试！');
@@ -333,9 +333,6 @@ class PMList extends React.Component {
 	}
 	//添加压力计
 	handleAdd(newPressureData){
-		this.setState({
-			confirmAddLoading: true
-		})
 		this.fetch_Post({
 			url: 'http://localhost:2051/PressureMeter/AddPressureMeter',
 			data: util.objToStr(newPressureData),
@@ -350,6 +347,9 @@ class PMList extends React.Component {
 					this.props.onAddDevice();
 				} else{
 					message.error('添加失败，请重试！');
+					this.setState({
+						visible: false,
+					})
 				}
 			}
 		})
@@ -388,15 +388,12 @@ class PMList extends React.Component {
 					title="添加压力计"
 					visible={this.state.visible}
 					// onOk = {this.handleAdd.bind(this)}
-					confirmLoading = {this.state.confirmAddLoading}
+					confirmLoading = {this.state.finishAdd}
 					onCancel = {this.handleModalCancel.bind(this)}
 					footer = {null}
 				>
-				{this.state.confirmAddLoading ?
-					<h3 style={{textAlign: 'center'}}>
-						<Button type="primary" shape="circle" loading></Button>
-						<span>压力计添加中</span>
-					</h3>
+				{this.state.finishAdd ?
+					null
 					:
 					<AddForm labelData={pressuremeterLabelData} onAddSubmit={this.handleAdd.bind(this)} defaultLngLat={this.props.defaultLngLat}/>
 				}
