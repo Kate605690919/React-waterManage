@@ -58,6 +58,7 @@ class HeaderTop extends React.Component {
                     <ul className="nav-info-menu">
                         <li><a href="####"><span className="userLogined"> {this._roleName}</span></a></li>
                         <li><a href="/Home/login"><Icon type="logout" /></a></li>
+                        <li><Link to="/Home/passupdate">修改密码</Link></li>
                     </ul>
                 </div>
                 <div className="navbar-collapse">

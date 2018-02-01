@@ -5,6 +5,7 @@ import { DeviceApp, DeviceFMDetail, DevicePMDetail } from './pages/Device';
 // import { ClientApp, ClientList, ClientAdd, ClientDetail, ClientBase, ClientFM } from './pages/Client';
 // import { StaffApp, StaffList, StaffAdd, StaffDetail, StaffBase } from './pages/Staff';
 import { FeedBackApp } from './pages/FeedBack';
+import PasswordUpdateApp from './pages/PasswordUpdateApp';
 const Routes = () => (
     <Router history={hashHistory}>
         <Route path="/" component={App} breadcrumbName="首页">
@@ -34,6 +35,7 @@ const Routes = () => (
                 <Route path="editbase/:uid" component={StaffBase} />
             </Route> */}
             <Route path="feedback" component={FeedBackApp}></Route>
+            <Route path="/Home/passupdate" component={PasswordUpdateApp} breadcrumbName="修改密码"></Route>
         </Route>
     </Router>
 );
