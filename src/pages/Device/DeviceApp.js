@@ -154,12 +154,11 @@ class DeviceApp extends React.Component {
 
 		this.getTableData(areaUid, e.target.value)
 	}
-	//添加流量计、压力计后刷新表格
+	//添加设备后刷新表格
 	getNewTableData(){
 		this.getTableData(this.state.currentTreeKey, this.state.radioValue);
 	}
 	render() {
-		// debugger;
 		// console.log(this.state.radioValue, 'Client');
 		let Device = null;
 		//添加设备时默认经纬应当为当前区域经纬度，这里先用常量

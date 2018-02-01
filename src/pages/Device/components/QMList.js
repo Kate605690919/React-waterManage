@@ -2,6 +2,7 @@ import React from 'react'
 import { Table, Input, Popconfirm, message, Button, Modal } from 'antd';
 import util from '../../../util/util';
 import AddForm from './AddForm';
+import EditForm from './EditForm';
 
 const EditableCell = ({ editable, value, onChange }) => (
 	<div>
@@ -26,61 +27,61 @@ const qualitymeterLabelData = [
         type: 'text',
         value: ''
     },
-    {
-        id: 2,
-        key: "QM_AlarmNumber",
-        name: '报警号码',
-        type: 'text',
-        value: ''
-    },
-    {
-        id: 3,
-        key: 'QM_AlarmThreshold',
-        name: '报警阈值',
-        type: 'text',
-        value: ''
-    },
-    {
-        id: 4,
-        key: 'QM_AlarmTimeOut',
-        name: '超时阈值',
-        type: 'text',
-        value: ''
-    },
-    {
-        id: 5,
-        key: 'QM_AlarmMode',
-        name: '报警模式',
-        type: 'radio',
-        value: '',
-        option: [
-            {
-                name: '自动',
-                value: 1
-            },
-            {
-                name: '默认',
-                value: 0
-            }
-        ]
-    },
-    {
-        id: 6,
-        key: 'QM_Class',
-        name: '用户类型',
-        type: 'radio',
-        value: '',
-        option: [
-            {
-                name: '手抄水质计',
-                value: 2
-            },
-            {
-                name: '普通',
-                value: 0
-            }
-        ]
-    },
+    // {
+    //     id: 2,
+    //     key: "QM_AlarmNumber",
+    //     name: '报警号码',
+    //     type: 'text',
+    //     value: ''
+    // },
+    // {
+    //     id: 3,
+    //     key: 'QM_AlarmThreshold',
+    //     name: '报警阈值',
+    //     type: 'text',
+    //     value: ''
+    // },
+    // {
+    //     id: 4,
+    //     key: 'QM_AlarmTimeOut',
+    //     name: '超时阈值',
+    //     type: 'text',
+    //     value: ''
+    // },
+    // {
+    //     id: 5,
+    //     key: 'QM_AlarmMode',
+    //     name: '报警模式',
+    //     type: 'radio',
+    //     value: '',
+    //     option: [
+    //         {
+    //             name: '自动',
+    //             value: 1
+    //         },
+    //         {
+    //             name: '默认',
+    //             value: 0
+    //         }
+    //     ]
+    // },
+    // {
+    //     id: 6,
+    //     key: 'QM_Class',
+    //     name: '用户类型',
+    //     type: 'radio',
+    //     value: '',
+    //     option: [
+    //         {
+    //             name: '手抄水质计',
+    //             value: 2
+    //         },
+    //         {
+    //             name: '普通',
+    //             value: 0
+    //         }
+    //     ]
+    // },
     {
         id: 7,
         key: 'QM_Description',
@@ -88,44 +89,44 @@ const qualitymeterLabelData = [
         type: 'text',
         value: ''
     },
-    {
-        id: 8,
-        key: 'QM_BatteryAlarmThreshold',
-        name: '设备电池报警阈值',
-        type: 'text',
-        value: ''
-    },
-    {
-        id: 9,
-        key: 'QM_ModemAlarmThreshold',
-        name: '通信电池报警阈值',
-        type: 'text',
-        value: ''
-    },
-    {
-        id: 10,
-        key: 'QM_Enable',
-        name: '是否可用',
-        type: 'radio',
-        value: '',
-        option: [
-            {
-                name: '是',
-                value: 1
-            },
-            {
-                name: '否',
-                value: 0
-            }
-        ]
-    },
-    {
-        id: 11,
-        key: 'QM_DeviceAlarmNumber',
-        name: '水质计手机号码',
-        type: 'text',
-        value: ''
-	},
+    // {
+    //     id: 8,
+    //     key: 'QM_BatteryAlarmThreshold',
+    //     name: '设备电池报警阈值',
+    //     type: 'text',
+    //     value: ''
+    // },
+    // {
+    //     id: 9,
+    //     key: 'QM_ModemAlarmThreshold',
+    //     name: '通信电池报警阈值',
+    //     type: 'text',
+    //     value: ''
+    // },
+    // {
+    //     id: 10,
+    //     key: 'QM_Enable',
+    //     name: '是否可用',
+    //     type: 'radio',
+    //     value: '',
+    //     option: [
+    //         {
+    //             name: '是',
+    //             value: 1
+    //         },
+    //         {
+    //             name: '否',
+    //             value: 0
+    //         }
+    //     ]
+    // },
+    // {
+    //     id: 11,
+    //     key: 'QM_DeviceAlarmNumber',
+    //     name: '水质计手机号码',
+    //     type: 'text',
+    //     value: ''
+	// },
 	{
 		id: 12,
 		key: 'QM_Lng',
@@ -186,7 +187,9 @@ class QMList extends React.Component {
 								</span>
 								:
 								<span>
-									<a onClick={() => this.edit(record.qualitymeter.QM_UId)}>编辑</a>
+									{/* <a onClick={() => this.edit(record.flowmeter.FM_UId)}>编辑</a> */}
+									{/* 这里将表格中的行编辑改为可以修改设备所有信息 */}
+									<a onClick={() => this.allEdit(record.qualitymeter.QM_UId)}>修改</a>
 									<Popconfirm title="Sure to delete?" onConfirm={() => this.delete(record.qualitymeter.QM_UId)}>
 										<a>删除</a>
 									</Popconfirm>
@@ -204,7 +207,9 @@ class QMList extends React.Component {
 		pagination: {},
 		loading: false,
 		visible: false,
-		confirmAddLoading: false,
+		finishAdd: false,
+		editModalVisible: false,
+		finishEdit: false,
     }
     componentWillReceiveProps(nextProps) {
 		let {tableData, loading, pagination, cacheData} = nextProps;
@@ -240,6 +245,66 @@ class QMList extends React.Component {
 			target.editable = true;
 			this.setState({ data: newData });
 		}
+	}
+	//可修改设备所有信息
+	allEdit(key){
+		const newData = [...this.state.data];
+		const target = newData.filter(item => key === item.qualitymeter.QM_UId)[0];
+		if(target){
+			this.editTarget = target.qualitymeter;
+			this.AraId = target.area.Ara_UId;
+			this.setState({
+				editModalVisible: true,
+				finishEdit: false,
+			})
+		}
+	}
+	handleEditModalCancel(){
+		this.setState({
+			editModalVisible: false,
+			finishEdit: true
+		});
+		// const hide = () => {
+		// 	console.log(this);
+		// 	this.setState({
+		// 		finishEdit: true
+		// 	});
+		// }
+		// setTimeout(hide, 200);	
+	}
+	onClose(){
+		this.setState({
+			finishEdit: true,
+		})
+	}
+	handleEdit(newMeter){
+		// this.setState({
+		// 	finishEdit: true
+		// })
+		this.fetch_Post({
+			url: 'http://localhost:2051/QualityMeter/ModifyQualityMeter',
+			data: util.objToStr(newMeter),
+			success: (res) => {
+				if(res){
+					message.success('修改成功！');
+					this.setState({
+						editModalVisible: false,
+						finishEdit: true
+					})
+					//重新加载
+					this.props.onAddDevice();
+					// this.setState({
+					// 	visible: false,
+					// 	finishAdd: false
+					// })
+				} else{
+					message.error('修改失败，请重试！');
+					this.setState({
+						editModalVisible: false,
+					})
+				}
+			}
+		})
 	}
 	save(key) {
 		const newData = [...this.state.data];
@@ -378,6 +443,24 @@ class QMList extends React.Component {
 					<AddForm labelData={qualitymeterLabelData} onAddSubmit={this.handleAdd.bind(this)} defaultLngLat={this.props.defaultLngLat}/>
 				}
 				</Modal>
+
+				{this.state.finishEdit ?
+					null
+					:
+					<Modal width="60%"
+					title="修改水质计"
+					visible={this.state.editModalVisible}
+					confirmLoading = {this.state.finishEdit}
+					onCancel = {this.handleEditModalCancel.bind(this)}
+					footer = {null}
+					afterClose={()=> this.onClose()}
+					maskClosable={false}
+					>
+				
+					<EditForm labelData={qualitymeterLabelData} onEditSubmit={this.handleEdit.bind(this)} meterData={this.editTarget} areaid={this.AraId}/>
+				
+					</Modal>
+				}
 				<Table rowKey={data => data.qualitymeter.QM_UId}
                 dataSource={this.state.data}
                 columns={this.QMColumns}

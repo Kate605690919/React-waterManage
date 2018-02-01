@@ -2,7 +2,6 @@ import React from 'react';
 import {Form, Input, Radio, Button, Cascader, Steps, message, Row, Col } from 'antd';
 import util from '../../../util/util';
 import WaterMap from './WaterMap';
-import Fetch from '../../../util/fetch';
 
 const FormItem = Form.Item;
 const RadioGroup = Radio.Group;
@@ -12,23 +11,27 @@ class NewForm extends React.Component{
         current: 0,   //步骤条
         loading: false
     }
+    componentWillReceiveProps(){
+        // this.setState({
+        //     current: this.props.step
+        // })
+    }
     componentWillUnmount(){
-        util.setSessionStorate('lng', null);
-        util.setSessionStorate('lat', null);
+        util.setSessionStorate('editlng', null);
+        util.setSessionStorate('editlat', null);
     }
     handleSubmit(e){
         e.preventDefault();
-        this.setState({loading: true});
         this.props.form.validateFieldsAndScroll((err, values) => {
             if(!err){
                 const areaId = values.areaUid[values.areaUid.length - 1];
                 values.areaUid = areaId;
-                const lng = util.getSessionStorate('lng');
-                const lat = util.getSessionStorate('lat');
+                const lng = util.getSessionStorate('editlng');
+                const lat = util.getSessionStorate('editlat');
                 Object.assign(values, lng, lat);
-                this.props.onAddSubmit(values);
-                util.setSessionStorate('lng', null);
-                util.setSessionStorate('lat', null);
+                this.props.onEditSubmit(values);
+                util.setSessionStorate('editlng', null);
+                util.setSessionStorate('editlat', null);
             } else{
                 message.error('请填写完整！')
             }
@@ -44,8 +47,8 @@ class NewForm extends React.Component{
             if(!err){
                 const lngValue = getFieldValue(lng);
                 const latValue = getFieldValue(lat);
-                util.setSessionStorate('lng', {[lng]: lngValue});
-                util.setSessionStorate('lat', {[lat]: latValue});
+                util.setSessionStorate('editlng', {[lng]: lngValue});
+                util.setSessionStorate('editlat', {[lat]: latValue});
                 const current = this.state.current + 1;
                 this.setState({current });
             }
@@ -65,32 +68,43 @@ class NewForm extends React.Component{
             [lng] : point.lng,
             [lat]:  point.lat
         })
-        util.setSessionStorate('lng', {[lng]: point.lng});
-        util.setSessionStorate('lat', {[lat]: point.lat});
+        util.setSessionStorate('editlng', {[lng]: point.lng});
+        util.setSessionStorate('editlat', {[lat]: point.lat});
     }
-    checkCode = (rule, value, callback) => {
-        console.log('hello');
-        callback();
+    //获取所属区域本身和父级区域id
+    getAreas(){
+        const aid = this.props.areaid;
+        const areatree = util.getSessionStorate('areatree');
+        const findArea = (areaid, tree) => {
+            let arr = []
+            //先判断当前节点的id是否等于要查找的id
+            if(tree.id === areaid){
+                arr = arr.concat(tree.id);
+                return arr;
+            } else if(!tree.children){
+                //有子节点就继续找
+                for(var i = 0; i < tree.children.length - 1; i++){
+                    let res = findArea(areaid, tree.children[i]);
+                    if(res){
+                        arr = arr.concat(tree.id);
+                        arr = arr.concat(res);
+                        return arr;
+                    }
+                }
+            } else{
+                //没有子节点
+                return false;
+            }
+        }
+        let res = [];
+        for(var i = 0; i < areatree.length; i++){
+            res = findArea(aid, areatree[i]);
+            if(res){
+                return res;
+            }
+        }
+        return res;
     }
-    //post方法封装
-	fetch_Post({url, data, success}){
-		fetch(url, {
-			method: 'POST',
-			headers: {"Content-Type": "application/x-www-form-urlencoded"},
-			body: data
-		}).then((response) => {
-			if (response.status !== 200) {
-				throw new Error('Fail to get response with status ' + response.status);
-			}
-			response.json().then((res) => {
-				success(res);
-			}).catch((error) => {
-				console.error(error);
-			});
-		}).catch((error) => {
-			console.error(error);
-		});
-	}
     render(){
         const { getFieldDecorator } = this.props.form;
         const labelData = this.props.labelData;
@@ -148,8 +162,12 @@ class NewForm extends React.Component{
                 })
             }
         }
+        const data = this.props.meterData;
+        const areaData = this.getAreas();
         let FormList = labelData.map(function(item){
             let content = null;
+            const prop = item.key;
+            const value = data[prop];
             if(item.type === 'text'){
                 if(item.key.indexOf('DeviceAlarmNumber') !== -1){
                     content = getFieldDecorator(item.key, {
@@ -157,15 +175,17 @@ class NewForm extends React.Component{
                             required: true, message: `${item.name}为必填项！`
                         },{
                             pattern: /^[1][3,4,5,7,8][0-9]{9}$/, message: '请输入有效的手机号码！'
-                        }]
+                        }],
+                        initialValue: value
                     })(
                         <Input />
                     );
-                } else if(item.key.indexOf('Description') !== -1 || item.key.indexOf('AlarmTimeOut') !== -1) {
+                } else if(item.key.indexOf('Description') !== -1 || item.key.indexOf('AlarmTimeOut') !== -1){
                     content = getFieldDecorator(item.key, {
                         rules: [{
                             required: false
-                        }]
+                        }],
+                        initialValue: value
                     })(
                         <Input />
                     );
@@ -175,7 +195,8 @@ class NewForm extends React.Component{
                             required: true, message: `${item.name}为必填项！`
                         },{
                             validator: checkCode
-                        }]
+                        }],
+                        initialValue: value
                     })(
                         <Input />
                     );
@@ -183,7 +204,8 @@ class NewForm extends React.Component{
                     content = getFieldDecorator(item.key, {
                         rules: [{
                             required: true, message: `${item.name}为必填项！`
-                        }]
+                        }],
+                        initialValue: value
                     })(
                         <Input />
                     );
@@ -192,7 +214,8 @@ class NewForm extends React.Component{
                 content = getFieldDecorator(item.key, {
                     rules: [{
                         required: true, message: `${item.name}为必选项！`
-                    }]
+                    }],
+                    initialValue: value
                 })(
                     <RadioGroup key={item.option.name}>
                     {item.option.map((op) => (<Radio key={op.name} value={op.value}>{op.name}</Radio>))}
@@ -208,6 +231,7 @@ class NewForm extends React.Component{
                 content = getFieldDecorator(item.key, {
                     // initialValue: ['zhejiang', 'hangzhou', 'xihu'],
                     rules: [{ type: 'array', required: true, message: `${item.name}为必填项！`}],
+                    initialValue: areaData
                   })(
                     <Cascader options={areas} changeOnSelect placeholder="选择区域"/>
                   );
@@ -220,17 +244,21 @@ class NewForm extends React.Component{
                 </FormItem>
             )
         });
+        // debugger;
         //从缓存中读取经纬度，如果缓存中没有，则取默认值
-        const lng = util.getSessionStorate('lng');
-        const lat = util.getSessionStorate('lat');
-        const dLng = this.props.defaultLngLat.lng;
-        const dLat = this.props.defaultLngLat.lat;
-        const lngValue = (lng !== null) ? Object.values(lng)[0]||dLng : dLng;
-        const latValue = (lat !== null) ? Object.values(lat)[0]||dLat : dLat;
+        // const lng = util.getSessionStorate('lng');
+        // const lat = util.getSessionStorate('lat');
+        // const dLng = this.props.defaultLngLat.lng;
+        // const dLat = this.props.defaultLngLat.lat;
+        // const lngValue = (lng !== null) ? Object.values(lng)[0]||dLng : dLng;
+        // const latValue = (lat !== null) ? Object.values(lat)[0]||dLat : dLat;
+        let lngValue;
+        let latValue;
         const mapLabelData = labelData.filter((item) => item.type === 'map');
         const renderMap = (mapLabel) => {
             const key = mapLabel.key;
             if(key.indexOf('Lng') !== -1){
+                lngValue = data[key];
                 return (
                     <FormItem {...formItemLayout} label={mapLabel.name}>
                     {getFieldDecorator(key, {
@@ -244,6 +272,7 @@ class NewForm extends React.Component{
                     </FormItem>
                 )
             } else if(key.indexOf('Lat') !== -1){
+                latValue = data[key];
                 return (
                     <FormItem {...formItemLayout} label={mapLabel.name}>
                     {getFieldDecorator(key, {
@@ -269,12 +298,12 @@ class NewForm extends React.Component{
                             {renderMap(mapLabelData[1])}
                         </Col>
                     </Row>
-                    <WaterMap mapname="addmap" defaultLng={lngValue} defaultLat={latValue} handleChange={this.handleMap.bind(this)} />
+                    <WaterMap mapname="editmap" defaultLng={lngValue} defaultLat={latValue} handleChange={this.handleMap.bind(this)} />
                 </div>
             )
         };
         const steps = [{
-            title: '选择地点',
+            title: '修改地点',
             render: () => {
                 return (
                     <div>
@@ -283,7 +312,7 @@ class NewForm extends React.Component{
                 )
             }
         },{
-            title: '基本信息',
+            title: '编辑信息',
             render: () => {
                 return (
                     <div>
@@ -316,7 +345,7 @@ class NewForm extends React.Component{
                     {
                         this.state.current === steps.length - 1
                         &&
-                        <Button style={{ marginLeft: 8}} loading={this.state.loading} type="primary" htmlType="submit">提交</Button>
+                        <Button style={{ marginLeft: 8}} loading={this.state.loading} type="primary" htmlType="submit">保存</Button>
                     }
 					
 				</div>
@@ -325,5 +354,5 @@ class NewForm extends React.Component{
     }
 }
 
-const AddForm = Form.create()(NewForm);
-export default AddForm;
+const EditForm = Form.create()(NewForm);
+export default EditForm;

@@ -11,8 +11,9 @@ class WaterMap extends React.Component{
         lat: this.props.defaultLat
     }
     componentDidMount(){
+        debugger;
         let BMap = window.BMap;
-        let map = new BMap.Map('watermap');
+        let map = new BMap.Map(this.props.mapname);
         map.centerAndZoom(new BMap.Point(this.state.lng, this.state.lat), 14);
         map.addControl(new BMap.NavigationControl());
         map.addEventListener('click', this.getPoint.bind(this));
@@ -29,10 +30,11 @@ class WaterMap extends React.Component{
         })
     }
     render(){
-        
+        debugger;
         // WMap.addEventListener('click', this.getPoint)
+        // const mapid = this.props.mapname;
         return (
-            <div id="watermap" style={{width: '100%', height: '300px'}} >
+            <div id={this.props.mapname} style={{width: '100%', height: '300px'}} >
 
             </div>
         )
