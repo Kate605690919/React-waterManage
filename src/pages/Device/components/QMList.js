@@ -187,8 +187,8 @@ class QMList extends React.Component {
 								</span>
 								:
 								<span>
-									{/* <a onClick={() => this.edit(record.flowmeter.FM_UId)}>编辑</a> */}
-									{/* 这里将表格中的行编辑改为可以修改设备所有信息 */}
+									{/* <a onClick={() => this.edit(record.qualitymeter.QM_UId)}>编辑</a> */}
+									{/* 这里将表格中的单元格编辑改为可以修改设备所有信息 */}
 									<a onClick={() => this.allEdit(record.qualitymeter.QM_UId)}>修改</a>
 									<Popconfirm title="Sure to delete?" onConfirm={() => this.delete(record.qualitymeter.QM_UId)}>
 										<a>删除</a>
@@ -232,7 +232,6 @@ class QMList extends React.Component {
 	handleChange(value, key, column) {
 		const newData = [...this.state.data];
 		const target = newData.filter(item => key === item.qualitymeter.QM_UId)[0];
-		// const newTarget = update(target, {qualitymeter: {$set: }})
 		if (target) {
 			eval(`target.${column}=value`);
 			this.setState({ data: newData });
@@ -262,15 +261,7 @@ class QMList extends React.Component {
 	handleEditModalCancel(){
 		this.setState({
 			editModalVisible: false,
-			finishEdit: true
 		});
-		// const hide = () => {
-		// 	console.log(this);
-		// 	this.setState({
-		// 		finishEdit: true
-		// 	});
-		// }
-		// setTimeout(hide, 200);	
 	}
 	onClose(){
 		this.setState({
@@ -278,9 +269,6 @@ class QMList extends React.Component {
 		})
 	}
 	handleEdit(newMeter){
-		// this.setState({
-		// 	finishEdit: true
-		// })
 		this.fetch_Post({
 			url: 'http://localhost:2051/QualityMeter/ModifyQualityMeter',
 			data: util.objToStr(newMeter),
@@ -293,15 +281,8 @@ class QMList extends React.Component {
 					})
 					//重新加载
 					this.props.onAddDevice();
-					// this.setState({
-					// 	visible: false,
-					// 	finishAdd: false
-					// })
 				} else{
 					message.error('修改失败，请重试！');
-					this.setState({
-						editModalVisible: false,
-					})
 				}
 			}
 		})
@@ -323,7 +304,6 @@ class QMList extends React.Component {
 				}
 			})
 			this.setState({ data: newData });
-			// this.cacheData = newData.map(item => ({ ...item }));
 			this.cacheData = JSON.parse(JSON.stringify(newData));
 		}
 	}
@@ -356,7 +336,7 @@ class QMList extends React.Component {
 	showModal(){
 		this.setState({
 			visible: true,
-			confirmAddLoading: false
+			finishAdd: false
 		});
 	}
 	//添加水质计
@@ -372,14 +352,10 @@ class QMList extends React.Component {
 					message.success('添加成功！');
 					this.setState({
 						visible: false,
-						confirmAddLoading: false
+						finishAdd: true
 					})
 					//重新加载
 					this.props.onAddDevice();
-					// this.setState({
-					// 	visible: false,
-					// 	confirmAddLoading: false
-					// })
 				} else{
 					message.error('添加失败，请重试！');
 					this.setState({
@@ -389,12 +365,6 @@ class QMList extends React.Component {
 				}
 			}
 		})
-		// const newItem = [];
-		// const newData = [newItem, ...this.state.data];
-		// this.setState({
-		// 	data: newData
-		// });
-		// fetch_Post
 	}
 	handleModalCancel(){
 		this.setState({
@@ -429,7 +399,6 @@ class QMList extends React.Component {
 				<Modal width="60%"
 					title="添加水质计"
 					visible={this.state.visible}
-					// onOk = {this.handleAdd.bind(this)}
 					confirmLoading = {this.state.confirmAddLoading}
 					onCancel = {this.handleModalCancel.bind(this)}
 					footer = {null}

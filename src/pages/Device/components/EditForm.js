@@ -8,19 +8,15 @@ const RadioGroup = Radio.Group;
 const Step = Steps.Step;
 class NewForm extends React.Component{
     state = {
-        current: 0,   //步骤条
-        loading: false
-    }
-    componentWillReceiveProps(){
-        // this.setState({
-        //     current: this.props.step
-        // })
+        current: 0,   //步骤条状态
+        loading: false  //保存按钮加载状态
     }
     componentWillUnmount(){
         util.setSessionStorate('editlng', null);
         util.setSessionStorate('editlat', null);
     }
     handleSubmit(e){
+        //提交修改表单数据
         e.preventDefault();
         this.props.form.validateFieldsAndScroll((err, values) => {
             if(!err){
@@ -33,7 +29,7 @@ class NewForm extends React.Component{
                 util.setSessionStorate('editlng', null);
                 util.setSessionStorate('editlat', null);
             } else{
-                message.error('请填写完整！')
+                message.error('请正确修改！')
             }
         })
     }
@@ -71,8 +67,9 @@ class NewForm extends React.Component{
         util.setSessionStorate('editlng', {[lng]: point.lng});
         util.setSessionStorate('editlat', {[lat]: point.lat});
     }
-    //获取所属区域本身和父级区域id
+    //获取所属区域本身和父级区域id，作为Cascader的初始值
     getAreas(){
+        //因为区域id只有一个，所以要从区域树查找它的父级区域
         const aid = this.props.areaid;
         const areatree = util.getSessionStorate('areatree');
         const findArea = (areaid, tree) => {
@@ -105,6 +102,25 @@ class NewForm extends React.Component{
         }
         return res;
     }
+    //post方法封装
+	fetch_Post({url, data, success}){
+		fetch(url, {
+			method: 'POST',
+			headers: {"Content-Type": "application/x-www-form-urlencoded"},
+			body: data
+		}).then((response) => {
+			if (response.status !== 200) {
+				throw new Error('Fail to get response with status ' + response.status);
+			}
+			response.json().then((res) => {
+				success(res);
+			}).catch((error) => {
+				console.error(error);
+			});
+		}).catch((error) => {
+			console.error(error);
+		});
+	}
     render(){
         const { getFieldDecorator } = this.props.form;
         const labelData = this.props.labelData;
@@ -118,23 +134,7 @@ class NewForm extends React.Component{
                 sm: { span: 16 },
             },
         };
-        // const tailFormItemLayout = {
-        //     wrapperCol: {
-        //       xs: {
-        //         span: 24,
-        //         offset: 0,
-        //       },
-        //       sm: {
-        //         span: 16,
-        //         offset: 6,
-        //       },
-        //     },
-        //   };
         const { current } = this.state;
-        // const displayRender = (labels, selectedOptions) => labels.map((label, i) => {
-        //     const option = selectedOptions[i];
-        //     return <span key={option.id}>{option.text} /</span>
-        // });
         const checkCode = (rule, value, callback) => {
             //验证编码是否可用
             const target = labelData.filter((item) => item.key.indexOf('Code') !== -1)[0];
@@ -222,14 +222,13 @@ class NewForm extends React.Component{
                     </RadioGroup>
                 );   
             } else if(item.type === 'cascader'){
-                //将区域树的key进行修改
+                //将区域树的键名进行修改，id改为value,text改为label
                 const areaTree = util.getSessionStorate('areatree');
                 let str = JSON.stringify(areaTree);
                 str = str.replace(/id/g, 'value');
                 str = str.replace(/text/g, 'label');
                 const areas = JSON.parse(str);
                 content = getFieldDecorator(item.key, {
-                    // initialValue: ['zhejiang', 'hangzhou', 'xihu'],
                     rules: [{ type: 'array', required: true, message: `${item.name}为必填项！`}],
                     initialValue: areaData
                   })(
@@ -244,14 +243,7 @@ class NewForm extends React.Component{
                 </FormItem>
             )
         });
-        // debugger;
-        //从缓存中读取经纬度，如果缓存中没有，则取默认值
-        // const lng = util.getSessionStorate('lng');
-        // const lat = util.getSessionStorate('lat');
-        // const dLng = this.props.defaultLngLat.lng;
-        // const dLat = this.props.defaultLngLat.lat;
-        // const lngValue = (lng !== null) ? Object.values(lng)[0]||dLng : dLng;
-        // const latValue = (lat !== null) ? Object.values(lat)[0]||dLat : dLat;
+        //步骤一：选择地点（经度和纬度）
         let lngValue;
         let latValue;
         const mapLabelData = labelData.filter((item) => item.type === 'map');

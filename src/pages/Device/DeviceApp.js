@@ -161,7 +161,7 @@ class DeviceApp extends React.Component {
 	render() {
 		// console.log(this.state.radioValue, 'Client');
 		let Device = null;
-		//添加设备时默认经纬应当为当前区域经纬度，这里先用常量
+		//添加设备时默认经纬度应当为当前区域经纬度，这里先用常量
 		const defaultLngLat = {
 			'lng': '114.07900429980464',
 			'lat': '22.553374'

@@ -2,7 +2,6 @@ import React from 'react';
 import {Form, Input, Radio, Button, Cascader, Steps, message, Row, Col } from 'antd';
 import util from '../../../util/util';
 import WaterMap from './WaterMap';
-import Fetch from '../../../util/fetch';
 
 const FormItem = Form.Item;
 const RadioGroup = Radio.Group;
@@ -10,7 +9,7 @@ const Step = Steps.Step;
 class NewForm extends React.Component{
     state = {
         current: 0,   //步骤条
-        loading: false
+        loading: false //保存按钮加载状态
     }
     componentWillUnmount(){
         util.setSessionStorate('lng', null);
@@ -30,7 +29,7 @@ class NewForm extends React.Component{
                 util.setSessionStorate('lng', null);
                 util.setSessionStorate('lat', null);
             } else{
-                message.error('请填写完整！')
+                message.error('请正确填写！')
             }
         })
     }
@@ -104,23 +103,9 @@ class NewForm extends React.Component{
                 sm: { span: 16 },
             },
         };
-        // const tailFormItemLayout = {
-        //     wrapperCol: {
-        //       xs: {
-        //         span: 24,
-        //         offset: 0,
-        //       },
-        //       sm: {
-        //         span: 16,
-        //         offset: 6,
-        //       },
-        //     },
-        //   };
+        
         const { current } = this.state;
-        // const displayRender = (labels, selectedOptions) => labels.map((label, i) => {
-        //     const option = selectedOptions[i];
-        //     return <span key={option.id}>{option.text} /</span>
-        // });
+
         const checkCode = (rule, value, callback) => {
             //验证编码是否可用
             const target = labelData.filter((item) => item.key.indexOf('Code') !== -1)[0];
@@ -199,14 +184,13 @@ class NewForm extends React.Component{
                     </RadioGroup>
                 );   
             } else if(item.type === 'cascader'){
-                //将区域树的key进行修改
+                //将区域树的键名进行修改，id改为value,text改为label
                 const areaTree = util.getSessionStorate('areatree');
                 let str = JSON.stringify(areaTree);
                 str = str.replace(/id/g, 'value');
                 str = str.replace(/text/g, 'label');
                 const areas = JSON.parse(str);
                 content = getFieldDecorator(item.key, {
-                    // initialValue: ['zhejiang', 'hangzhou', 'xihu'],
                     rules: [{ type: 'array', required: true, message: `${item.name}为必填项！`}],
                   })(
                     <Cascader options={areas} changeOnSelect placeholder="选择区域"/>
@@ -220,6 +204,7 @@ class NewForm extends React.Component{
                 </FormItem>
             )
         });
+
         //从缓存中读取经纬度，如果缓存中没有，则取默认值
         const lng = util.getSessionStorate('lng');
         const lat = util.getSessionStorate('lat');
@@ -273,6 +258,7 @@ class NewForm extends React.Component{
                 </div>
             )
         };
+        
         const steps = [{
             title: '选择地点',
             render: () => {

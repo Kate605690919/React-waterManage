@@ -190,7 +190,7 @@ class FMList extends React.Component {
 								:
 								<span>
 									{/* <a onClick={() => this.edit(record.flowmeter.FM_UId)}>编辑</a> */}
-									{/* 这里将表格中的行编辑改为可以修改设备所有信息 */}
+									{/* 这里将表格中的单元格编辑改为可以修改设备所有信息 */}
 									<a onClick={() => this.allEdit(record.flowmeter.FM_UId)}>修改</a>
 									<Popconfirm title="Sure to delete?" onConfirm={() => this.delete(record.flowmeter.FM_UId)}>
 										<a>删除</a>
@@ -208,10 +208,10 @@ class FMList extends React.Component {
         data: this.props.tableData,
 		pagination: {},
 		loading: false,
-		visible: false,
-		finishAdd: false,
-		editModalVisible: false,
-		finishEdit: false,
+		visible: false,       //添加设备模态框是否可见
+		finishAdd: false,     //是否完成添加设备
+		editModalVisible: false,   //修改设备模态框是否可见
+		finishEdit: false,         //是否完成或取消修改
     }
     componentWillReceiveProps(nextProps) {
 		let {tableData, loading, pagination, cacheData} = nextProps;
@@ -231,10 +231,11 @@ class FMList extends React.Component {
 			/>
 		);
 	}
+
+	//编辑单元格
 	handleChange(value, key, column) {
 		const newData = [...this.state.data];
 		const target = newData.filter(item => key === item.flowmeter.FM_UId)[0];
-		// const newTarget = update(target, {flowmeter: {$set: }})
 		if (target) {
 			eval(`target.${column}=value`);
 			this.setState({ data: newData });
@@ -248,6 +249,7 @@ class FMList extends React.Component {
 			this.setState({ data: newData });
 		}
 	}
+
 	//可修改设备所有信息
 	allEdit(key){
 		const newData = [...this.state.data];
@@ -264,26 +266,15 @@ class FMList extends React.Component {
 	handleEditModalCancel(){
 		this.setState({
 			editModalVisible: false,
-			// finishEdit: true
 		});
-		// const hide = () => {
-		// 	console.log(this);
-		// 	this.setState({
-		// 		finishEdit: true
-		// 	});
-		// }
-		// setTimeout(hide, 200);	
 	}
+	//模态框完全关闭后回调函数
 	onClose(){
 		this.setState({
 			finishEdit: true
 		});
 	}
 	handleEdit(newFlowData){
-		console.log(newFlowData);
-		// this.setState({
-		// 	finishEdit: true
-		// })
 		this.fetch_Post({
 			url: 'http://localhost:2051/FlowMeter/ModifyFlowMeter',
 			data: util.objToStr(newFlowData),
@@ -296,19 +287,13 @@ class FMList extends React.Component {
 					})
 					//重新加载
 					this.props.onAddDevice();
-					// this.setState({
-					// 	visible: false,
-					// 	finishAdd: false
-					// })
 				} else{
 					message.error('修改失败，请重试！');
-					this.setState({
-						editModalVisible: false,
-					})
 				}
 			}
 		})
 	}
+
 	save(key) {
 		const newData = [...this.state.data];
 		const target = newData.filter(item => key === item.flowmeter.FM_UId)[0];
@@ -326,7 +311,6 @@ class FMList extends React.Component {
 				}
 			})
 			this.setState({ data: newData });
-			// this.cacheData = newData.map(item => ({ ...item }));
 			this.cacheData = JSON.parse(JSON.stringify(newData));
 		}
 	}
@@ -339,6 +323,7 @@ class FMList extends React.Component {
 			this.setState({ data: newData });
 		}
 	}
+
 	delete(key) {
 		const newData = [...this.state.data];
 		const target = newData.filter(item => key === item.flowmeter.FM_UId)[0];
@@ -356,6 +341,7 @@ class FMList extends React.Component {
 			this.setState({ data: newData.filter(item => item.flowmeter.FM_UId !== key) });
 		}
 	}
+
 	showModal(){
 		this.setState({
 			visible: true,
@@ -364,10 +350,6 @@ class FMList extends React.Component {
 	}
 	//添加流量计
 	handleAdd(newFlowData){
-		console.log(newFlowData);
-		// this.setState({
-		// 	finishAdd: true
-		// })
 		this.fetch_Post({
 			url: 'http://localhost:2051/FlowMeter/AddFlowMeter',
 			data: util.objToStr(newFlowData),
@@ -380,31 +362,21 @@ class FMList extends React.Component {
 					})
 					//重新加载
 					this.props.onAddDevice();
-					// this.setState({
-					// 	visible: false,
-					// 	finishAdd: false
-					// })
 				} else{
 					message.error('添加失败，请重试！');
 					this.setState({
 						visible: false,
-						// finishAdd: false
 					})
 				}
 			}
 		})
-		// const newItem = [];
-		// const newData = [newItem, ...this.state.data];
-		// this.setState({
-		// 	data: newData
-		// });
-		// fetch_Post
 	}
 	handleModalCancel(){
 		this.setState({
 			visible: false,
 		});
 	}
+
 	//post方法封装
 	fetch_Post({url, data, success}){
 		fetch(url, {
@@ -425,19 +397,15 @@ class FMList extends React.Component {
 		});
 	}
     render() {
-		// const areaid = this.AraId;
-		// const renderEditForm = (areaid) => {
-		// 	return <EditForm labelData={flowmeterLabelData} onEditSubmit={this.handleEdit.bind(this)} meterData={this.editTarget} key={this.AraId} areaid={this.AraId} />
-		// }
         return (
 			<div>
 				<div style={{paddingLeft: '20px', paddingBottom: '10px'}}>
 					<Button type="primary" onClick={this.showModal.bind(this)}>添加流量计</Button>
 				</div>
+				
 				<Modal width="60%"
 					title="添加流量计"
 					visible={this.state.visible}
-					// onOk = {this.handleAdd.bind(this)}
 					confirmLoading = {this.state.finishAdd}
 					onCancel = {this.handleModalCancel.bind(this)}
 					footer = {null}
