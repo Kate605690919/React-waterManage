@@ -72,11 +72,6 @@ class Util {
             method: "POST",
             body: data,
         });
-        // if (token) {
-        //     headers = { "Content-Type": "application/x-www-form-urlencoded", 'access_token': 'token' };
-        // } else {
-        //     headers = { "Content-Type": "application/x-www-form-urlencoded" };
-        // }
         fetch(request).then((response) => {
             if (response.status !== 200) {
                 throw new Error('Fail to get response with status ' + response.status);

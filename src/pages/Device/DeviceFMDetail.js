@@ -1,5 +1,5 @@
 import React from 'react';
-import ECharts from 'react-echarts';
+// import ECharts from 'react-echarts';
 import { Breadcrumb, Card, Tabs, Table, Row, Col, DatePicker, Icon } from 'antd';
 import moment from 'moment';
 import { columnsStatus, columnsAnalysis, columnsNight, columnsFlow } from './components/detailTableOptions';
@@ -30,18 +30,21 @@ class DeviceFMDetail extends React.Component {
     }
     componentDidMount() {
         this.setState({ loading: true, analysisLoading: true });
+        const that = this;
         // 获取当前设备数据
-        this.fetch({
+        util.fetch({
             url: `http://localhost:64915/FlowMeter/Detail?${this._uid}`,
             success: (res) => {
+                debugger;
                 // this.getTableData(res.data[0].id);//加载table的数据
-                this.setState({ baseData: res, loading: false });
+                that.setState({ baseData: res, loading: false });
                 // 获取流量计分析数据
-                this.fetch({
+                util.fetch({
                     url: `http://localhost:64915/flowmeter/Analysis?${this._uid}&time=${util.dateFormat(res[0].flowmeter.FM_FlowCountLast, 2)}`,
                     success: (res) => {
+                        debugger;
                         // this.getTableData(res.data[0].id);//加载table的数据
-                        this.setState({ analysisData: [res], analysisLoading: false });
+                        that.setState({ analysisData: [res], analysisLoading: false });
                     }
                 });
             }
@@ -65,25 +68,27 @@ class DeviceFMDetail extends React.Component {
     //     console.log(key)
     // }
     getFlowData = (dateStrings) => {
+        const that = this;
         this.setState({ flowLoading: true });
         // 获取当前设备数据
-        this.fetch({
+        util.fetch({
             url: `http://localhost:64915/flowmeter/currentData?${this._uid}&startDt=${dateStrings[0]}&endDt=${dateStrings[1]}`,
             success: (res) => {
                 var detailEchartLinesOption = this.detailEchartLinesOption(res);
-                this.setState({ flowData: res, flowLoading: false, detailEchartLinesOption });
+                that.setState({ flowData: res, flowLoading: false, detailEchartLinesOption });
             }
         });
     }
     getHeatData = () => {
+        const that = this;
         this.setState({ heatLoading: true });
         // 获取当前设备数据
-        this.fetch({
+        util.fetch({
             url: `http://localhost:64915/flowmeter/RecentFlowData?${this._uid}`,
             success: (res) => {
                 // let data = { time: select(res.data, 'time'), value: select(res.data, 'value') };
                 var detailHeatOption = this.detailHeatOption(res);
-                this.setState({ heatLoading: false, detailHeatOption });
+                that.setState({ heatLoading: false, detailHeatOption });
             }
         });
     }
@@ -184,7 +189,7 @@ class DeviceFMDetail extends React.Component {
                                         pagination={{ pageSize: 8 }} />
                                 </Col>
                                 <Col className="gutter-row" md={12} span={24} >
-                                    <ECharts option={this.state.detailEchartLinesOption} style={{ minHeight: '500px' }} />
+                                    {/* <ECharts option={this.state.detailEchartLinesOption} style={{ minHeight: '500px' }} /> */}
                                 </Col>
                             </Row>
                             {/* {
@@ -201,7 +206,7 @@ class DeviceFMDetail extends React.Component {
                         </TabPane>
                         <TabPane tab="热力图分析" key="2">
                             {this.state.heatLoading ? <Icon type="loading" /> : null}
-                            <ECharts option={this.state.detailHeatOption} style={{ minHeight: '500px' }} />
+                            {/* <ECharts option={this.state.detailHeatOption} style={{ minHeight: '500px' }} /> */}
                         </TabPane>
                     </Tabs>
                 </Card>

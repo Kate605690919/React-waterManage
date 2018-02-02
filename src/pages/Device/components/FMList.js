@@ -17,7 +17,7 @@ class FMList extends React.Component {
 			title: '流量计编码',
 			dataIndex: 'flowmeter.FM_Code',
 			width: '15%',
-			render: (text, record) => <a href={`#/flowmeter/detail/uid=${record.flowmeter.FM_UId}`}>{text}</a>,
+			render: (text, record) => <a href={`#/device/flowmeter/detail/uid=${record.flowmeter.FM_UId}`}>{text}</a>,
 		}, {
 			title: '描述',
 			dataIndex: 'flowmeter.FM_Description',

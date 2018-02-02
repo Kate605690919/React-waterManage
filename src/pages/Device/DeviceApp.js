@@ -19,7 +19,7 @@ class DeviceApp extends React.Component {
 		this.onRadioChange = this.onRadioChange.bind(this);
 		// 获取区域树数据
 		util.fetch({
-			url: `http://localhost:2051/area/AreaTree`,
+			url: `http://localhost:64915/area/AreaTree`,
 			success: (res) => {
 				let areaUid = util.getLocalStorate('areaUid');
 				if (!areaUid) {
@@ -43,7 +43,7 @@ class DeviceApp extends React.Component {
 		radioValue: 'Client',
 	}
 	//获取设备表格数据
-	getTableData(areaUid, radioValue = 'Staff') {
+	getTableData(areaUid, radioValue = 'FM') {
 		this.setState({ loading: true });
 		let url;
 		switch (radioValue) {
@@ -72,12 +72,14 @@ class DeviceApp extends React.Component {
 				return false;
 			}
 		}
-		this.fetch_Post({
+		util.fetch_Post({
 			url: url,
 			data: `areaUid=${areaUid}`,
-			token: util.getSessionStorate('token'),
 			success: (res) => {
-				if (radioValue === 'FM' || radioValue === 'PM') res = JSON.parse(res);
+				if (radioValue === 'FM' || radioValue === 'PM') {
+					res = JSON.parse(res);
+					console.log(res);
+				}
 				// this.cacheData = res.map(item => ({ ...item }));
 				this.cacheData = JSON.parse(JSON.stringify(res));
 				const pagination = { ...this.state.pagination };

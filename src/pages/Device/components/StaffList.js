@@ -1,5 +1,5 @@
 import React from 'react'
-import { Table, Popconfirm, Input, message, TreeSelect, Button, Modal, Form, Icon, Transfer } from 'antd';
+import { Table, Popconfirm, Input, message, TreeSelect, Button, Modal, Form } from 'antd';
 import util from '../../../util/util';
 const TreeNode = TreeSelect.TreeNode;
 const FormItem = Form.Item;
@@ -58,7 +58,7 @@ const CollectionCreateForm = Form.create()(
 			<Modal
 				visible={visible}
 				title="添加职员"
-				okText="Create"
+				okText="添加"
 				onCancel={onCancel}
 				onOk={onCreate}
 			>
@@ -152,6 +152,7 @@ class StaffList extends React.Component {
 								<span>
 									<a onClick={() => this.edit(record.Uid)}>编辑</a>
 									<a onClick={() => this.delete(record.Id)}>删除</a>
+									<a onClick={() => this.resetPassword(record.Uid)}>重置密码</a>
 								</span>
 						}
 					</div>
@@ -212,10 +213,12 @@ class StaffList extends React.Component {
 		const target = newData.filter(item => key === item.Uid)[0];
 		if (target) {
 			target.editable = true;
+			util.setLocalStorate('areaUid_New', target.area.Ara_UId);
 			this.setState({ data: newData });
 		}
 	}
 	save(key) {
+		message.loading('保存中...', 0);
 		const that = this;
 		const newData = [...this.state.data];
 		const target = newData.filter(item => key === item.Uid)[0];
@@ -231,6 +234,7 @@ class StaffList extends React.Component {
 				&Member_Phone=${target.Phone ? target.Phone : ''}&Member_Memo=${target.Memo ? target.Memo : ''}
 				&Member_AreaUid=${areaUid_New}&Member_UserUid=${target.Uid ? target.Uid : ''}`,
 				success: (res) => {
+					message.destroy();
 					if (res) {
 						message.success('修改成功！');
 						that.props.renderTable(areaUid);// 从父组件处获取数据
@@ -249,6 +253,7 @@ class StaffList extends React.Component {
 		const target = newData.filter(item => key === item.Uid)[0];
 		if (target) {
 			util.setLocalStorate('areaUid', target.area.Ara_UId);
+			util.setLocalStorate('areaUid_New', target.area.Ara_UId);
 			Object.assign(target, this.cacheData.filter(item => key === item.Uid)[0]);
 			delete target.editable;
 			this.setState({ data: newData });
@@ -257,10 +262,12 @@ class StaffList extends React.Component {
 	// 删除客户
 	delete(Id) {
 		const that = this;
+		message.loading('删除中...', 0);
 		util.fetch_Post({
-			url: 'http://localhost:2051/staff/DeleteClient',
+			url: `http://localhost:2051/staff/DeleteClient`,
 			data: `id=${Id}`,
 			success: (res) => {
+				message.destroy();
 				if (res) {
 					const areaUid = util.getLocalStorate('areaUid');// 当前areaTree所选中区域Uid
 					message.success('删除成功！');
@@ -268,6 +275,23 @@ class StaffList extends React.Component {
 				}
 				else {
 					message.error('删除失败，请重试！');
+				}
+			}
+		})
+	}
+	// 重置密码
+	resetPassword(Uid) {
+		message.loading('重置密码中...', 0);
+		util.fetch_Post({
+			url: `http://localhost:2051/staff/ResetClientPassword`,
+			data: `uid=${Uid}`,
+			success: (res) => {
+				message.destroy();
+				if (res) {
+					message.success('重置密码成功！');
+				}
+				else {
+					message.error('重置密码失败，请重试！');
 				}
 			}
 		})
@@ -293,7 +317,7 @@ class StaffList extends React.Component {
 			if (!values.Member_AreaUid) {
 				return message.error('请选择所属区域！');
 			}
-			message.loading('添加中...,请稍后');
+			message.loading('添加中...,请稍后', 0);
 			let formData = util.objToStr(values);
 			util.fetch_Post({
 				url: 'http://localhost:2051/staff/AddClient',

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Form, Icon, Input, Button } from 'antd';
 import util from '../../util/util';
-import { location } from 'react-router/lib/PropTypes';
+// import { location } from 'react-router/lib/PropTypes';
 
 const FormItem = Form.Item;
 
