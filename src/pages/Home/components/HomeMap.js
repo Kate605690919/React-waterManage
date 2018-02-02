@@ -5,12 +5,12 @@ import initMap from './initMap';
 
 class HomeMap extends React.Component {
     componentDidMount() {
-        let that = this;
         util.fetch({
             url:'/Area/GetMapData',
             success: (data) => {
+                debugger;
                 let mapEl = document.querySelector("#homeMap");
-                // initMap(mapEl, data);
+                initMap(mapEl, data);
             }
         })
     }

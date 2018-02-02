@@ -1,5 +1,5 @@
 import React from 'react'
-import { Table, Popconfirm, Input, message, TreeSelect, Button, Modal, Form } from 'antd';
+import { Table, Popconfirm, Input, message, TreeSelect, Button, Modal, Form, Icon, Transfer } from 'antd';
 import util from '../../../util/util';
 const TreeNode = TreeSelect.TreeNode;
 const FormItem = Form.Item;
@@ -119,11 +119,6 @@ class StaffList extends React.Component {
 			width: '15%',
 			render: (text, record) => this.renderColumns(text, record, 'area.Ara_Name'),
 		}, {
-			title: '职位',
-			dataIndex: 'roles',
-			width: '15%',
-			render: (text, record) => this.renderColumns(text, record, 'roles'),
-		}, {
 			title: '电话号码',
 			dataIndex: 'Phone',
 			width: '20%',
@@ -152,6 +147,7 @@ class StaffList extends React.Component {
 								<span>
 									<a onClick={() => this.edit(record.Uid)}>编辑</a>
 									<a onClick={() => this.delete(record.Id)}>删除</a>
+									<a onClick={() => this.bindRole(record.Uid)}>绑定职位</a>
 									<a onClick={() => this.resetPassword(record.Uid)}>重置密码</a>
 								</span>
 						}
@@ -162,7 +158,7 @@ class StaffList extends React.Component {
 
 		this.cacheData = this.props.cacheData;
 		this.save = this.save.bind(this);
-		// this.expandDetail = this.expandDetail.bind(this);
+		this.expandDetail = this.expandDetail.bind(this);
 	}
 
 	state = {
@@ -172,8 +168,8 @@ class StaffList extends React.Component {
 		count: this.props.tableData.length,
 		visible: false,
 		detailLoading: false,
-		visibleFM: false,
-		confirmLoadingFM: false,
+		visibleRoles: false,
+		confirmLoadingRoles: false,
 		transferData: [],
 		targetKeys: [],
 	}
@@ -196,6 +192,45 @@ class StaffList extends React.Component {
 			eval(`target.${column}= value`);
 			this.setState({ data: newData });
 		}
+	}
+	// 绑定职位
+	bindRole(key) {
+		const that = this;
+		util.setLocalStorate('currentKey', key);
+		const newData = [...this.state.data];
+		let target = newData.filter(item => key === item.Uid)[0];
+		this.setState({ visibleRoles: true });
+		util.fetch({
+			url: 'http://localhost:2051/roles/GetAllRoles',
+			success: (res) => {
+				if(!target.allRoles) target.allRoles = [];
+				let keys = target.allRoles.map(item => item.Ir_UId);
+				that.setState({
+					transferData: res,
+					targetKeys: keys,
+				});
+			}
+		})
+	}
+	// transfer的筛选
+	filterRolesOption = (inputValue, option) => {
+		return option.Ir_Name.indexOf(inputValue) > -1 || option.Ir_Description.indexOf(inputValue) > -1;
+	}
+	// transfer 列表显示内容
+	renderTransferItem = (item) => {
+		const customLabel = (
+			<span className="custom-item">
+				{item.Ir_Name} - {item.Ir_Description}
+			</span>
+		);
+
+		return {
+			label: customLabel, // for displayed item
+			value: item.Ir_Description, // for title and filter matching
+		};
+	}
+	handleTransfChange = (targetKeys) => {
+		this.setState({ targetKeys });
 	}
 	renderColumns(text, record, column) {
 		return (
@@ -229,7 +264,7 @@ class StaffList extends React.Component {
 		if (target) {
 			delete target.editable;
 			util.fetch_Post({
-				url: 'http://localhost:2051/staff/ModifyClient',
+				url: 'http://localhost:2051/staff/ModifyStaff',
 				data: `Member_Name=${target.Name ? target.Name : ''}&Member_RealName=${target.RealName ? target.RealName : ''}
 				&Member_Phone=${target.Phone ? target.Phone : ''}&Member_Memo=${target.Memo ? target.Memo : ''}
 				&Member_AreaUid=${areaUid_New}&Member_UserUid=${target.Uid ? target.Uid : ''}`,
@@ -264,7 +299,7 @@ class StaffList extends React.Component {
 		const that = this;
 		message.loading('删除中...', 0);
 		util.fetch_Post({
-			url: `http://localhost:2051/staff/DeleteClient`,
+			url: `http://localhost:2051/staff/DeleteStaff`,
 			data: `id=${Id}`,
 			success: (res) => {
 				message.destroy();
@@ -283,7 +318,7 @@ class StaffList extends React.Component {
 	resetPassword(Uid) {
 		message.loading('重置密码中...', 0);
 		util.fetch_Post({
-			url: `http://localhost:2051/staff/ResetClientPassword`,
+			url: `http://localhost:2051/staff/ResetStaffPassword`,
 			data: `uid=${Uid}`,
 			success: (res) => {
 				message.destroy();
@@ -292,6 +327,64 @@ class StaffList extends React.Component {
 				}
 				else {
 					message.error('重置密码失败，请重试！');
+				}
+			}
+		})
+	}
+	// 绑定流量计详情
+	expandDetail = (expanded, record) => {
+		if (expanded) {
+			this.setState({ detailLoading: true });
+			util.fetch({
+				url: `http://localhost:2051/staff/GetDetail?uid=${record.Uid}`,
+				success: (res) => {
+					debugger;
+					const newData = [...this.state.data];
+					const target = newData.filter(item => record.Uid === item.Uid)[0];
+					if (target) {
+						util.setLocalStorate('areaUid', target.area.Ara_UId);
+						Object.assign(target, this.cacheData.filter(item => record.Uid === item.Uid)[0]);
+						target.allRoles = res.allRoles;
+						this.setState({ data: newData, detailLoading: false });
+					}
+				}
+			});
+		}
+	}
+	// 职位详情
+	renderRolesMeter = (record) => {
+		if (record.allRoles) {
+			let res = record.allRoles.map(item => <p key={item.FM_UId}><span style={{ 'marginRight': '20px' }}>{item.Ir_Name}</span><span>{item.Ir_Description}</span></p>)
+			return res;
+		} else if (this.state.detailLoading) {
+			return <Icon type="loading" />
+		} else return <h4>暂无</h4>;
+	}
+	// 职位模态框
+	handleCancelRoles = () => {
+		this.setState({
+			visibleRoles: false,
+			transferData: [],
+			targetKeys: [],
+		});
+	}
+	handleOk = (e) => {
+		const key = util.getLocalStorate('currentKey')
+		let obj = {staffuid: key, roleuids: this.state.targetKeys};
+		const newData = [...this.state.data];
+		const dataRoles = util.objToStr(obj);
+		let target = newData.filter(item => key === item.Uid)[0];
+		util.fetch_Post({
+			url: 'http://localhost:2051/staff/ModifyStaffRole',
+			data: dataRoles,
+			success: (res) => {
+				if (res) {
+					message.success('绑定成功！');
+					target.flowmeter = null;
+					this.setState({ data: newData, visibleRoles: false });
+				}
+				else {
+					message.error('绑定失败，请重试！');
 				}
 			}
 		})
@@ -320,7 +413,7 @@ class StaffList extends React.Component {
 			message.loading('添加中...,请稍后', 0);
 			let formData = util.objToStr(values);
 			util.fetch_Post({
-				url: 'http://localhost:2051/staff/AddClient',
+				url: 'http://localhost:2051/staff/AddStaff',
 				data: formData,
 				success: (res) => {
 					message.destroy();
@@ -348,10 +441,32 @@ class StaffList extends React.Component {
 					onCancel={this.handleCancel}
 					onCreate={this.handleCreate}
 				/>
+				<Modal title="绑定职位"
+					visible={this.state.visibleRoles}
+					onOk={this.handleOk}
+					confirmLoading={this.state.confirmLoadingRoles}
+					onCancel={this.handleCancelRoles}
+				>
+					<Transfer
+						dataSource={this.state.transferData}
+						showSearch
+						listStyle={{ 'width': '45%' }}
+						rowKey={record => record.Ir_UId}
+						filterOption={this.filterRolesOption}
+						notFoundContent={'暂无数据'}
+						titles={['未绑定流量计', '已绑定流量计']}
+						searchPlaceholder={'搜索'}
+						targetKeys={this.state.targetKeys}
+						onChange={this.handleTransfChange}
+						render={this.renderTransferItem}
+					/>
+				</Modal>
 				<Table rowKey={data => data.Uid}
 					dataSource={this.state.data}
 					columns={this.columns}
 					loading={this.state.loading}
+					onExpand={this.expandDetail}
+					expandedRowRender={record => this.renderRolesMeter(record)}
 				/>
 			</div>
 		)

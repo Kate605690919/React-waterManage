@@ -9,19 +9,21 @@ import { FeedBackApp } from './pages/FeedBack';
 const Routes = () => (
     <Router history={hashHistory}>
         <Route path='/' component={Login} />
-        <Route path="/device" component={App} breadcrumbName="首页">
+        <Route path="/device" component={App} breadcrumbName="设备人员管理">
             <IndexRoute component={DeviceApp} />
             <Route path="flowmeter/detail/:uid" component={DeviceFMDetail} breadcrumbName="流量计详情"></Route>
             <Route path="pressuremeter/detail/:uid" component={DevicePMDetail} breadcrumbName="压力计详情"></Route>
+        </Route>
+        <Route path="/" component={App}>
             <Route path="/feedback" component={FeedBackApp}></Route>
             <Route path="/role" component={Role}></Route>
             <Route path="/home" component={Home}></Route>
         </Route>
-            {/* <Route path="devices" component={DeviceApp}>
+        {/* <Route path="devices" component={DeviceApp}>
                 <Route path="/flowmeter" component={FMList}></Route>
                 <Route path="/pressuremeter" component={PMList}></Route>
             </Route> */}
-            {/* <IndexRoute component={HomeApp}></IndexRoute>
+        {/* <IndexRoute component={HomeApp}></IndexRoute>
             <Route path="devices" component={DeviceApp}>
                 <Route path="/flowmeter/detail/:uid" component={DeviceFMDetail}></Route>
                 <Route path="/pressuremeter/detail/:uid" component={DeviceFMDetail }></Route>

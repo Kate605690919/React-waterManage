@@ -1,9 +1,10 @@
 import React from 'react';
 import { Card, Col, Table, Row } from 'antd';
 import util from '../../util/util';
+import initMap from './components/initMap';
 import './home.less';
 const FMOptions = [{
-    title: '名称',
+    title: '名称(流量计)',
     dataIndex: 'flowmeter.FM_Description',
 }, {
     title: '昨日流量',
@@ -13,7 +14,7 @@ const FMOptions = [{
     dataIndex: 'lastday_flow_proportion',
 }];
 const PMOptions = [{
-    title: '名称',
+    title: '名称(压力计)',
     dataIndex: 'pressuremeter.PM_Description',
 }, {
     title: '昨日流量',
@@ -23,14 +24,14 @@ const PMOptions = [{
     dataIndex: 'lastday_pressure_proportion',
 }];
 const YFMOptions = [{
-    title: '名称',
+    title: '名称(流量计)',
     dataIndex: 'flowmeter.FM_Description',
 }, {
     title: '昨日变化趋势',
     dataIndex: 'lastday_flow_proportion',
 }];
 const YPMOptions = [{
-    title: '名称',
+    title: '名称(压力计)',
     dataIndex: 'pressuremeter.PM_Description',
 }, {
     title: '昨日变化趋势',
@@ -66,7 +67,6 @@ class Home extends React.Component {
         util.fetch({
             url: 'http://localhost:64915/FlowMeter/GetLastDayFlowList',
             success: (res) => {
-                debugger;
                 res = JSON.parse(res);
                 that.setState({ YFMRank: res.slice(0, 3), YFMLoading: false });
             }
@@ -78,6 +78,13 @@ class Home extends React.Component {
                 that.setState({ YPMRank: res.slice(0, 3), YPMLoading: false });
             }
         });
+        util.fetch({
+            url: 'http://localhost:64915/Area/GetMapData',
+            success: (data) => {
+                let mapEl = document.querySelector("#homeMap");
+                initMap(mapEl, data);
+            }
+        })
     }
     render() {
         return (
@@ -85,51 +92,50 @@ class Home extends React.Component {
                 <Card>
                     <Row gutter={16}>
                         <Col className="gutter-row" span={8}>
-                            <Card className="littleCard">
-                                <Table columns={FMOptions}
-                                    dataSource={this.state.FMRank}
-                                    size="small"
-                                    pagination={false}
-                                    loading={this.state.FMLoading}
-                                    rowKey={data => data.flowmeter.FM_UId} />
-                            </Card>
-                            <Card className="littleCard">
-                                <Table columns={PMOptions}
-                                    dataSource={this.state.PMRank}
-                                    size="small"
-                                    pagination={false}
-                                    loading={this.state.PMLoading}
-                                    rowKey={data => data.pressuremeter.PM_UId} />
-                            </Card>
-                        </Col>
-                        <Col className="gutter-row" span={8}>
-                            <Card className="littleCard">
-                                <Table columns={YFMOptions}
-                                    dataSource={this.state.YFMRank}
-                                    size="small"
-                                    pagination={false}
-                                    loading={this.state.YFMLoading}
-                                    rowKey={data => data.flowmeter.FM_UId} />
-                                <Table columns={YPMOptions}
-                                    dataSource={this.state.YPMRank}
-                                    size="small"
-                                    pagination={false}
-                                    loading={this.state.YPMLoading}
-                                    rowKey={data => data.pressuremeter.PM_UId} />
-                            </Card>
-                        </Col>
-                    </Row>
-
-                    {/* <div className="commonData">
-                        <Card className="littleCard">
+                            <h2>常用设备</h2>
+                            <Table columns={FMOptions}
+                                dataSource={this.state.FMRank}
+                                size="small"
+                                pagination={false}
+                                loading={this.state.FMLoading}
+                                rowKey={data => data.flowmeter.FM_UId} />
                             <Table columns={PMOptions}
                                 dataSource={this.state.PMRank}
                                 size="small"
                                 pagination={false}
                                 loading={this.state.PMLoading}
                                 rowKey={data => data.pressuremeter.PM_UId} />
-                        </Card>
-                    </div> */}
+                        </Col>
+                        <Col className="gutter-row" span={8}>
+                            <h2>昨日流量/压力变化排行</h2>
+                            <Table columns={YFMOptions}
+                                dataSource={this.state.YFMRank}
+                                size="small"
+                                pagination={false}
+                                loading={this.state.YFMLoading}
+                                rowKey={data => data.flowmeter.FM_UId} />
+                            <Table columns={YPMOptions}
+                                dataSource={this.state.YPMRank}
+                                size="small"
+                                pagination={false}
+                                loading={this.state.YPMLoading}
+                                rowKey={data => data.pressuremeter.PM_UId} />
+                        </Col>
+                        <Col className="gutter-row" span={8}>
+                            <Card className="littleCard">
+                                <div className="map">
+                                    <div id="homeMap" style={{ marginBottom: '10px', minHeight: '300px' }}></div>
+                                    <div id="legend">
+                                        <ul>
+                                            <li><i></i><span>流量计</span></li>
+                                            <li><i></i><span>压力计</span></li>
+                                            <li><i></i><span>水质计</span></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </Card>
+                        </Col>
+                    </Row>
                 </Card>
             </Col>
         );

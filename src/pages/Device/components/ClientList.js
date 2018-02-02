@@ -112,11 +112,7 @@ class ClientList extends React.Component {
 			title: '客户名',
 			dataIndex: 'Name',
 			width: '10%',
-			render: (text, record) => this.renderColumns(text, record, 'Name')
-			// {
-			// 	if (record.editable) return 
-			// 	else return (<a href={`#/client/detail/uid=${record.Uid}`}>{text}</a>);
-			// },
+			render: (text, record) => this.renderColumns(text, record, 'Name'),
 		}, {
 			title: '真实姓名或公司名',
 			dataIndex: 'RealName',

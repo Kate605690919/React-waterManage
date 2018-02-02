@@ -1,6 +1,6 @@
-// import echarts from 'echarts/dist/echarts.common';
+// import echarts from 'echarts';
 // // 引入折线图
-// import  'echarts/lib/chart/line';
+// import  'echarts/lib/chart/heatmap';
 // // 引入提示框和标题组件
 // import 'echarts/lib/component/tooltip';
 // import 'echarts/lib/component/title';
