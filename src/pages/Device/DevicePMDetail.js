@@ -6,6 +6,8 @@ import { columnsStatus, columnsAnalysis, columnsNight, columnsFlow } from './com
 import detailEchartLinesOption from './components/detailEchartLinesOption';
 import detailHeatOption from './components/detailHeatOption';
 import util from '../../util/util';
+import EchartBox from './components/EchartBox';
+
 
 const { RangePicker } = DatePicker;
 const TabPane = Tabs.TabPane;
@@ -57,32 +59,37 @@ class DevicePMDetail extends React.Component {
         flowLoading: false,
         checked: true,
         detailEchartLinesOption: null,
-        heatLoading: false,
+        EchartLinesLoading: true,
+        EchartLinesData: null,
+        heatLoading: true,
         detailHeatOption: null,
+        heatData: null,
     }
-    onTabsChange = (key) => {
-        console.log(key)
-    }
+    // onTabsChange = (key) => {
+    //     console.log(key)
+    // }
     getFlowData = (dateStrings) => {
+        const that = this;
         this.setState({ flowLoading: true });
         // 获取当前设备数据
-        this.fetch({
+        util.fetch({
             url: `http://localhost:64915/PressureMeter/GetPressureDetailWithTime?${this._uid}&startDt=${dateStrings[0]}&endDt=${dateStrings[1]}`,
             success: (res) => {
-                var detailEchartLinesOption = this.detailEchartLinesOption(res);
-                this.setState({ flowData: res, flowLoading: false, detailEchartLinesOption });
+                let detailEchartLinesOption = this.detailEchartLinesOption(res);
+                that.setState({ flowData: res, flowLoading: false, detailEchartLinesOption });
             }
         });
     }
     getHeatData = () => {
+        const that = this;
         this.setState({ heatLoading: true });
         // 获取当前设备数据
-        this.fetch({
+        util.fetch({
             url: `http://localhost:64915/PressureMeter/RecentPressureData?${this._uid}`,
             success: (res) => {
                 // let data = { time: select(res.data, 'time'), value: select(res.data, 'value') };
-                var detailHeatOption = this.detailHeatOption(res);
-                this.setState({ heatLoading: false, detailHeatOption });
+                let detailHeatOption = this.detailHeatOption(res);
+                that.setState({ heatLoading: false, detailHeatOption });
             }
         });
     }
@@ -180,14 +187,14 @@ class DevicePMDetail extends React.Component {
                                         pagination={{ pageSize: 8 }} />
                                 </Col>
                                 <Col className="gutter-row" md={12} span={24} >
-                                    {/* <ECharts option={this.state.detailEchartLinesOption} style={{ minHeight: '500px' }} /> */}
+                                    <EchartBox options={this.state.detailEchartLinesOption} loading={this.state.EchartLinesLoading} id={'echartlines'} data={this.state.EchartLinesData} style={{ minHeight: '500px' }}></EchartBox>
                                 </Col>
                             </Row>
 
                         </TabPane>
                         <TabPane tab="热力图分析" key="2">
                             {this.state.heatLoading ? <Icon type="loading" /> : null}
-                            {/* <ECharts option={this.state.detailHeatOption} style={{ minHeight: '500px' }} /> */}
+                            <EchartBox options={this.state.detailHeatOption} loading={this.state.heatLoading} id={'echartheat'} data={this.state.heatData}></EchartBox>
                         </TabPane>
                     </Tabs>
                 </Card>

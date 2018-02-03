@@ -158,9 +158,11 @@ class NewForm extends React.Component{
                     content = getFieldDecorator(item.key, {
                         rules: [{
                             required: true, message: `${item.name}为必填项！`
-                        },{
+                        }
+                        ,{
                             validator: checkCode
-                        }]
+                        }
+                    ]
                     })(
                         <Input />
                     );

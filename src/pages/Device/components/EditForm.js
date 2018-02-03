@@ -24,7 +24,9 @@ class NewForm extends React.Component{
                 values.areaUid = areaId;
                 const lng = util.getSessionStorate('editlng');
                 const lat = util.getSessionStorate('editlat');
-                Object.assign(values, lng, lat);
+                const uid = util.getSessionStorate('device_uid');
+                Object.assign(values, lng, lat, uid);
+                debugger;
                 this.props.onEditSubmit(values);
                 util.setSessionStorate('editlng', null);
                 util.setSessionStorate('editlat', null);
@@ -70,7 +72,6 @@ class NewForm extends React.Component{
     //获取所属区域本身和父级区域id，作为Cascader的初始值
     getAreas(){
         //因为区域id只有一个，所以要从区域树查找它的父级区域
-        debugger;
         const aid = this.props.areaid;
         const areatree = util.getSessionStorate('areatree');
         const findArea = (areaid, tree) => {

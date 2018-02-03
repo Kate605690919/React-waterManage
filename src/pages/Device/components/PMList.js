@@ -1,5 +1,5 @@
 import React from 'react'
-import { Table,Input, Popconfirm, message, Button, Modal } from 'antd';
+import { Table, Input, Popconfirm, message, Button, Modal } from 'antd';
 import util from '../../../util/util';
 import AddForm from './AddForm';
 import EditForm from './EditForm';
@@ -20,112 +20,112 @@ const pressuremeterLabelData = [
 		type: 'cascader',
 		value: ''
 	},
-    {
-        id: 1,
-        key: "PM_Code",
-        name: '压力计编码',
-        type: 'text',
-        value: ''
-    },
-    // {
-    //     id: 2,
-    //     key: "PM_AlarmNumber",
-    //     name: '报警号码',
-    //     type: 'text',
-    //     value: ''
-    // },
-    // {
-    //     id: 3,
-    //     key: 'PM_AlarmThreshold',
-    //     name: '报警阈值',
-    //     type: 'text',
-    //     value: ''
-    // },
-    // {
-    //     id: 4,
-    //     key: 'PM_AlarmTimeOut',
-    //     name: '超时阈值',
-    //     type: 'text',
-    //     value: ''
-    // },
-    // {
-    //     id: 5,
-    //     key: 'PM_AlarmMode',
-    //     name: '报警模式',
-    //     type: 'radio',
-    //     value: '',
-    //     option: [
-    //         {
-    //             name: '自动',
-    //             value: 1
-    //         },
-    //         {
-    //             name: '默认',
-    //             value: 0
-    //         }
-    //     ]
-    // },
-    // {
-    //     id: 6,
-    //     key: 'PM_Class',
-    //     name: '用户类型',
-    //     type: 'radio',
-    //     value: '',
-    //     option: [
-    //         {
-    //             name: '手抄压力计',
-    //             value: 2
-    //         },
-    //         {
-    //             name: '普通',
-    //             value: 0
-    //         }
-    //     ]
-    // },
-    {
-        id: 7,
-        key: 'PM_Description',
-        name: '压力计描述',
-        type: 'text',
-        value: ''
-    },
-    // {
-    //     id: 8,
-    //     key: 'PM_BatteryAlarmThreshold',
-    //     name: '设备电池报警阈值',
-    //     type: 'text',
-    //     value: ''
-    // },
-    // {
-    //     id: 9,
-    //     key: 'PM_ModemAlarmThreshold',
-    //     name: '通信电池报警阈值',
-    //     type: 'text',
-    //     value: ''
-    // },
-    // {
-    //     id: 10,
-    //     key: 'PM_Enable',
-    //     name: '是否可用',
-    //     type: 'radio',
-    //     value: '',
-    //     option: [
-    //         {
-    //             name: '是',
-    //             value: 1
-    //         },
-    //         {
-    //             name: '否',
-    //             value: 0
-    //         }
-    //     ]
-    // },
-    // {
-    //     id: 11,
-    //     key: 'PM_DeviceAlarmNumber',
-    //     name: '压力计手机号码',
-    //     type: 'text',
-    //     value: ''
+	{
+		id: 1,
+		key: "PM_Code",
+		name: '压力计编码',
+		type: 'text',
+		value: ''
+	},
+	// {
+	//     id: 2,
+	//     key: "PM_AlarmNumber",
+	//     name: '报警号码',
+	//     type: 'text',
+	//     value: ''
+	// },
+	// {
+	//     id: 3,
+	//     key: 'PM_AlarmThreshold',
+	//     name: '报警阈值',
+	//     type: 'text',
+	//     value: ''
+	// },
+	// {
+	//     id: 4,
+	//     key: 'PM_AlarmTimeOut',
+	//     name: '超时阈值',
+	//     type: 'text',
+	//     value: ''
+	// },
+	// {
+	//     id: 5,
+	//     key: 'PM_AlarmMode',
+	//     name: '报警模式',
+	//     type: 'radio',
+	//     value: '',
+	//     option: [
+	//         {
+	//             name: '自动',
+	//             value: 1
+	//         },
+	//         {
+	//             name: '默认',
+	//             value: 0
+	//         }
+	//     ]
+	// },
+	// {
+	//     id: 6,
+	//     key: 'PM_Class',
+	//     name: '用户类型',
+	//     type: 'radio',
+	//     value: '',
+	//     option: [
+	//         {
+	//             name: '手抄压力计',
+	//             value: 2
+	//         },
+	//         {
+	//             name: '普通',
+	//             value: 0
+	//         }
+	//     ]
+	// },
+	{
+		id: 7,
+		key: 'PM_Description',
+		name: '压力计描述',
+		type: 'text',
+		value: ''
+	},
+	// {
+	//     id: 8,
+	//     key: 'PM_BatteryAlarmThreshold',
+	//     name: '设备电池报警阈值',
+	//     type: 'text',
+	//     value: ''
+	// },
+	// {
+	//     id: 9,
+	//     key: 'PM_ModemAlarmThreshold',
+	//     name: '通信电池报警阈值',
+	//     type: 'text',
+	//     value: ''
+	// },
+	// {
+	//     id: 10,
+	//     key: 'PM_Enable',
+	//     name: '是否可用',
+	//     type: 'radio',
+	//     value: '',
+	//     option: [
+	//         {
+	//             name: '是',
+	//             value: 1
+	//         },
+	//         {
+	//             name: '否',
+	//             value: 0
+	//         }
+	//     ]
+	// },
+	// {
+	//     id: 11,
+	//     key: 'PM_DeviceAlarmNumber',
+	//     name: '压力计手机号码',
+	//     type: 'text',
+	//     value: ''
 	// },
 	{
 		id: 12,
@@ -143,9 +143,13 @@ const pressuremeterLabelData = [
 	}
 ]
 class PMList extends React.Component {
-    constructor(props) {
+	constructor(props) {
 		super(props);
-        this.PMColumns = [{
+
+		this.permissionFM = util.getSessionStorate('permission').PressureMeterManage;
+		// this.permissionFM = false;
+
+		this.PMColumns = [{
 			title: '压力计编码',
 			dataIndex: 'pressuremeter.PM_Code',
 			width: '15%',
@@ -154,7 +158,7 @@ class PMList extends React.Component {
 			title: '描述',
 			dataIndex: 'pressuremeter.PM_Description',
 			width: '20%',
-			render: (text, record) => this.renderColumns(text, record, 'pressuremeter.PM_Description')			
+			render: (text, record) => this.renderColumns(text, record, 'pressuremeter.PM_Description')
 		}, {
 			title: '区域',
 			dataIndex: 'area.Ara_Name',
@@ -162,57 +166,60 @@ class PMList extends React.Component {
 		}, {
 			title: '更新',
 			dataIndex: 'status.PMS_UpdateDt',
-            width: '15%',
+			width: '15%',
 			render: (text, record) => util.dateFormat(text, 7)
-		}, {
-			title: '操作',
-			dataIndex: 'operation',
-			render: (text, record) => {
-				const { editable } = record;
-				return (
-					<div className="editable-row-operations">
-						{
-							editable ?
-								<span>
-									<a onClick={() => this.save(record.pressuremeter.PM_UId)}>保存</a>
-									<Popconfirm title="Sure to cancel?" onConfirm={() => this.cancel(record.pressuremeter.PM_UId)}>
-										<a>取消</a>
-									</Popconfirm>
-								</span>
-								:
-								<span>
-									{/* <a onClick={() => this.edit(record.pressuremeter.PM_UId)}>编辑</a> */}
-									{/* 这里将表格中的单元格编辑改为可以修改设备所有信息 */}
-									<a onClick={() => this.allEdit(record.pressuremeter.PM_UId)}>修改</a>
-									<Popconfirm title="Sure to delete?" onConfirm={() => this.delete(record.pressuremeter.PM_UId)}>
-										<a>删除</a>
-									</Popconfirm>
-								</span>
-						}
-					</div>
-				);
-			},
-		}];
+		},];
+		if (this.permissionFM) {
+			this.PMColumns.push({
+				title: '操作',
+				dataIndex: 'operation',
+				render: (text, record) => {
+					const { editable } = record;
+					return (
+						<div className="editable-row-operations">
+							{
+								editable ?
+									<span>
+										<a onClick={() => this.save(record.pressuremeter.PM_UId)}>保存</a>
+										<Popconfirm title="Sure to cancel?" onConfirm={() => this.cancel(record.pressuremeter.PM_UId)}>
+											<a>取消</a>
+										</Popconfirm>
+									</span>
+									:
+									<span>
+										{/* <a onClick={() => this.edit(record.pressuremeter.PM_UId)}>编辑</a> */}
+										{/* 这里将表格中的单元格编辑改为可以修改设备所有信息 */}
+										<a onClick={() => this.allEdit(record.pressuremeter.PM_UId)}>修改</a>
+										<Popconfirm title="Sure to delete?" onConfirm={() => this.delete(record.pressuremeter.PM_UId)}>
+											<a>删除</a>
+										</Popconfirm>
+									</span>
+							}
+						</div>
+					);
+				},
+			});
+		}
 		this.cacheData = this.props.cacheData;
-    }
-    
+	}
+
 	state = {
-        data: this.props.tableData,
+		data: this.props.tableData,
 		pagination: {},
 		loading: false,
 		visible: false,
 		finishAdd: false,
 		editModalVisible: false,
 		finishEdit: false,
-    }
-    componentWillReceiveProps(nextProps) {
-        let {tableData, loading, pagination, cacheData} = nextProps;
-        this.cacheData = cacheData;
-        this.setState({
-            data: tableData,
-            loading,
-            pagination,
-        });
+	}
+	componentWillReceiveProps(nextProps) {
+		let { tableData, loading, pagination, cacheData } = nextProps;
+		this.cacheData = cacheData;
+		this.setState({
+			data: tableData,
+			loading,
+			pagination,
+		});
 	}
 	renderColumns(text, record, column) {
 		return (
@@ -240,34 +247,35 @@ class PMList extends React.Component {
 		}
 	}
 	//可修改设备所有信息
-	allEdit(key){
+	allEdit(key) {
 		const newData = [...this.state.data];
 		const target = newData.filter(item => key === item.pressuremeter.PM_UId)[0];
-		if(target){
+		if (target) {
 			this.editTarget = target.pressuremeter;
 			this.AraId = target.area.Ara_UId;
+			util.setSessionStorate('device_uid', { PM_UId: key });
 			this.setState({
 				editModalVisible: true,
 				finishEdit: false,
 			})
 		}
 	}
-	handleEditModalCancel(){
+	handleEditModalCancel() {
 		this.setState({
 			editModalVisible: false,
-		});	
+		});
 	}
-	onClose(){
+	onClose() {
 		this.setState({
 			finishEdit: true
 		})
 	}
-	handleEdit(newMeter){
+	handleEdit(newMeter) {
 		this.fetch_Post({
 			url: 'http://localhost:2051/PressureMeter/ModifyPressureMeter',
 			data: util.objToStr(newMeter),
 			success: (res) => {
-				if(res){
+				if (res) {
 					message.success('修改成功！');
 					this.setState({
 						editModalVisible: false,
@@ -275,7 +283,7 @@ class PMList extends React.Component {
 					})
 					//重新加载
 					this.props.onAddDevice();
-				} else{
+				} else {
 					message.error('修改失败，请重试！');
 				}
 			}
@@ -293,16 +301,16 @@ class PMList extends React.Component {
 				&PM_Id=${target.pressuremeter.PM_Id}`,
 				success: (res) => {
 					console.log(res);
-					if(res) message.success('修改成功！');
+					if (res) message.success('修改成功！');
 					else message.error('修改失败，请重试！');
 				}
 			})
 			this.setState({ data: newData });
-			this.cacheData = JSON.parse(JSON.stringify(newData));			
+			this.cacheData = JSON.parse(JSON.stringify(newData));
 		}
 	}
 	cancel(key) {
-        const newData = [...this.state.data];
+		const newData = [...this.state.data];
 		const target = newData.filter(item => key === item.pressuremeter.PM_UId)[0];
 		if (target) {
 			Object.assign(target, this.cacheData.filter(item => key === item.pressuremeter.PM_UId)[0]);
@@ -313,31 +321,31 @@ class PMList extends React.Component {
 	delete(key) {
 		const newData = [...this.state.data];
 		const target = newData.filter(item => key === item.pressuremeter.PM_UId)[0];
-		if(target){
+		if (target) {
 			this.fetch_Post({
 				url: 'http://localhost:2051/PressureMeter/DeletePressureMeter',
 				data: util.objToStr(target.pressuremeter),
 				success: (res) => {
-					if(res) message.success('删除成功！');
+					if (res) message.success('删除成功！');
 					else message.error('删除失败，请重试！');
 				}
 			})
-			this.setState({ data: newData.filter(item => item.pressuremeter.PM_UId !== key) });			
+			this.setState({ data: newData.filter(item => item.pressuremeter.PM_UId !== key) });
 		}
 	}
-	showModal(){
+	showModal() {
 		this.setState({
 			visible: true,
 			finishAdd: false
 		});
 	}
 	//添加压力计
-	handleAdd(newPressureData){
+	handleAdd(newPressureData) {
 		this.fetch_Post({
 			url: 'http://localhost:2051/PressureMeter/AddPressureMeter',
 			data: util.objToStr(newPressureData),
 			success: (res) => {
-				if(res){
+				if (res) {
 					message.success('添加成功！');
 					this.setState({
 						visible: false,
@@ -345,7 +353,7 @@ class PMList extends React.Component {
 					})
 					//重新加载
 					this.props.onAddDevice();
-				} else{
+				} else {
 					message.error('添加失败，请重试！');
 					this.setState({
 						visible: false,
@@ -354,7 +362,7 @@ class PMList extends React.Component {
 			}
 		})
 	}
-	handleModalCancel(){
+	handleModalCancel() {
 		this.setState({
 			visible: false,
 		});
@@ -378,50 +386,56 @@ class PMList extends React.Component {
 			console.error(error);
 		});
 	}
-    render() {
-        return (
+	render() {
+		return (
 			<div>
-				<div style={{paddingLeft: '20px', paddingBottom: '10px'}}>
-					<Button type="primary" onClick={this.showModal.bind(this)}>添加压力计</Button>
-				</div>
-				<Modal width="60%"
-					title="添加压力计"
-					visible={this.state.visible}
-					// onOk = {this.handleAdd.bind(this)}
-					confirmLoading = {this.state.finishAdd}
-					onCancel = {this.handleModalCancel.bind(this)}
-					footer = {null}
-				>
-				{this.state.finishAdd ?
-					null
-					:
-					<AddForm labelData={pressuremeterLabelData} onAddSubmit={this.handleAdd.bind(this)} defaultLngLat={this.props.defaultLngLat}/>
-				}
-				</Modal>
+				{this.permissionFM ? (
+					<div style={{ paddingLeft: '20px', paddingBottom: '10px' }}>
+						<Button type="primary" onClick={this.showModal.bind(this)}>添加压力计</Button>
+					</div>
+				) : null}
+				{this.permissionFM ? (
+					<div>
+						<Modal width="60%"
+							title="添加压力计"
+							visible={this.state.visible}
+							// onOk = {this.handleAdd.bind(this)}
+							confirmLoading={this.state.finishAdd}
+							onCancel={this.handleModalCancel.bind(this)}
+							footer={null}
+						>
+							{this.state.finishAdd ?
+								null
+								:
+								<AddForm labelData={pressuremeterLabelData} onAddSubmit={this.handleAdd.bind(this)} defaultLngLat={this.props.defaultLngLat} />
+							}
+						</Modal>
 
-				{this.state.finishEdit ?
-					null
-					:
-					<Modal width="60%"
-					title="修改压力计"
-					visible={this.state.editModalVisible}
-					confirmLoading = {this.state.finishEdit}
-					onCancel = {this.handleEditModalCancel.bind(this)}
-					footer = {null}
-					afterClose={()=> this.onClose()}
-					maskClosable={false}
-					>
-				
-					<EditForm labelData={pressuremeterLabelData} onEditSubmit={this.handleEdit.bind(this)} meterData={this.editTarget} areaid={this.AraId}/>
-					</Modal>
-				}
+						{this.state.finishEdit ?
+							null
+							:
+							<Modal width="60%"
+								title="修改压力计"
+								visible={this.state.editModalVisible}
+								confirmLoading={this.state.finishEdit}
+								onCancel={this.handleEditModalCancel.bind(this)}
+								footer={null}
+								afterClose={() => this.onClose()}
+								maskClosable={false}
+							>
+
+								<EditForm labelData={pressuremeterLabelData} onEditSubmit={this.handleEdit.bind(this)} meterData={this.editTarget} areaid={this.AraId} />
+							</Modal>
+						}
+					</div>
+				) : null}
 				<Table rowKey={data => data.pressuremeter.PM_UId}
-                dataSource={this.state.data}
-                columns={this.PMColumns}
-                loading={this.state.loading}
-            	/>
+					dataSource={this.state.data}
+					columns={this.PMColumns}
+					loading={this.state.loading}
+				/>
 			</div>
-        )
-    }
+		)
+	}
 }
 export default PMList;

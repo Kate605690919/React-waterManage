@@ -4,7 +4,6 @@ import util from '../../../util/util';
 import AddForm from './AddForm';
 import EditForm from './EditForm';
 
-
 const EditableCell = ({ editable, value, onChange }) => (
 	<div>
 		{editable
@@ -13,7 +12,7 @@ const EditableCell = ({ editable, value, onChange }) => (
 		}
 	</div>
 );
-const flowmeterLabelData = [
+const pressuremeterLabelData = [
 	{
 		id: 0,
 		key: 'areaUid',
@@ -23,90 +22,90 @@ const flowmeterLabelData = [
 	},
 	{
 		id: 1,
-		key: "FM_Code",
-		name: '流量计编码',
-		type: 'text',
-		value: ''
-	},
-	{
-		id: 2,
-		key: "FM_AlarmNumber",
-		name: '报警号码',
-		type: 'text',
-		value: ''
-	},
-	{
-		id: 3,
-		key: 'FM_AlarmThreshold',
-		name: '报警阈值',
-		type: 'text',
-		value: ''
-	},
-	{
-		id: 4,
-		key: 'FM_AlarmTimeOut',
-		name: '超时阈值',
-		type: 'text',
-		value: ''
-	},
-	{
-		id: 5,
-		key: 'FM_AlarmMode',
-		name: '报警模式',
-		type: 'radio',
-		value: '',
-		option: [
-			{
-				name: '自动',
-				value: 1
-			},
-			{
-				name: '默认',
-				value: 0
-			}
-		]
-	},
-	{
-		id: 6,
-		key: 'FM_Class',
-		name: '用户类型',
-		type: 'radio',
-		value: '',
-		option: [
-			{
-				name: '手抄流量计',
-				value: 2
-			},
-			{
-				name: '普通',
-				value: 0
-			}
-		]
-	},
-	{
-		id: 7,
-		key: 'FM_Description',
-		name: '流量计描述',
-		type: 'text',
-		value: ''
-	},
-	{
-		id: 8,
-		key: 'FM_BatteryAlarmThreshold',
-		name: '设备电池报警阈值',
-		type: 'text',
-		value: ''
-	},
-	{
-		id: 9,
-		key: 'FM_ModemAlarmThreshold',
-		name: '通信电池报警阈值',
+		key: "PM_Code",
+		name: '压力计编码',
 		type: 'text',
 		value: ''
 	},
 	// {
+	//     id: 2,
+	//     key: "PM_AlarmNumber",
+	//     name: '报警号码',
+	//     type: 'text',
+	//     value: ''
+	// },
+	// {
+	//     id: 3,
+	//     key: 'PM_AlarmThreshold',
+	//     name: '报警阈值',
+	//     type: 'text',
+	//     value: ''
+	// },
+	// {
+	//     id: 4,
+	//     key: 'PM_AlarmTimeOut',
+	//     name: '超时阈值',
+	//     type: 'text',
+	//     value: ''
+	// },
+	// {
+	//     id: 5,
+	//     key: 'PM_AlarmMode',
+	//     name: '报警模式',
+	//     type: 'radio',
+	//     value: '',
+	//     option: [
+	//         {
+	//             name: '自动',
+	//             value: 1
+	//         },
+	//         {
+	//             name: '默认',
+	//             value: 0
+	//         }
+	//     ]
+	// },
+	// {
+	//     id: 6,
+	//     key: 'PM_Class',
+	//     name: '用户类型',
+	//     type: 'radio',
+	//     value: '',
+	//     option: [
+	//         {
+	//             name: '手抄压力计',
+	//             value: 2
+	//         },
+	//         {
+	//             name: '普通',
+	//             value: 0
+	//         }
+	//     ]
+	// },
+	{
+		id: 7,
+		key: 'PM_Description',
+		name: '压力计描述',
+		type: 'text',
+		value: ''
+	},
+	// {
+	//     id: 8,
+	//     key: 'PM_BatteryAlarmThreshold',
+	//     name: '设备电池报警阈值',
+	//     type: 'text',
+	//     value: ''
+	// },
+	// {
+	//     id: 9,
+	//     key: 'PM_ModemAlarmThreshold',
+	//     name: '通信电池报警阈值',
+	//     type: 'text',
+	//     value: ''
+	// },
+	// {
 	//     id: 10,
-	//     key: 'FM_Enable',
+	//     key: 'PM_Enable',
 	//     name: '是否可用',
 	//     type: 'radio',
 	//     value: '',
@@ -121,64 +120,57 @@ const flowmeterLabelData = [
 	//         }
 	//     ]
 	// },
-	{
-		id: 11,
-		key: 'FM_DeviceAlarmNumber',
-		name: '流量计手机号码',
-		type: 'text',
-		value: ''
-	},
+	// {
+	//     id: 11,
+	//     key: 'PM_DeviceAlarmNumber',
+	//     name: '压力计手机号码',
+	//     type: 'text',
+	//     value: ''
+	// },
 	{
 		id: 12,
-		key: 'FM_Lng',
+		key: 'PM_Lng',
 		name: '经度',
 		type: 'map',
 		value: ''
 	},
 	{
 		id: 13,
-		key: 'FM_Lat',
+		key: 'PM_Lat',
 		name: '纬度',
 		type: 'map',
 		value: ''
 	}
 ]
-
-class FMList extends React.Component {
+class AreaList extends React.Component {
 	constructor(props) {
 		super(props);
 
-		this.permissionFM = util.getSessionStorate('permission').FlowMeterManage;
-		// this.permissionFM = true;
+		this.permissionFM = util.getSessionStorate('permission').PressureMeterManage;
+		// this.permissionFM = false;
 
-		this.FMColumns = [{
-			title: '流量计编码',
-			dataIndex: 'flowmeter.FM_Code',
+		this.PMColumns = [{
+			title: '压力计编码',
+			dataIndex: 'pressuremeter.PM_Code',
 			width: '15%',
-			render: (text, record) => <a href={`#/device/flowmeter/detail/uid=${record.flowmeter.FM_UId}`}>{text}</a>,
+			render: (text, record) => <a href={`#/device/pressuremeter/detail/pmUid=${record.pressuremeter.PM_UId}`}>{text}</a>,
 		}, {
 			title: '描述',
-			dataIndex: 'flowmeter.FM_Description',
+			dataIndex: 'pressuremeter.PM_Description',
 			width: '20%',
-			render: (text, record) => this.renderColumns(text, record, 'flowmeter.FM_Description')
+			render: (text, record) => this.renderColumns(text, record, 'pressuremeter.PM_Description')
 		}, {
 			title: '区域',
 			dataIndex: 'area.Ara_Name',
-			width: '20%',
+			width: '20%'
 		}, {
 			title: '更新',
-			dataIndex: 'flowmeter.FM_FlowCountLast',
+			dataIndex: 'status.PMS_UpdateDt',
 			width: '15%',
-			render: (text, record) => {
-				let result = null;
-				if (text) {
-					result = util.dateFormat(text, 7);
-				}
-				return result;
-			}
+			render: (text, record) => util.dateFormat(text, 7)
 		},];
 		if (this.permissionFM) {
-			this.FMColumns.push({
+			this.PMColumns.push({
 				title: '操作',
 				dataIndex: 'operation',
 				render: (text, record) => {
@@ -188,43 +180,44 @@ class FMList extends React.Component {
 							{
 								editable ?
 									<span>
-										<a onClick={() => this.save(record.flowmeter.FM_UId)}>保存</a>
-										<Popconfirm title="Sure to cancel?" onConfirm={() => this.cancel(record.flowmeter.FM_UId)}>
+										<a onClick={() => this.save(record.pressuremeter.PM_UId)}>保存</a>
+										<Popconfirm title="Sure to cancel?" onConfirm={() => this.cancel(record.pressuremeter.PM_UId)}>
 											<a>取消</a>
 										</Popconfirm>
 									</span>
 									:
 									<span>
-										{/* <a onClick={() => this.edit(record.flowmeter.FM_UId)}>编辑</a> */}
+										{/* <a onClick={() => this.edit(record.pressuremeter.PM_UId)}>编辑</a> */}
 										{/* 这里将表格中的单元格编辑改为可以修改设备所有信息 */}
-										<a onClick={() => this.allEdit(record.flowmeter.FM_UId)}>修改</a>
-										<Popconfirm title="Sure to delete?" onConfirm={() => this.delete(record.flowmeter.FM_UId)}>
+										<a onClick={() => this.allEdit(record.pressuremeter.PM_UId)}>修改</a>
+										<Popconfirm title="Sure to delete?" onConfirm={() => this.delete(record.pressuremeter.PM_UId)}>
 											<a>删除</a>
 										</Popconfirm>
 									</span>
 							}
 						</div>
 					);
-				}
+				},
 			});
 		}
 		this.cacheData = this.props.cacheData;
 	}
 
 	state = {
-		data: this.props.tableData,
+		data: [this.props.tableData],
 		pagination: {},
 		loading: false,
-		visible: false,       //添加设备模态框是否可见
-		finishAdd: false,     //是否完成添加设备
-		editModalVisible: false,   //修改设备模态框是否可见
-		finishEdit: false,         //是否完成或取消修改
+		visible: false,
+		finishAdd: false,
+		editModalVisible: false,
+		finishEdit: false,
 	}
 	componentWillReceiveProps(nextProps) {
+		debugger;
 		let { tableData, loading, pagination, cacheData } = nextProps;
 		this.cacheData = cacheData;
 		this.setState({
-			data: tableData,
+			data: [tableData],
 			loading,
 			pagination,
 		});
@@ -234,15 +227,13 @@ class FMList extends React.Component {
 			<EditableCell
 				editable={record.editable}
 				value={text}
-				onChange={value => this.handleChange(value, record.flowmeter.FM_UId, column)}
+				onChange={value => this.handleChange(value, record.pressuremeter.PM_UId, column)}
 			/>
 		);
 	}
-
-	//编辑单元格
 	handleChange(value, key, column) {
 		const newData = [...this.state.data];
-		const target = newData.filter(item => key === item.flowmeter.FM_UId)[0];
+		const target = newData.filter(item => key === item.pressuremeter.PM_UId)[0];
 		if (target) {
 			eval(`target.${column}=value`);
 			this.setState({ data: newData });
@@ -250,24 +241,23 @@ class FMList extends React.Component {
 	}
 	edit(key) {
 		const newData = [...this.state.data];
-		const target = newData.filter(item => key === item.flowmeter.FM_UId)[0];
+		const target = newData.filter(item => key === item.pressuremeter.PM_UId)[0];
 		if (target) {
 			target.editable = true;
 			this.setState({ data: newData });
 		}
 	}
-
 	//可修改设备所有信息
 	allEdit(key) {
 		const newData = [...this.state.data];
-		const target = newData.filter(item => key === item.flowmeter.FM_UId)[0];
+		const target = newData.filter(item => key === item.pressuremeter.PM_UId)[0];
 		if (target) {
-			this.editTarget = target.flowmeter;
+			this.editTarget = target.pressuremeter;
 			this.AraId = target.area.Ara_UId;
-			util.setSessionStorate('device_uid', { FM_UId: key });
+			util.setSessionStorate('device_uid', { PM_UId: key });
 			this.setState({
 				editModalVisible: true,
-				finishEdit: false
+				finishEdit: false,
 			})
 		}
 	}
@@ -276,16 +266,15 @@ class FMList extends React.Component {
 			editModalVisible: false,
 		});
 	}
-	//模态框完全关闭后回调函数
 	onClose() {
 		this.setState({
 			finishEdit: true
-		});
+		})
 	}
-	handleEdit(newFlowData) {
+	handleEdit(newMeter) {
 		this.fetch_Post({
-			url: 'http://localhost:2051/FlowMeter/ModifyFlowMeter',
-			data: util.objToStr(newFlowData),
+			url: 'http://localhost:2051/PressureMeter/ModifyPressureMeter',
+			data: util.objToStr(newMeter),
 			success: (res) => {
 				if (res) {
 					message.success('修改成功！');
@@ -301,17 +290,16 @@ class FMList extends React.Component {
 			}
 		})
 	}
-
 	save(key) {
 		const newData = [...this.state.data];
-		const target = newData.filter(item => key === item.flowmeter.FM_UId)[0];
+		const target = newData.filter(item => key === item.pressuremeter.PM_UId)[0];
 		if (target) {
 			delete target.editable;
+			console.log(target);
 			this.fetch_Post({
-				url: 'http://localhost:2051/FlowMeter/ModifyFlowMeter',
-				// data: `FM_Code=${target.flowmeter.FM_Code}&FM_Description=${target.flowmeter.FM_Description}
-				// &FM_UId=${target.flowmeter.FM_UId}&FM_Id=${target.flowmeter.FM_Id}`,
-				data: util.objToStr(target.flowmeter),
+				url: 'http://localhost:2051/PressureMeter/ModifyPressureMeter',
+				data: `PM_Code=${target.pressuremeter.PM_Code}&PM_Description=${target.pressuremeter.PM_Description}
+				&PM_Id=${target.pressuremeter.PM_Id}`,
 				success: (res) => {
 					console.log(res);
 					if (res) message.success('修改成功！');
@@ -324,43 +312,39 @@ class FMList extends React.Component {
 	}
 	cancel(key) {
 		const newData = [...this.state.data];
-		const target = newData.filter(item => key === item.flowmeter.FM_UId)[0];
+		const target = newData.filter(item => key === item.pressuremeter.PM_UId)[0];
 		if (target) {
-			Object.assign(target, this.cacheData.filter(item => key === item.flowmeter.FM_UId)[0]);
+			Object.assign(target, this.cacheData.filter(item => key === item.pressuremeter.PM_UId)[0]);
 			delete target.editable;
 			this.setState({ data: newData });
 		}
 	}
-
 	delete(key) {
 		const newData = [...this.state.data];
-		const target = newData.filter(item => key === item.flowmeter.FM_UId)[0];
+		const target = newData.filter(item => key === item.pressuremeter.PM_UId)[0];
 		if (target) {
 			this.fetch_Post({
-				url: 'http://localhost:2051/FlowMeter/DeleteFlowMeter',
-				// data: `&FM_UId=${target.flowmeter.FM_UId}&FM_Id=${target.flowmeter.FM_Id}`,
-				data: util.objToStr(target.flowmeter),
+				url: 'http://localhost:2051/PressureMeter/DeletePressureMeter',
+				data: util.objToStr(target.pressuremeter),
 				success: (res) => {
-					console.log(res);
 					if (res) message.success('删除成功！');
 					else message.error('删除失败，请重试！');
 				}
-			});
-			this.setState({ data: newData.filter(item => item.flowmeter.FM_UId !== key) });
+			})
+			this.setState({ data: newData.filter(item => item.pressuremeter.PM_UId !== key) });
 		}
 	}
-
 	showModal() {
 		this.setState({
 			visible: true,
 			finishAdd: false
 		});
 	}
-	//添加流量计
-	handleAdd(newFlowData) {
+	//添加压力计
+	handleAdd(newPressureData) {
 		this.fetch_Post({
-			url: 'http://localhost:2051/FlowMeter/AddFlowMeter',
-			data: util.objToStr(newFlowData),
+			url: 'http://localhost:2051/PressureMeter/AddPressureMeter',
+			data: util.objToStr(newPressureData),
 			success: (res) => {
 				if (res) {
 					message.success('添加成功！');
@@ -384,8 +368,7 @@ class FMList extends React.Component {
 			visible: false,
 		});
 	}
-
-	//post方法封装
+	// post方法封装
 	fetch_Post({ url, data, success }) {
 		fetch(url, {
 			method: 'POST',
@@ -409,14 +392,15 @@ class FMList extends React.Component {
 			<div>
 				{this.permissionFM ? (
 					<div style={{ paddingLeft: '20px', paddingBottom: '10px' }}>
-						<Button type="primary" onClick={this.showModal.bind(this)}>添加流量计</Button>
+						<Button type="primary" onClick={this.showModal.bind(this)}>添加压力计</Button>
 					</div>
 				) : null}
 				{this.permissionFM ? (
 					<div>
 						<Modal width="60%"
-							title="添加流量计"
+							title="添加压力计"
 							visible={this.state.visible}
+							// onOk = {this.handleAdd.bind(this)}
 							confirmLoading={this.state.finishAdd}
 							onCancel={this.handleModalCancel.bind(this)}
 							footer={null}
@@ -424,36 +408,35 @@ class FMList extends React.Component {
 							{this.state.finishAdd ?
 								null
 								:
-								<AddForm labelData={flowmeterLabelData} onAddSubmit={this.handleAdd.bind(this)} defaultLngLat={this.props.defaultLngLat} />
+								<AddForm labelData={pressuremeterLabelData} onAddSubmit={this.handleAdd.bind(this)} defaultLngLat={this.props.defaultLngLat} />
 							}
 						</Modal>
 
-						{
-							this.state.finishEdit ?
-								null
-								:
-								<Modal width="60%"
-									title="修改流量计"
-									visible={this.state.editModalVisible}
-									confirmLoading={this.state.finishEdit}
-									onCancel={this.handleEditModalCancel.bind(this)}
-									footer={null}
-									afterClose={() => this.onClose()}
-									maskClosable={false}
-								>
-									<EditForm labelData={flowmeterLabelData} onEditSubmit={this.handleEdit.bind(this)} meterData={this.editTarget} areaid={this.AraId} />
-								</Modal>
+						{this.state.finishEdit ?
+							null
+							:
+							<Modal width="60%"
+								title="修改压力计"
+								visible={this.state.editModalVisible}
+								confirmLoading={this.state.finishEdit}
+								onCancel={this.handleEditModalCancel.bind(this)}
+								footer={null}
+								afterClose={() => this.onClose()}
+								maskClosable={false}
+							>
+
+								<EditForm labelData={pressuremeterLabelData} onEditSubmit={this.handleEdit.bind(this)} meterData={this.editTarget} areaid={this.AraId} />
+							</Modal>
 						}
 					</div>
 				) : null}
-
-				<Table rowKey={data => data.flowmeter.FM_UId}
+				<Table rowKey={data => data.pressuremeter.PM_UId}
 					dataSource={this.state.data}
-					columns={this.FMColumns}
+					columns={this.PMColumns}
 					loading={this.state.loading}
 				/>
 			</div>
 		)
 	}
 }
-export default FMList;
+export default AreaList;

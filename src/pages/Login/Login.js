@@ -38,8 +38,8 @@ class NormalLoginForm extends React.Component {
               util.setSessionStorate('username',headers.get('username'));
               util.setSessionStorate('useruid', headers.get('useruid'));
               util.setSessionStorate('token', headers.get('access_token'));
-
-              window.location.hash = '#/device'
+              util.setSessionStorate('permission', res);
+              window.location.hash = '#/device';
             }
           } 
         })

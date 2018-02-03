@@ -20,7 +20,7 @@ const renderTreeNodes = (data) => {
 };
 const EditableCell = ({ editable, value, onChange, column }) => {
     if (editable) {
-            return <Input style={{ margin: '-5px 0' }} value={value} onChange={e => onChange(e.target.value)} />
+        return <Input style={{ margin: '-5px 0' }} value={value} onChange={e => onChange(e.target.value)} />
     } else {
         return (<div>{value}</div>);
     }
@@ -50,7 +50,7 @@ const CollectionCreateForm = Form.create()(
                             rules: [{ required: true, message: '请输入描述名!' }],
                         })(
                             <Input />
-                        )}
+                            )}
                     </FormItem>
                 </Form>
             </Modal>
@@ -60,6 +60,9 @@ const CollectionCreateForm = Form.create()(
 class Role extends React.Component {
     constructor(props) {
         super(props);
+        this.permissionFM = util.getSessionStorate('permission').RoleManage;
+        // this.permissionFM = false;
+
         this.columns = [{
             title: '职位名',
             dataIndex: 'Ir_Name',
@@ -70,32 +73,34 @@ class Role extends React.Component {
             dataIndex: 'Ir_Description',
             width: '40%',
             render: (text, record) => this.renderColumns(text, record, 'Ir_Description'),
-        }, {
-            title: '操作',
-            dataIndex: 'operation',
-            render: (text, record) => {
-                const { editable } = record;
-                return (
-                    <div className="editable-row-operations">
-                        {
-                            editable ?
-                                <span>
-                                    <a onClick={() => this.save(record.Ir_UId)}>保存</a>
-                                    <Popconfirm title="Sure to cancel?" onConfirm={() => this.cancel(record.Ir_UId)}>
-                                        <a>取消</a>
-                                    </Popconfirm>
-                                </span>
-                                :
-                                <span>
-                                    <a onClick={() => this.edit(record.Ir_UId)}>编辑</a>
-                                    <a onClick={() => this.delete(record.Ir_Id)}>删除</a>
-                                </span>
-                        }
-                    </div>
-                );
-            },
-        }];
-
+        },];
+        if (this.permissionFM) {
+            this.columns.push({
+                title: '操作',
+                dataIndex: 'operation',
+                render: (text, record) => {
+                    const { editable } = record;
+                    return (
+                        <div className="editable-row-operations">
+                            {
+                                editable ?
+                                    <span>
+                                        <a onClick={() => this.save(record.Ir_UId)}>保存</a>
+                                        <Popconfirm title="Sure to cancel?" onConfirm={() => this.cancel(record.Ir_UId)}>
+                                            <a>取消</a>
+                                        </Popconfirm>
+                                    </span>
+                                    :
+                                    <span>
+                                        <a onClick={() => this.edit(record.Ir_UId)}>编辑</a>
+                                        <a onClick={() => this.delete(record.Ir_Id)}>删除</a>
+                                    </span>
+                            }
+                        </div>
+                    );
+                },
+            })
+        }
         this.cacheData = this.props.cacheData;
         this.save = this.save.bind(this);
 
@@ -248,15 +253,19 @@ class Role extends React.Component {
     }
     render() {
         return (
-            <Col className="Role" xs={24} style={{'padding': '20px'}}>
+            <Col className="Role" xs={24} style={{ 'padding': '20px' }}>
                 <Card>
-                    <Button type="primary" onClick={this.showModal}>添加职位</Button>
-                    <CollectionCreateForm
-                        ref={this.saveFormRef}
-                        visible={this.state.visible}
-                        onCancel={this.handleCancel}
-                        onCreate={this.handleCreate}
-                    />
+                    {this.permissionFM ? (
+                        <div>
+                            <Button type="primary" onClick={this.showModal}>添加职位</Button>
+                            <CollectionCreateForm
+                                ref={this.saveFormRef}
+                                visible={this.state.visible}
+                                onCancel={this.handleCancel}
+                                onCreate={this.handleCreate}
+                            />
+                        </div>
+                    ) : null}
                     <Table rowKey={data => data.Ir_UId}
                         dataSource={this.state.data}
                         columns={this.columns}

@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router';
 import './HeaderTop.less';
 import { Button, Icon, Menu } from 'antd';
+import util from '../../util/util';
 // const SubMenu = Menu.SubMenu;
 // const menu = (
 //     <Menu>
@@ -18,6 +19,9 @@ class HeaderTop extends React.Component {
     constructor(props) {
         super(props);
         this._roleName = 'hkAdmin';
+        this.permission = util.getSessionStorate('permission');
+        // this.permission.RoleView = false;
+
     }
     state = {
         collapsed: true,
@@ -47,17 +51,19 @@ class HeaderTop extends React.Component {
                         <li key="2">
                             <Link to="/device" activeClassName="active">设备人员管理</Link>
                         </li>
-                        <li key="3">
-                            <Link to="/role" activeClassName="active">权限管理</Link>
-                        </li>
+                        {this.permission.RoleView ? (
+                            <li key="3">
+                                <Link to="/role" activeClassName="active">权限管理</Link>
+                            </li>
+                        ) : null}
                         <li key="4">
                             <Link to="/feedback" activeClassName="active">反馈</Link>
                         </li>
                     </ul>
                     <ul className="nav-info-menu">
-                        <li><a href="####"><span className="userLogined"> {this._roleName}</span></a></li>
-                        <li><a href="/Home/login"><Icon type="logout" /></a></li>
+                        <li><span> {this._roleName}</span></li>
                         <li><Link to="/Home/passupdate">修改密码</Link></li>
+                        <li><Link to="/"><Icon type="logout" /></Link></li>
                     </ul>
                 </div>
                 <div className="navbar-collapse">
@@ -76,10 +82,13 @@ class HeaderTop extends React.Component {
                             <Icon type="desktop" />
                             <span><Link to="/device" activeClassName="active">设备人员管理</Link></span>
                         </Menu.Item>
-                        <Menu.Item key="3">
-                            <Icon type="desktop" />
-                            <span><Link to="/role" activeClassName="active">权限管理</Link></span>
-                        </Menu.Item>
+                        {this.permission.RoleView ? (
+                            <Menu.Item key="3">
+                                <Icon type="desktop" />
+                                <span><Link to="/role" activeClassName="active">权限管理</Link></span>
+                            </Menu.Item>
+                        ) : null}
+
                         <Menu.Item key="4">
                             <Icon type="desktop" />
                             <span><Link to="/feedback" activeClassName="active">反馈</Link></span>
