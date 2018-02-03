@@ -149,7 +149,7 @@ class PMList extends React.Component {
 			title: '压力计编码',
 			dataIndex: 'pressuremeter.PM_Code',
 			width: '15%',
-			render: (text, record) => <a href={`#/pressuremeter/detail/pmUid=${record.pressuremeter.PM_UId}`}>{text}</a>,
+			render: (text, record) => <a href={`#/device/pressuremeter/detail/pmUid=${record.pressuremeter.PM_UId}`}>{text}</a>,
 		}, {
 			title: '描述',
 			dataIndex: 'pressuremeter.PM_Description',

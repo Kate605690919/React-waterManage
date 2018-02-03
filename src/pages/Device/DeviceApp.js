@@ -19,20 +19,25 @@ class DeviceApp extends React.Component {
 		// 函数的this绑定
 		this.onRadioChange = this.onRadioChange.bind(this);
 		// 获取区域树数据
-		this.fetch({
-			url: `http://localhost:2051/area/AreaTree`,
+		util.fetch({
+			url: `http://localhost:64915/area/AreaTree`,
 			success: (res) => {
+				let areaUid = util.getLocalStorate('areaUid');
+				if (!areaUid) {
+					util.setLocalStorate('areaUid', res.id);
+					areaUid = res.id;
+				}
 				res = [res];
-				util.setSessionStorate('areatree',res);
-				this.getTableData(res[0].id);//加载table的数据
-				this.setState({ treeData: res, currentTreeKey: res[0].id });
+				util.setLocalStorate('areatree', res);
+				this.getTableData(areaUid);//加载table的数据
+				this.setState({ treeData: res, currentTreeKey: areaUid });
 			}
 		});
 	}
 
 	state = {
 		treeData: [],
-		currentTreeKey: null,
+		currentTreeKey: util.getLocalStorate('areaUid'),
 		data: [],
 		pagination: {},
 		loading: false,
@@ -68,17 +73,16 @@ class DeviceApp extends React.Component {
 				return false;
 			}
 		}
-		this.fetch_Post({
+		util.fetch_Post({
 			url: url,
 			data: `areaUid=${areaUid}`,
 			success: (res) => {
-				this.setState({ loading: true });
-				if(radioValue === 'FM' || radioValue === 'PM' || radioValue === 'QM'){
-					res = JSON.parse(JSON.parse(res).data);
-					this.cacheData = JSON.parse(JSON.stringify(res));
-				} else {
-					this.cacheData = JSON.parse(JSON.stringify(res));
+				if (radioValue === 'FM' || radioValue === 'PM' || radioValue === 'QM') {
+					res = JSON.parse(res);
+					console.log(res);
 				}
+				// this.cacheData = res.map(item => ({ ...item }));
+				this.cacheData = JSON.parse(JSON.stringify(res));
 				const pagination = { ...this.state.pagination };
 				// Read total count from server
 				// pagination.total = data.totalCount;
@@ -147,7 +151,11 @@ class DeviceApp extends React.Component {
 		})
 		util.setSessionStorate('lng', null);
 		util.setSessionStorate('lat', null);
-		this.getTableData(selectedKeys, this.state.radioValue);
+		// this.getTableData(selectedKeys, this.state.radioValue);
+		if (selectedKeys.length !== 0) {
+			this.getTableData(selectedKeys, this.state.radioValue);
+			util.setLocalStorate('areaUid', selectedKeys[0])
+		}
 	}
 	//toolbar的单选按钮组
 	onRadioChange(e) {
@@ -216,9 +224,9 @@ class DeviceApp extends React.Component {
 		} else if (this.state.radioValue === 'QM'){
 			Device = <QMList tableData={this.state.data} cacheData={this.cacheData} loading={this.state.loading} pagination={this.state.pagination} onAddDevice={this.getNewTableData.bind(this)} defaultLngLat={defaultLngLat}/>
 		} else if (this.state.radioValue === 'Client') {
-			Device = <ClientList tableData={this.state.data} cacheData={this.cacheData} loading={this.state.loading} pagination={this.state.pagination} />
+			Device = <ClientList tableData={this.state.data} cacheData={this.cacheData} loading={this.state.loading} pagination={this.state.pagination} renderTable={(areaUid) => this.getTableData(areaUid, 'Client')} />
 		} else if (this.state.radioValue === 'Staff') {
-			Device = <StaffList tableData={this.state.data} cacheData={this.cacheData} loading={this.state.loading} pagination={this.state.pagination} />
+			Device = <StaffList tableData={this.state.data} cacheData={this.cacheData} loading={this.state.loading} pagination={this.state.pagination} renderTable={(areaUid) => this.getTableData(areaUid, 'Staff')}  />
 		}
 		return (
 			<div className="content deviceApp">

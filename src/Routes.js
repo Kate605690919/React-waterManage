@@ -1,22 +1,31 @@
 import React from 'react';
 import { Router, Route, hashHistory, IndexRoute } from 'react-router';
 import App from './App.js';
+import Login from './pages/Login';
 import { DeviceApp, DeviceFMDetail, DevicePMDetail } from './pages/Device';
-// import { ClientApp, ClientList, ClientAdd, ClientDetail, ClientBase, ClientFM } from './pages/Client';
-// import { StaffApp, StaffList, StaffAdd, StaffDetail, StaffBase } from './pages/Staff';
+import Role from './pages/Role';
+import Home from './pages/Home';
 import { FeedBackApp } from './pages/FeedBack';
 import PasswordUpdateApp from './pages/PasswordUpdateApp';
 const Routes = () => (
     <Router history={hashHistory}>
-        <Route path="/" component={App} breadcrumbName="首页">
-            <IndexRoute component={DeviceApp}></IndexRoute>
-            <Route path="/flowmeter/detail/:uid" component={DeviceFMDetail} breadcrumbName="流量计详情"></Route>
-            <Route path="/pressuremeter/detail/:uid" component={DevicePMDetail } breadcrumbName="压力计详情"></Route>
-            {/* <Route path="devices" component={DeviceApp}>
+        <Route path='/' component={Login} />
+        <Route path="/device" component={App} breadcrumbName="设备人员管理">
+            <IndexRoute component={DeviceApp} />
+            <Route path="flowmeter/detail/:uid" component={DeviceFMDetail} breadcrumbName="流量计详情"></Route>
+            <Route path="pressuremeter/detail/:uid" component={DevicePMDetail} breadcrumbName="压力计详情"></Route>
+        </Route>
+        <Route path="/" component={App}>
+            <Route path="/feedback" component={FeedBackApp}></Route>
+            <Route path="/role" component={Role}></Route>
+            <Route path="/home" component={Home}></Route>
+            <Route path="/Home/passupdate" component={PasswordUpdateApp} breadcrumbName="修改密码"></Route>
+        </Route>
+        {/* <Route path="devices" component={DeviceApp}>
                 <Route path="/flowmeter" component={FMList}></Route>
                 <Route path="/pressuremeter" component={PMList}></Route>
             </Route> */}
-            {/* <IndexRoute component={HomeApp}></IndexRoute>
+        {/* <IndexRoute component={HomeApp}></IndexRoute>
             <Route path="devices" component={DeviceApp}>
                 <Route path="/flowmeter/detail/:uid" component={DeviceFMDetail}></Route>
                 <Route path="/pressuremeter/detail/:uid" component={DeviceFMDetail }></Route>
@@ -34,9 +43,6 @@ const Routes = () => (
                 <Route path="detail/:uid" component={StaffDetail} />
                 <Route path="editbase/:uid" component={StaffBase} />
             </Route> */}
-            <Route path="feedback" component={FeedBackApp}></Route>
-            <Route path="/Home/passupdate" component={PasswordUpdateApp} breadcrumbName="修改密码"></Route>
-        </Route>
     </Router>
 );
 

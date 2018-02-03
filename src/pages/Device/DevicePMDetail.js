@@ -1,5 +1,5 @@
 import React from 'react';
-import ECharts from 'react-echarts';
+// import ECharts from 'react-echarts';
 import { Breadcrumb, Card, Tabs, Table, Row, Col, DatePicker, Icon } from 'antd';
 import moment from 'moment';
 import { columnsStatus, columnsAnalysis, columnsNight, columnsFlow } from './components/PMTableOptions';
@@ -180,14 +180,14 @@ class DevicePMDetail extends React.Component {
                                         pagination={{ pageSize: 8 }} />
                                 </Col>
                                 <Col className="gutter-row" md={12} span={24} >
-                                    <ECharts option={this.state.detailEchartLinesOption} style={{ minHeight: '500px' }} />
+                                    {/* <ECharts option={this.state.detailEchartLinesOption} style={{ minHeight: '500px' }} /> */}
                                 </Col>
                             </Row>
 
                         </TabPane>
                         <TabPane tab="热力图分析" key="2">
                             {this.state.heatLoading ? <Icon type="loading" /> : null}
-                            <ECharts option={this.state.detailHeatOption} style={{ minHeight: '500px' }} />
+                            {/* <ECharts option={this.state.detailHeatOption} style={{ minHeight: '500px' }} /> */}
                         </TabPane>
                     </Tabs>
                 </Card>

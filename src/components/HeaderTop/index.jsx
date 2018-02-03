@@ -1,18 +1,18 @@
 import React from 'react';
 import { Link } from 'react-router';
 import './HeaderTop.less';
-import { Button, Icon, Menu, Dropdown } from 'antd';
-const SubMenu = Menu.SubMenu;
-const menu = (
-    <Menu>
-        <Menu.Item key="0">
-            <Link to="/" activeClassName="active">客户管理</Link>
-        </Menu.Item>
-        <Menu.Item key="1">
-            <Link to="/" activeClassName="active">职员管理</Link>
-        </Menu.Item>
-    </Menu>
-);
+import { Button, Icon, Menu } from 'antd';
+// const SubMenu = Menu.SubMenu;
+// const menu = (
+//     <Menu>
+//         <Menu.Item key="0">
+//             <Link to="/" activeClassName="active">客户管理</Link>
+//         </Menu.Item>
+//         <Menu.Item key="1">
+//             <Link to="/" activeClassName="active">职员管理</Link>
+//         </Menu.Item>
+//     </Menu>
+// );
 
 class HeaderTop extends React.Component {
     constructor(props) {
@@ -42,16 +42,15 @@ class HeaderTop extends React.Component {
                 <div className="nav-info">
                     <ul className="nav-menu">
                         <li key="1">
-                            <Link to="/" activeClassName="active">设备</Link>
+                            <Link to="/home" activeClassName="active">首页</Link>
                         </li>
-                        <li>
-                            <Dropdown overlay={menu} trigger={['click']}>
-                                <a className="ant-dropdown-link" href="####">
-                                    管理 <Icon type="down" />
-                                </a>
-                            </Dropdown>
+                        <li key="2">
+                            <Link to="/device" activeClassName="active">设备人员管理</Link>
                         </li>
-                        <li>
+                        <li key="3">
+                            <Link to="/role" activeClassName="active">权限管理</Link>
+                        </li>
+                        <li key="4">
                             <Link to="/feedback" activeClassName="active">反馈</Link>
                         </li>
                     </ul>
@@ -71,16 +70,24 @@ class HeaderTop extends React.Component {
                     >
                         <Menu.Item key="1">
                             <Icon type="pie-chart" />
-                            <span>设备</span>
+                            <span><Link to="/home" activeClassName="active">首页</Link></span>
                         </Menu.Item>
                         <Menu.Item key="2">
                             <Icon type="desktop" />
-                            <span>反馈</span>
+                            <span><Link to="/device" activeClassName="active">设备人员管理</Link></span>
                         </Menu.Item>
-                        <SubMenu key="sub1" title={<span><Icon type="mail" /><span>管理</span></span>}>
+                        <Menu.Item key="3">
+                            <Icon type="desktop" />
+                            <span><Link to="/role" activeClassName="active">权限管理</Link></span>
+                        </Menu.Item>
+                        <Menu.Item key="4">
+                            <Icon type="desktop" />
+                            <span><Link to="/feedback" activeClassName="active">反馈</Link></span>
+                        </Menu.Item>
+                        {/* <SubMenu key="sub1" title={<span><Icon type="mail" /><span>管理</span></span>}>
                             <Menu.Item key="3">客户管理</Menu.Item>
                             <Menu.Item key="4">职员管理</Menu.Item>
-                        </SubMenu>
+                        </SubMenu> */}
                         <Menu.Item key="5" className>
                             <span><a href="####" className="ant-menu-itemSelf"><span className="userLogined"> {this._roleName}</span></a></span>
                             <span><a href="/Home/login" className="ant-menu-itemSelf item-2"><Icon type="logout" /></a></span>
