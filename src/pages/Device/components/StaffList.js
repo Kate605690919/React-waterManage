@@ -203,8 +203,8 @@ class StaffList extends React.Component {
 		util.fetch({
 			url: 'http://localhost:2051/roles/GetAllRoles',
 			success: (res) => {
-				if(!target.allRoles) target.allRoles = [];
-				let keys = target.allRoles.map(item => item.Ir_UId);
+				if(!target.roleWithBindings) target.roleWithBindings = [];
+				let keys = target.roleWithBindings.map(item => item.Ir_UId);
 				that.setState({
 					transferData: res,
 					targetKeys: keys,
@@ -344,7 +344,7 @@ class StaffList extends React.Component {
 					if (target) {
 						util.setLocalStorate('areaUid', target.area.Ara_UId);
 						Object.assign(target, this.cacheData.filter(item => record.Uid === item.Uid)[0]);
-						target.allRoles = res.allRoles;
+						target.roleWithBindings = res.roleWithBindings;
 						this.setState({ data: newData, detailLoading: false });
 					}
 				}
@@ -353,8 +353,8 @@ class StaffList extends React.Component {
 	}
 	// 职位详情
 	renderRolesMeter = (record) => {
-		if (record.allRoles) {
-			let res = record.allRoles.map(item => <p key={item.FM_UId}><span style={{ 'marginRight': '20px' }}>{item.Ir_Name}</span><span>{item.Ir_Description}</span></p>)
+		if (record.roleWithBindings) {
+			let res = record.roleWithBindings.map(item => <p key={item.Ir_UId}><span style={{ 'marginRight': '20px' }}>{item.Ir_Name}</span><span>{item.Ir_Description}</span></p>)
 			return res;
 		} else if (this.state.detailLoading) {
 			return <Icon type="loading" />

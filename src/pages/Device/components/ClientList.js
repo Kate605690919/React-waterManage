@@ -72,7 +72,20 @@ const CollectionCreateForm = Form.create()(
 					</FormItem>
 					<FormItem label="所属区域">
 						{getFieldDecorator('Member_AreaUid', {
-							rules: [{ required: true, message: '请选择区域!' }],
+							rules: [{
+								required: true, message: '请选择区域!'
+							}, {
+								validator: (rule, value, callback) => {
+									util.fetch_Post({
+										url: 'http://localhost:2051/client/CheckClientName',
+										data: `name=${value}`,
+										success: (res) => {
+											if(!res)
+											callback();
+										}
+									})
+								}, message: '该名称已被使用！'
+							}],
 						})(
 							<TreeSelect
 								showSearch
@@ -428,7 +441,7 @@ class ClientList extends React.Component {
 	}
 	handleOk = (e) => {
 		const key = util.getLocalStorate('currentKey')
-		let obj = {uid: key, id: this.state.targetKeys};
+		let obj = { uid: key, id: this.state.targetKeys };
 		const newData = [...this.state.data];
 		const dataFM = util.objToStr(obj);
 		let target = newData.filter(item => key === item.Uid)[0];
@@ -481,7 +494,7 @@ class ClientList extends React.Component {
 					<Transfer
 						dataSource={this.state.transferData}
 						showSearch
-						listStyle={{'width': '45%'}}
+						listStyle={{ 'width': '45%' }}
 						rowKey={record => record.FM_Id}
 						filterOption={this.filterFMOption}
 						notFoundContent={'暂无数据'}
