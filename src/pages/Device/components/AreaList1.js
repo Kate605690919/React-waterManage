@@ -1,21 +1,13 @@
 import React from 'react'
-import { Table, Input, Popconfirm, message, Button, Modal } from 'antd';
+import { Table, Popconfirm, message, Button, Modal } from 'antd';
 import util from '../../../util/util';
 import AddForm from './AddForm';
 import EditForm from './EditForm';
 
-const EditableCell = ({ editable, value, onChange }) => (
-	<div>
-		{editable
-			? <Input style={{ margin: '-5px 0' }} value={value} onChange={e => onChange(e.target.value)} />
-			: value
-		}
-	</div>
-);
 const pressuremeterLabelData = [
 	{
 		id: 0,
-		key: 'areaUid',
+		key: 'ara_UId',
 		name: '区域选择',
 		type: 'cascader',
 		value: ''
@@ -23,65 +15,10 @@ const pressuremeterLabelData = [
 	{
 		id: 1,
 		key: "PM_Code",
-		name: '压力计编码',
+		name: 'Ara.',
 		type: 'text',
 		value: ''
 	},
-	// {
-	//     id: 2,
-	//     key: "PM_AlarmNumber",
-	//     name: '报警号码',
-	//     type: 'text',
-	//     value: ''
-	// },
-	// {
-	//     id: 3,
-	//     key: 'PM_AlarmThreshold',
-	//     name: '报警阈值',
-	//     type: 'text',
-	//     value: ''
-	// },
-	// {
-	//     id: 4,
-	//     key: 'PM_AlarmTimeOut',
-	//     name: '超时阈值',
-	//     type: 'text',
-	//     value: ''
-	// },
-	// {
-	//     id: 5,
-	//     key: 'PM_AlarmMode',
-	//     name: '报警模式',
-	//     type: 'radio',
-	//     value: '',
-	//     option: [
-	//         {
-	//             name: '自动',
-	//             value: 1
-	//         },
-	//         {
-	//             name: '默认',
-	//             value: 0
-	//         }
-	//     ]
-	// },
-	// {
-	//     id: 6,
-	//     key: 'PM_Class',
-	//     name: '用户类型',
-	//     type: 'radio',
-	//     value: '',
-	//     option: [
-	//         {
-	//             name: '手抄压力计',
-	//             value: 2
-	//         },
-	//         {
-	//             name: '普通',
-	//             value: 0
-	//         }
-	//     ]
-	// },
 	{
 		id: 7,
 		key: 'PM_Description',
@@ -89,44 +26,6 @@ const pressuremeterLabelData = [
 		type: 'text',
 		value: ''
 	},
-	// {
-	//     id: 8,
-	//     key: 'PM_BatteryAlarmThreshold',
-	//     name: '设备电池报警阈值',
-	//     type: 'text',
-	//     value: ''
-	// },
-	// {
-	//     id: 9,
-	//     key: 'PM_ModemAlarmThreshold',
-	//     name: '通信电池报警阈值',
-	//     type: 'text',
-	//     value: ''
-	// },
-	// {
-	//     id: 10,
-	//     key: 'PM_Enable',
-	//     name: '是否可用',
-	//     type: 'radio',
-	//     value: '',
-	//     option: [
-	//         {
-	//             name: '是',
-	//             value: 1
-	//         },
-	//         {
-	//             name: '否',
-	//             value: 0
-	//         }
-	//     ]
-	// },
-	// {
-	//     id: 11,
-	//     key: 'PM_DeviceAlarmNumber',
-	//     name: '压力计手机号码',
-	//     type: 'text',
-	//     value: ''
-	// },
 	{
 		id: 12,
 		key: 'PM_Lng',
@@ -142,7 +41,7 @@ const pressuremeterLabelData = [
 		value: ''
 	}
 ]
-class PMList extends React.Component {
+class AreaList extends React.Component {
 	constructor(props) {
 		super(props);
 
@@ -150,24 +49,21 @@ class PMList extends React.Component {
 		// this.permissionFM = false;
 
 		this.PMColumns = [{
-			title: '压力计编码',
-			dataIndex: 'pressuremeter.PM_Code',
-			width: '15%',
-			render: (text, record) => <a href={`#/device/pressuremeter/detail/pmUid=${record.pressuremeter.PM_UId}`}>{text}</a>,
+			title: '区域名称',
+			dataIndex: 'Ara_Name',
+			width: '15%'
 		}, {
 			title: '描述',
-			dataIndex: 'pressuremeter.PM_Description',
-			width: '20%',
-			render: (text, record) => this.renderColumns(text, record, 'pressuremeter.PM_Description')
-		}, {
-			title: '区域',
-			dataIndex: 'area.Ara_Name',
+			dataIndex: 'Ara_Description',
 			width: '20%'
 		}, {
-			title: '更新',
-			dataIndex: 'status.PMS_UpdateDt',
-			width: '15%',
-			render: (text, record) => util.dateFormat(text, 7)
+			title: '经度',
+			dataIndex: 'Ara_Lng',
+			width: '20%'
+		}, {
+			title: '纬度',
+			dataIndex: 'Ara_Lat',
+			width: '15%'
 		},];
 		if (this.permissionFM) {
 			this.PMColumns.push({
@@ -180,8 +76,8 @@ class PMList extends React.Component {
 							{
 								editable ?
 									<span>
-										<a onClick={() => this.save(record.pressuremeter.PM_UId)}>保存</a>
-										<Popconfirm title="Sure to cancel?" onConfirm={() => this.cancel(record.pressuremeter.PM_UId)}>
+										<a onClick={() => this.save(record.Ara_UId)}>保存</a>
+										<Popconfirm title="Sure to cancel?" onConfirm={() => this.cancel(record.Ara_UId)}>
 											<a>取消</a>
 										</Popconfirm>
 									</span>
@@ -189,8 +85,8 @@ class PMList extends React.Component {
 									<span>
 										{/* <a onClick={() => this.edit(record.pressuremeter.PM_UId)}>编辑</a> */}
 										{/* 这里将表格中的单元格编辑改为可以修改设备所有信息 */}
-										<a onClick={() => this.allEdit(record.pressuremeter.PM_UId)}>修改</a>
-										<Popconfirm title="Sure to delete?" onConfirm={() => this.delete(record.pressuremeter.PM_UId)}>
+										<a onClick={() => this.allEdit(record.Ara_UId)}>修改</a>
+										<Popconfirm title="Sure to delete?" onConfirm={() => this.delete(record.Ara_Id)}>
 											<a>删除</a>
 										</Popconfirm>
 									</span>
@@ -204,7 +100,7 @@ class PMList extends React.Component {
 	}
 
 	state = {
-		data: this.props.tableData,
+		data: [this.props.tableData],
 		pagination: {},
 		loading: false,
 		visible: false,
@@ -216,19 +112,10 @@ class PMList extends React.Component {
 		let { tableData, loading, pagination, cacheData } = nextProps;
 		this.cacheData = cacheData;
 		this.setState({
-			data: tableData,
+			data: [tableData],
 			loading,
 			pagination,
 		});
-	}
-	renderColumns(text, record, column) {
-		return (
-			<EditableCell
-				editable={record.editable}
-				value={text}
-				onChange={value => this.handleChange(value, record.pressuremeter.PM_UId, column)}
-			/>
-		);
 	}
 	handleChange(value, key, column) {
 		const newData = [...this.state.data];
@@ -249,11 +136,10 @@ class PMList extends React.Component {
 	//可修改设备所有信息
 	allEdit(key) {
 		const newData = [...this.state.data];
-		const target = newData.filter(item => key === item.pressuremeter.PM_UId)[0];
+		const target = newData[0];
 		if (target) {
-			this.editTarget = target.pressuremeter;
-			this.AraId = target.area.Ara_UId;
-			util.setSessionStorate('device_uid', { PM_UId: key });
+		this.editTarget = target;
+		this.AraId = target.Ara_UId;
 			this.setState({
 				editModalVisible: true,
 				finishEdit: false,
@@ -429,7 +315,7 @@ class PMList extends React.Component {
 						}
 					</div>
 				) : null}
-				<Table rowKey={data => data.pressuremeter.PM_UId}
+				<Table rowKey={data => data.Ara_UId}
 					dataSource={this.state.data}
 					columns={this.PMColumns}
 					loading={this.state.loading}
@@ -438,4 +324,4 @@ class PMList extends React.Component {
 		)
 	}
 }
-export default PMList;
+export default AreaList;

@@ -65,7 +65,23 @@ const CollectionCreateForm = Form.create()(
 				<Form layout="vertical">
 					<FormItem label="职员名">
 						{getFieldDecorator('Member_Name', {
-							rules: [{ required: true, message: '请输入职员名!' }],
+							rules: [{
+								required: true, message: '请输入职员名!'
+							}, {
+								validator: (rule, value, callback) => {
+									util.fetch_Post({
+										url: 'http://localhost:2051/client/CheckClientName',
+										data: `name=${value}`,
+										success: (res) => {
+											if (res) {
+												callback();
+											} else {
+												callback('该职员名已经存在');
+											}
+										}
+									})
+								}
+							}],
 						})(
 							<Input />
 							)}
@@ -108,6 +124,9 @@ const CollectionCreateForm = Form.create()(
 class StaffList extends React.Component {
 	constructor(props) {
 		super(props);
+		this.permissionFM = util.getSessionStorate('permission').ClientManage;
+		// this.permissionFM = false;
+
 		this.columns = [{
 			title: '职员名',
 			dataIndex: 'Name',
@@ -128,34 +147,36 @@ class StaffList extends React.Component {
 			dataIndex: 'Memo',
 			width: '20%',
 			render: (text, record) => this.renderColumns(text, record, 'Memo'),
-		}, {
-			title: '操作',
-			dataIndex: 'operation',
-			render: (text, record) => {
-				const { editable } = record;
-				return (
-					<div className="editable-row-operations">
-						{
-							editable ?
-								<span>
-									<a onClick={() => this.save(record.Uid)}>保存</a>
-									<Popconfirm title="Sure to cancel?" onConfirm={() => this.cancel(record.Uid)}>
-										<a>取消</a>
-									</Popconfirm>
-								</span>
-								:
-								<span>
-									<a onClick={() => this.edit(record.Uid)}>编辑</a>
-									<a onClick={() => this.delete(record.Id)}>删除</a>
-									<a onClick={() => this.bindRole(record.Uid)}>绑定职位</a>
-									<a onClick={() => this.resetPassword(record.Uid)}>重置密码</a>
-								</span>
-						}
-					</div>
-				);
-			},
-		}];
-
+		},];
+		if (this.permissionFM) {
+			this.columns.push({
+				title: '操作',
+				dataIndex: 'operation',
+				render: (text, record) => {
+					const { editable } = record;
+					return (
+						<div className="editable-row-operations">
+							{
+								editable ?
+									<span>
+										<a onClick={() => this.save(record.Uid)}>保存</a>
+										<Popconfirm title="Sure to cancel?" onConfirm={() => this.cancel(record.Uid)}>
+											<a>取消</a>
+										</Popconfirm>
+									</span>
+									:
+									<span>
+										<a onClick={() => this.edit(record.Uid)}>编辑</a>
+										<a onClick={() => this.delete(record.Id)}>删除</a>
+										<a onClick={() => this.bindRole(record.Uid)}>绑定职位</a>
+										<a onClick={() => this.resetPassword(record.Uid)}>重置密码</a>
+									</span>
+							}
+						</div>
+					);
+				},
+			})
+		}
 		this.cacheData = this.props.cacheData;
 		this.save = this.save.bind(this);
 		this.expandDetail = this.expandDetail.bind(this);
@@ -203,7 +224,7 @@ class StaffList extends React.Component {
 		util.fetch({
 			url: 'http://localhost:2051/roles/GetAllRoles',
 			success: (res) => {
-				if(!target.roleWithBindings) target.roleWithBindings = [];
+				if (!target.roleWithBindings) target.roleWithBindings = [];
 				let keys = target.roleWithBindings.map(item => item.Ir_UId);
 				that.setState({
 					transferData: res,
@@ -338,7 +359,6 @@ class StaffList extends React.Component {
 			util.fetch({
 				url: `http://localhost:2051/staff/GetDetail?uid=${record.Uid}`,
 				success: (res) => {
-					debugger;
 					const newData = [...this.state.data];
 					const target = newData.filter(item => record.Uid === item.Uid)[0];
 					if (target) {
@@ -370,7 +390,7 @@ class StaffList extends React.Component {
 	}
 	handleOk = (e) => {
 		const key = util.getLocalStorate('currentKey')
-		let obj = {staffuid: key, roleuids: this.state.targetKeys};
+		let obj = { staffuid: key, roleuids: this.state.targetKeys };
 		const newData = [...this.state.data];
 		const dataRoles = util.objToStr(obj);
 		let target = newData.filter(item => key === item.Uid)[0];
@@ -434,33 +454,40 @@ class StaffList extends React.Component {
 	render() {
 		return (
 			<div className="ClientList">
-				<Button type="primary" onClick={this.showModal}>添加职员</Button>
-				<CollectionCreateForm
-					ref={this.saveFormRef}
-					visible={this.state.visible}
-					onCancel={this.handleCancel}
-					onCreate={this.handleCreate}
-				/>
-				<Modal title="绑定职位"
-					visible={this.state.visibleRoles}
-					onOk={this.handleOk}
-					confirmLoading={this.state.confirmLoadingRoles}
-					onCancel={this.handleCancelRoles}
-				>
-					<Transfer
-						dataSource={this.state.transferData}
-						showSearch
-						listStyle={{ 'width': '45%' }}
-						rowKey={record => record.Ir_UId}
-						filterOption={this.filterRolesOption}
-						notFoundContent={'暂无数据'}
-						titles={['未绑定流量计', '已绑定流量计']}
-						searchPlaceholder={'搜索'}
-						targetKeys={this.state.targetKeys}
-						onChange={this.handleTransfChange}
-						render={this.renderTransferItem}
-					/>
-				</Modal>
+				{this.permissionFM ? (
+					<Button type="primary" onClick={this.showModal}>添加职员</Button>
+				) : null}
+				{this.permissionFM ? (
+					<div>
+						<CollectionCreateForm
+							ref={this.saveFormRef}
+							visible={this.state.visible}
+							onCancel={this.handleCancel}
+							onCreate={this.handleCreate}
+						/>
+						<Modal title="绑定职位"
+							visible={this.state.visibleRoles}
+							onOk={this.handleOk}
+							confirmLoading={this.state.confirmLoadingRoles}
+							onCancel={this.handleCancelRoles}
+						>
+							<Transfer
+								dataSource={this.state.transferData}
+								showSearch
+								listStyle={{ 'width': '45%' }}
+								rowKey={record => record.Ir_UId}
+								filterOption={this.filterRolesOption}
+								notFoundContent={'暂无数据'}
+								titles={['未绑定流量计', '已绑定流量计']}
+								searchPlaceholder={'搜索'}
+								targetKeys={this.state.targetKeys}
+								onChange={this.handleTransfChange}
+								render={this.renderTransferItem}
+							/>
+						</Modal>
+					</div>
+				) : null}
+
 				<Table rowKey={data => data.Uid}
 					dataSource={this.state.data}
 					columns={this.columns}

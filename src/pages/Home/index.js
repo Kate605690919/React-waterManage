@@ -38,6 +38,12 @@ const YPMOptions = [{
     dataIndex: 'lastday_pressure_proportion',
 }];
 class Home extends React.Component {
+    constructor(props) {
+        super(props);
+        this.permission= util.getSessionStorate('permission');
+        // this.permissionFM = false;
+
+    }
     state = {
         FMRank: [],
         FMLoading: true,
@@ -50,34 +56,38 @@ class Home extends React.Component {
     }
     componentDidMount() {
         const that = this;
-        util.fetch({
-            url: 'http://localhost:64915/FlowMeter/GetMostVisitsFlowMeter',
-            success: (res) => {
-                res = JSON.parse(res);
-                that.setState({ FMRank: res.slice(0, 3), FMLoading: false });
-            }
-        });
-        util.fetch({
-            url: 'http://localhost:64915/PressureMeter/GetMostVisitsPressureMeter',
-            success: (res) => {
-                res = JSON.parse(res);
-                that.setState({ PMRank: res.slice(0, 3), PMLoading: false });
-            }
-        });
-        util.fetch({
-            url: 'http://localhost:64915/FlowMeter/GetLastDayFlowList',
-            success: (res) => {
-                res = JSON.parse(res);
-                that.setState({ YFMRank: res.slice(0, 3), YFMLoading: false });
-            }
-        });
-        util.fetch({
-            url: 'http://localhost:64915/PressureMeter/GetLastDayPressureList',
-            success: (res) => {
-                res = JSON.parse(res);
-                that.setState({ YPMRank: res.slice(0, 3), YPMLoading: false });
-            }
-        });
+        if (this.permission.FlowMeterView) {
+            util.fetch({
+                url: 'http://localhost:64915/FlowMeter/GetLastDayFlowList',
+                success: (res) => {
+                    res = JSON.parse(res);
+                    that.setState({ YFMRank: res.slice(0, 3), YFMLoading: false });
+                }
+            });
+            util.fetch({
+                url: 'http://localhost:64915/FlowMeter/GetMostVisitsFlowMeter',
+                success: (res) => {
+                    res = JSON.parse(res);
+                    that.setState({ FMRank: res.slice(0, 3), FMLoading: false });
+                }
+            });
+        }
+        if (this.permission.PressureMeterView) {
+            util.fetch({
+                url: 'http://localhost:64915/PressureMeter/GetMostVisitsPressureMeter',
+                success: (res) => {
+                    res = JSON.parse(res);
+                    that.setState({ PMRank: res.slice(0, 3), PMLoading: false });
+                }
+            });
+            util.fetch({
+                url: 'http://localhost:64915/PressureMeter/GetLastDayPressureList',
+                success: (res) => {
+                    res = JSON.parse(res);
+                    that.setState({ YPMRank: res.slice(0, 3), YPMLoading: false });
+                }
+            });
+        }
         util.fetch({
             url: 'http://localhost:64915/Area/GetMapData',
             success: (data) => {
@@ -93,33 +103,43 @@ class Home extends React.Component {
                     <Row gutter={16}>
                         <Col className="gutter-row" span={8}>
                             <h2>常用设备</h2>
-                            <Table columns={FMOptions}
-                                dataSource={this.state.FMRank}
-                                size="small"
-                                pagination={false}
-                                loading={this.state.FMLoading}
-                                rowKey={data => data.flowmeter.FM_UId} />
-                            <Table columns={PMOptions}
-                                dataSource={this.state.PMRank}
-                                size="small"
-                                pagination={false}
-                                loading={this.state.PMLoading}
-                                rowKey={data => data.pressuremeter.PM_UId} />
+                            {this.permission.FlowMeterView ? (
+                                <Table columns={FMOptions}
+                                    dataSource={this.state.FMRank}
+                                    size="small"
+                                    pagination={false}
+                                    loading={this.state.FMLoading}
+                                    rowKey={data => data.flowmeter.FM_UId} />
+                            ) : <div>暂无可查看流量计</div>}
+
+                            {this.permission.PressureMeterView ? (
+                                <Table columns={PMOptions}
+                                    dataSource={this.state.PMRank}
+                                    size="small"
+                                    pagination={false}
+                                    loading={this.state.PMLoading}
+                                    rowKey={data => data.pressuremeter.PM_UId} />
+                            ) : <div>暂无可查看压力计</div>}
                         </Col>
                         <Col className="gutter-row" span={8}>
                             <h2>昨日流量/压力变化排行</h2>
-                            <Table columns={YFMOptions}
-                                dataSource={this.state.YFMRank}
-                                size="small"
-                                pagination={false}
-                                loading={this.state.YFMLoading}
-                                rowKey={data => data.flowmeter.FM_UId} />
-                            <Table columns={YPMOptions}
-                                dataSource={this.state.YPMRank}
-                                size="small"
-                                pagination={false}
-                                loading={this.state.YPMLoading}
-                                rowKey={data => data.pressuremeter.PM_UId} />
+                            {this.permission.FlowMeterView ? (
+                                <Table columns={YFMOptions}
+                                    dataSource={this.state.YFMRank}
+                                    size="small"
+                                    pagination={false}
+                                    loading={this.state.YFMLoading}
+                                    rowKey={data => data.flowmeter.FM_UId} />
+                            ) : <div>暂无可查看流量计</div>}
+
+                            {this.permission.PressureMeterView ? (
+                                <Table columns={YPMOptions}
+                                    dataSource={this.state.YPMRank}
+                                    size="small"
+                                    pagination={false}
+                                    loading={this.state.YPMLoading}
+                                    rowKey={data => data.pressuremeter.PM_UId} />
+                            ) : <div>暂无可查看压力计</div>}
                         </Col>
                         <Col className="gutter-row" span={8}>
                             <Card className="littleCard">

@@ -38,14 +38,19 @@ class DeviceFMDetail extends React.Component {
             success: (res) => {
                 // this.getTableData(res.data[0].id);//加载table的数据
                 that.setState({ baseData: res, loading: false });
-                // 获取流量计分析数据
-                util.fetch({
-                    url: `http://localhost:64915/flowmeter/Analysis?${this._uid}&time=${util.dateFormat(res[0].flowmeter.FM_FlowCountLast, 2)}`,
-                    success: (res) => {
-                        // this.getTableData(res.data[0].id);//加载table的数据
-                        that.setState({ analysisData: [res], analysisLoading: false });
-                    }
-                });
+                if (res[0].flowmeter.FM_FlowCountLast) {
+                    // 获取流量计分析数据
+                    util.fetch({
+                        url: `http://localhost:64915/flowmeter/Analysis?${this._uid}&time=${util.dateFormat(res[0].flowmeter.FM_FlowCountLast, 2)}`,
+                        success: (res) => {
+                            // this.getTableData(res.data[0].id);//加载table的数据
+                            that.setState({ analysisData: [res], analysisLoading: false });
+                        }
+                    });
+                } else {
+                    that.setState({ analysisData: [], analysisLoading: false });
+                }
+
             }
         });
         this.getFlowData(defaultDateStr);
@@ -90,7 +95,7 @@ class DeviceFMDetail extends React.Component {
             success: (res) => {
                 // let data = { time: select(res.data, 'time'), value: select(res.data, 'value') };
                 var detailHeatOption = this.detailHeatOption(res);
-                that.setState({ heatLoading: false, heatData: res, detailHeatOption});
+                that.setState({ heatLoading: false, heatData: res, detailHeatOption });
             }
         });
     }
@@ -119,7 +124,7 @@ class DeviceFMDetail extends React.Component {
         let { routes, params } = this.props;
         let baseData = this.state.baseData[0];
         let DeviceInfo = null;
-        if(baseData) {
+        if (baseData) {
             console.log(baseData.flowmeter);
             DeviceInfo = (
                 <div className="deviceInfo">
@@ -127,7 +132,7 @@ class DeviceFMDetail extends React.Component {
                     <span>{baseData.flowmeter.FM_Description}</span>
                     <span>{util.dateFormat(baseData.flowmeter.FM_FlowCountLast, 2)}</span>
                 </div>
-            ); 
+            );
         } else {
             DeviceInfo = <Icon type="loading" />;
         }
@@ -190,7 +195,7 @@ class DeviceFMDetail extends React.Component {
                                         pagination={{ pageSize: 8 }} />
                                 </Col>
                                 <Col className="gutter-row" md={12} span={24} >
-                                <EchartBox options={this.state.detailEchartLinesOption} loading={this.state.EchartLinesLoading} id={'echartlines'} data={this.state.EchartLinesData} style={{ minHeight: '500px' }}></EchartBox>
+                                    <EchartBox options={this.state.detailEchartLinesOption} loading={this.state.EchartLinesLoading} id={'echartlines'} data={this.state.EchartLinesData} style={{ minHeight: '500px' }}></EchartBox>
                                 </Col>
                             </Row>
                         </TabPane>

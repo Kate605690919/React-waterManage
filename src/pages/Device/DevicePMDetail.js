@@ -6,6 +6,8 @@ import { columnsStatus, columnsAnalysis, columnsNight, columnsFlow } from './com
 import detailEchartLinesOption from './components/detailEchartLinesOption';
 import detailHeatOption from './components/detailHeatOption';
 import util from '../../util/util';
+import EchartBox from './components/EchartBox';
+
 
 const { RangePicker } = DatePicker;
 const TabPane = Tabs.TabPane;
@@ -29,20 +31,26 @@ class DevicePMDetail extends React.Component {
     }
     componentDidMount() {
         this.setState({ loading: true, analysisLoading: true });
+        const that = this;
         // 获取当前设备数据
         this.fetch({
             url: `http://localhost:64915/PressureMeter/Detail?${this._uid}`,
             success: (res) => {
                 // this.getTableData(res.data[0].id);//加载table的数据
                 this.setState({ baseData: res, loading: false });
-                // 获取流量计分析数据
-                this.fetch({
-                    url: `http://localhost:64915/PressureMeter/PressureAnalysis?${this._uid}&time=${util.dateFormat(res[0].pressuremeter.PM_CountLast, 2)}`,
-                    success: (res) => {
-                        // this.getTableData(res.data[0].id);//加载table的数据
-                        this.setState({ analysisData: [res], analysisLoading: false });
-                    }
-                });
+                if (res[0].flowmeter.FM_FlowCountLast) {
+                    // 获取流量计分析数据
+                    this.fetch({
+                        url: `http://localhost:64915/PressureMeter/PressureAnalysis?${this._uid}&time=${util.dateFormat(res[0].pressuremeter.PM_CountLast, 2)}`,
+                        success: (res) => {
+                            // this.getTableData(res.data[0].id);//加载table的数据
+                            this.setState({ analysisData: [res], analysisLoading: false });
+                        }
+                    });
+                } else {
+                    that.setState({ analysisData: [], analysisLoading: false });
+                }
+
             }
         });
         this.getFlowData(defaultDateStr);
@@ -57,32 +65,37 @@ class DevicePMDetail extends React.Component {
         flowLoading: false,
         checked: true,
         detailEchartLinesOption: null,
-        heatLoading: false,
+        EchartLinesLoading: true,
+        EchartLinesData: null,
+        heatLoading: true,
         detailHeatOption: null,
+        heatData: null,
     }
-    onTabsChange = (key) => {
-        console.log(key)
-    }
+    // onTabsChange = (key) => {
+    //     console.log(key)
+    // }
     getFlowData = (dateStrings) => {
+        const that = this;
         this.setState({ flowLoading: true });
         // 获取当前设备数据
-        this.fetch({
+        util.fetch({
             url: `http://localhost:64915/PressureMeter/GetPressureDetailWithTime?${this._uid}&startDt=${dateStrings[0]}&endDt=${dateStrings[1]}`,
             success: (res) => {
-                var detailEchartLinesOption = this.detailEchartLinesOption(res);
-                this.setState({ flowData: res, flowLoading: false, detailEchartLinesOption });
+                let detailEchartLinesOption = this.detailEchartLinesOption(res);
+                that.setState({ flowData: res, flowLoading: false, detailEchartLinesOption });
             }
         });
     }
     getHeatData = () => {
+        const that = this;
         this.setState({ heatLoading: true });
         // 获取当前设备数据
-        this.fetch({
+        util.fetch({
             url: `http://localhost:64915/PressureMeter/RecentPressureData?${this._uid}`,
             success: (res) => {
                 // let data = { time: select(res.data, 'time'), value: select(res.data, 'value') };
-                var detailHeatOption = this.detailHeatOption(res);
-                this.setState({ heatLoading: false, detailHeatOption });
+                let detailHeatOption = this.detailHeatOption(res);
+                that.setState({ heatLoading: false, detailHeatOption });
             }
         });
     }
@@ -111,7 +124,7 @@ class DevicePMDetail extends React.Component {
         let { routes, params } = this.props;
         let baseData = this.state.baseData[0];
         let DeviceInfo = null;
-        if(baseData) {
+        if (baseData) {
             console.log(baseData.pressuremeter);
             DeviceInfo = (
                 <div className="deviceInfo">
@@ -119,7 +132,7 @@ class DevicePMDetail extends React.Component {
                     <span>{baseData.pressuremeter.PM_Description}</span>
                     <span>{util.dateFormat(baseData.pressuremeter.PM_CountLast, 2)}</span>
                 </div>
-            ); 
+            );
         } else {
             DeviceInfo = <Icon type="loading" />;
         }
@@ -180,14 +193,14 @@ class DevicePMDetail extends React.Component {
                                         pagination={{ pageSize: 8 }} />
                                 </Col>
                                 <Col className="gutter-row" md={12} span={24} >
-                                    {/* <ECharts option={this.state.detailEchartLinesOption} style={{ minHeight: '500px' }} /> */}
+                                    <EchartBox options={this.state.detailEchartLinesOption} loading={this.state.EchartLinesLoading} id={'echartlines'} data={this.state.EchartLinesData} style={{ minHeight: '500px' }}></EchartBox>
                                 </Col>
                             </Row>
 
                         </TabPane>
                         <TabPane tab="热力图分析" key="2">
                             {this.state.heatLoading ? <Icon type="loading" /> : null}
-                            {/* <ECharts option={this.state.detailHeatOption} style={{ minHeight: '500px' }} /> */}
+                            <EchartBox options={this.state.detailHeatOption} loading={this.state.heatLoading} id={'echartheat'} data={this.state.heatData}></EchartBox>
                         </TabPane>
                     </Tabs>
                 </Card>

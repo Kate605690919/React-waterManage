@@ -12,7 +12,7 @@ const EditableCell = ({ editable, value, onChange }) => (
 		}
 	</div>
 );
-const pressuremeterLabelData = [
+const qualitymeterLabelData = [
 	{
 		id: 0,
 		key: 'areaUid',
@@ -22,35 +22,35 @@ const pressuremeterLabelData = [
 	},
 	{
 		id: 1,
-		key: "PM_Code",
-		name: '压力计编码',
+		key: "QM_Code",
+		name: '水质计编码',
 		type: 'text',
 		value: ''
 	},
 	// {
 	//     id: 2,
-	//     key: "PM_AlarmNumber",
+	//     key: "QM_AlarmNumber",
 	//     name: '报警号码',
 	//     type: 'text',
 	//     value: ''
 	// },
 	// {
 	//     id: 3,
-	//     key: 'PM_AlarmThreshold',
+	//     key: 'QM_AlarmThreshold',
 	//     name: '报警阈值',
 	//     type: 'text',
 	//     value: ''
 	// },
 	// {
 	//     id: 4,
-	//     key: 'PM_AlarmTimeOut',
+	//     key: 'QM_AlarmTimeOut',
 	//     name: '超时阈值',
 	//     type: 'text',
 	//     value: ''
 	// },
 	// {
 	//     id: 5,
-	//     key: 'PM_AlarmMode',
+	//     key: 'QM_AlarmMode',
 	//     name: '报警模式',
 	//     type: 'radio',
 	//     value: '',
@@ -67,13 +67,13 @@ const pressuremeterLabelData = [
 	// },
 	// {
 	//     id: 6,
-	//     key: 'PM_Class',
+	//     key: 'QM_Class',
 	//     name: '用户类型',
 	//     type: 'radio',
 	//     value: '',
 	//     option: [
 	//         {
-	//             name: '手抄压力计',
+	//             name: '手抄水质计',
 	//             value: 2
 	//         },
 	//         {
@@ -84,28 +84,28 @@ const pressuremeterLabelData = [
 	// },
 	{
 		id: 7,
-		key: 'PM_Description',
-		name: '压力计描述',
+		key: 'QM_Description',
+		name: '水质计描述',
 		type: 'text',
 		value: ''
 	},
 	// {
 	//     id: 8,
-	//     key: 'PM_BatteryAlarmThreshold',
+	//     key: 'QM_BatteryAlarmThreshold',
 	//     name: '设备电池报警阈值',
 	//     type: 'text',
 	//     value: ''
 	// },
 	// {
 	//     id: 9,
-	//     key: 'PM_ModemAlarmThreshold',
+	//     key: 'QM_ModemAlarmThreshold',
 	//     name: '通信电池报警阈值',
 	//     type: 'text',
 	//     value: ''
 	// },
 	// {
 	//     id: 10,
-	//     key: 'PM_Enable',
+	//     key: 'QM_Enable',
 	//     name: '是否可用',
 	//     type: 'radio',
 	//     value: '',
@@ -122,55 +122,61 @@ const pressuremeterLabelData = [
 	// },
 	// {
 	//     id: 11,
-	//     key: 'PM_DeviceAlarmNumber',
-	//     name: '压力计手机号码',
+	//     key: 'QM_DeviceAlarmNumber',
+	//     name: '水质计手机号码',
 	//     type: 'text',
 	//     value: ''
 	// },
 	{
 		id: 12,
-		key: 'PM_Lng',
+		key: 'QM_Lng',
 		name: '经度',
 		type: 'map',
 		value: ''
 	},
 	{
 		id: 13,
-		key: 'PM_Lat',
+		key: 'QM_Lat',
 		name: '纬度',
 		type: 'map',
 		value: ''
 	}
 ]
-class PMList extends React.Component {
+class QMList extends React.Component {
 	constructor(props) {
 		super(props);
 
-		this.permissionFM = util.getSessionStorate('permission').PressureMeterManage;
-		// this.permissionFM = false;
+		this.permissionFM = util.getSessionStorate('permission').QualityMeterManage;
+		this.permissionFM = true;
 
-		this.PMColumns = [{
-			title: '压力计编码',
-			dataIndex: 'pressuremeter.PM_Code',
+		this.QMColumns = [{
+			title: '水质计编码',
+			dataIndex: 'qualitymeter.QM_Code',
 			width: '15%',
-			render: (text, record) => <a href={`#/device/pressuremeter/detail/pmUid=${record.pressuremeter.PM_UId}`}>{text}</a>,
+			render: (text, record) => this.renderColumns(text, record, 'qualitymeter.QM_Code')
 		}, {
 			title: '描述',
-			dataIndex: 'pressuremeter.PM_Description',
+			dataIndex: 'qualitymeter.QM_Description',
 			width: '20%',
-			render: (text, record) => this.renderColumns(text, record, 'pressuremeter.PM_Description')
+			render: (text, record) => this.renderColumns(text, record, 'qualitymeter.QM_Description')
 		}, {
 			title: '区域',
 			dataIndex: 'area.Ara_Name',
-			width: '20%'
+			width: '20%',
 		}, {
 			title: '更新',
-			dataIndex: 'status.PMS_UpdateDt',
+			dataIndex: 'qualitymeter.QM_QualityCountLast',
 			width: '15%',
-			render: (text, record) => util.dateFormat(text, 7)
+			render: (text, record) => {
+				let result = null;
+				if (text) {
+					result = util.dateFormat(text, 7);
+				}
+				return result;
+			}
 		},];
 		if (this.permissionFM) {
-			this.PMColumns.push({
+			this.QMColumns.push({
 				title: '操作',
 				dataIndex: 'operation',
 				render: (text, record) => {
@@ -180,17 +186,17 @@ class PMList extends React.Component {
 							{
 								editable ?
 									<span>
-										<a onClick={() => this.save(record.pressuremeter.PM_UId)}>保存</a>
-										<Popconfirm title="Sure to cancel?" onConfirm={() => this.cancel(record.pressuremeter.PM_UId)}>
+										<a onClick={() => this.save(record.qualitymeter.QM_UId)}>保存</a>
+										<Popconfirm title="Sure to cancel?" onConfirm={() => this.cancel(record.qualitymeter.QM_UId)}>
 											<a>取消</a>
 										</Popconfirm>
 									</span>
 									:
 									<span>
-										{/* <a onClick={() => this.edit(record.pressuremeter.PM_UId)}>编辑</a> */}
+										{/* <a onClick={() => this.edit(record.qualitymeter.QM_UId)}>编辑</a> */}
 										{/* 这里将表格中的单元格编辑改为可以修改设备所有信息 */}
-										<a onClick={() => this.allEdit(record.pressuremeter.PM_UId)}>修改</a>
-										<Popconfirm title="Sure to delete?" onConfirm={() => this.delete(record.pressuremeter.PM_UId)}>
+										<a onClick={() => this.allEdit(record.qualitymeter.QM_UId)}>修改</a>
+										<Popconfirm title="Sure to delete?" onConfirm={() => this.delete(record.qualitymeter.QM_UId)}>
 											<a>删除</a>
 										</Popconfirm>
 									</span>
@@ -226,13 +232,13 @@ class PMList extends React.Component {
 			<EditableCell
 				editable={record.editable}
 				value={text}
-				onChange={value => this.handleChange(value, record.pressuremeter.PM_UId, column)}
+				onChange={value => this.handleChange(value, record.qualitymeter.QM_UId, column)}
 			/>
 		);
 	}
 	handleChange(value, key, column) {
 		const newData = [...this.state.data];
-		const target = newData.filter(item => key === item.pressuremeter.PM_UId)[0];
+		const target = newData.filter(item => key === item.qualitymeter.QM_UId)[0];
 		if (target) {
 			eval(`target.${column}=value`);
 			this.setState({ data: newData });
@@ -240,7 +246,7 @@ class PMList extends React.Component {
 	}
 	edit(key) {
 		const newData = [...this.state.data];
-		const target = newData.filter(item => key === item.pressuremeter.PM_UId)[0];
+		const target = newData.filter(item => key === item.qualitymeter.QM_UId)[0];
 		if (target) {
 			target.editable = true;
 			this.setState({ data: newData });
@@ -249,11 +255,11 @@ class PMList extends React.Component {
 	//可修改设备所有信息
 	allEdit(key) {
 		const newData = [...this.state.data];
-		const target = newData.filter(item => key === item.pressuremeter.PM_UId)[0];
+		const target = newData.filter(item => key === item.qualitymeter.QM_UId)[0];
 		if (target) {
-			this.editTarget = target.pressuremeter;
+			this.editTarget = target.qualitymeter;
 			this.AraId = target.area.Ara_UId;
-			util.setSessionStorate('device_uid', { PM_UId: key });
+			util.setSessionStorate('device_uid', { QM_UId: key });
 			this.setState({
 				editModalVisible: true,
 				finishEdit: false,
@@ -267,12 +273,12 @@ class PMList extends React.Component {
 	}
 	onClose() {
 		this.setState({
-			finishEdit: true
+			finishEdit: true,
 		})
 	}
 	handleEdit(newMeter) {
 		this.fetch_Post({
-			url: 'http://localhost:2051/PressureMeter/ModifyPressureMeter',
+			url: 'http://localhost:2051/QualityMeter/ModifyQualityMeter',
 			data: util.objToStr(newMeter),
 			success: (res) => {
 				if (res) {
@@ -291,14 +297,14 @@ class PMList extends React.Component {
 	}
 	save(key) {
 		const newData = [...this.state.data];
-		const target = newData.filter(item => key === item.pressuremeter.PM_UId)[0];
+		const target = newData.filter(item => key === item.qualitymeter.QM_UId)[0];
 		if (target) {
 			delete target.editable;
-			console.log(target);
 			this.fetch_Post({
-				url: 'http://localhost:2051/PressureMeter/ModifyPressureMeter',
-				data: `PM_Code=${target.pressuremeter.PM_Code}&PM_Description=${target.pressuremeter.PM_Description}
-				&PM_Id=${target.pressuremeter.PM_Id}`,
+				url: 'http://localhost:2051/qualitymeter/Modifyqualitymeter',
+				// data: `FM_Code=${target.qualitymeter.FM_Code}&FM_Description=${target.qualitymeter.FM_Description}
+				// &QM_UId=${target.qualitymeter.QM_UId}&FM_Id=${target.qualitymeter.FM_Id}`,
+				data: util.objToStr(target.qualitymeter),
 				success: (res) => {
 					console.log(res);
 					if (res) message.success('修改成功！');
@@ -311,26 +317,28 @@ class PMList extends React.Component {
 	}
 	cancel(key) {
 		const newData = [...this.state.data];
-		const target = newData.filter(item => key === item.pressuremeter.PM_UId)[0];
+		const target = newData.filter(item => key === item.qualitymeter.QM_UId)[0];
 		if (target) {
-			Object.assign(target, this.cacheData.filter(item => key === item.pressuremeter.PM_UId)[0]);
+			Object.assign(target, this.cacheData.filter(item => key === item.qualitymeter.QM_UId)[0]);
 			delete target.editable;
 			this.setState({ data: newData });
 		}
 	}
 	delete(key) {
 		const newData = [...this.state.data];
-		const target = newData.filter(item => key === item.pressuremeter.PM_UId)[0];
+		const target = newData.filter(item => key === item.qualitymeter.QM_UId)[0];
 		if (target) {
 			this.fetch_Post({
-				url: 'http://localhost:2051/PressureMeter/DeletePressureMeter',
-				data: util.objToStr(target.pressuremeter),
+				url: 'http://localhost:2051/QualityMeter/DeleteQualityMeter',
+				// data: `&QM_UId=${target.qualitymeter.QM_UId}&FM_Id=${target.qualitymeter.FM_Id}`,
+				data: util.objToStr(target.qualitymeter),
 				success: (res) => {
+					console.log(res);
 					if (res) message.success('删除成功！');
 					else message.error('删除失败，请重试！');
 				}
-			})
-			this.setState({ data: newData.filter(item => item.pressuremeter.PM_UId !== key) });
+			});
+			this.setState({ data: newData.filter(item => item.qualitymeter.QM_UId !== key) });
 		}
 	}
 	showModal() {
@@ -339,11 +347,11 @@ class PMList extends React.Component {
 			finishAdd: false
 		});
 	}
-	//添加压力计
-	handleAdd(newPressureData) {
+	//添加水质计
+	handleAdd(newQualityData) {
 		this.fetch_Post({
-			url: 'http://localhost:2051/PressureMeter/AddPressureMeter',
-			data: util.objToStr(newPressureData),
+			url: 'http://localhost:2051/QualityMeter/AddQualityMeter',
+			data: util.objToStr(newQualityData),
 			success: (res) => {
 				if (res) {
 					message.success('添加成功！');
@@ -355,9 +363,6 @@ class PMList extends React.Component {
 					this.props.onAddDevice();
 				} else {
 					message.error('添加失败，请重试！');
-					this.setState({
-						visible: false,
-					})
 				}
 			}
 		})
@@ -367,7 +372,7 @@ class PMList extends React.Component {
 			visible: false,
 		});
 	}
-	// post方法封装
+	//post方法封装
 	fetch_Post({ url, data, success }) {
 		fetch(url, {
 			method: 'POST',
@@ -391,15 +396,14 @@ class PMList extends React.Component {
 			<div>
 				{this.permissionFM ? (
 					<div style={{ paddingLeft: '20px', paddingBottom: '10px' }}>
-						<Button type="primary" onClick={this.showModal.bind(this)}>添加压力计</Button>
+						<Button type="primary" onClick={this.showModal.bind(this)}>添加水质计</Button>
 					</div>
 				) : null}
 				{this.permissionFM ? (
 					<div>
 						<Modal width="60%"
-							title="添加压力计"
+							title="添加水质计"
 							visible={this.state.visible}
-							// onOk = {this.handleAdd.bind(this)}
 							confirmLoading={this.state.finishAdd}
 							onCancel={this.handleModalCancel.bind(this)}
 							footer={null}
@@ -407,7 +411,7 @@ class PMList extends React.Component {
 							{this.state.finishAdd ?
 								null
 								:
-								<AddForm labelData={pressuremeterLabelData} onAddSubmit={this.handleAdd.bind(this)} defaultLngLat={this.props.defaultLngLat} />
+								<AddForm labelData={qualitymeterLabelData} onAddSubmit={this.handleAdd.bind(this)} defaultLngLat={this.props.defaultLngLat} />
 							}
 						</Modal>
 
@@ -415,7 +419,7 @@ class PMList extends React.Component {
 							null
 							:
 							<Modal width="60%"
-								title="修改压力计"
+								title="修改水质计"
 								visible={this.state.editModalVisible}
 								confirmLoading={this.state.finishEdit}
 								onCancel={this.handleEditModalCancel.bind(this)}
@@ -424,18 +428,20 @@ class PMList extends React.Component {
 								maskClosable={false}
 							>
 
-								<EditForm labelData={pressuremeterLabelData} onEditSubmit={this.handleEdit.bind(this)} meterData={this.editTarget} areaid={this.AraId} />
+								<EditForm labelData={qualitymeterLabelData} onEditSubmit={this.handleEdit.bind(this)} meterData={this.editTarget} areaid={this.AraId} />
+
 							</Modal>
 						}
 					</div>
 				) : null}
-				<Table rowKey={data => data.pressuremeter.PM_UId}
+
+				<Table rowKey={data => data.qualitymeter.QM_UId}
 					dataSource={this.state.data}
-					columns={this.PMColumns}
+					columns={this.QMColumns}
 					loading={this.state.loading}
 				/>
 			</div>
 		)
 	}
 }
-export default PMList;
+export default QMList;

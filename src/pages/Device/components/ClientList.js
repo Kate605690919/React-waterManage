@@ -65,7 +65,23 @@ const CollectionCreateForm = Form.create()(
 				<Form layout="vertical">
 					<FormItem label="客户名">
 						{getFieldDecorator('Member_Name', {
-							rules: [{ required: true, message: '请输入客户名!' }],
+							rules: [{
+								required: true, message: '请输入客户名!'
+							}, {
+								validator: (rule, value, callback) => {
+									util.fetch_Post({
+										url: 'http://localhost:2051/client/CheckClientName',
+										data: `name=${value}`,
+										success: (res) => {
+											if (res) {
+												callback();
+											} else {
+												callback('该客户名已经存在');
+											}
+										}
+									})
+								}
+							}],
 						})(
 							<Input />
 							)}
@@ -74,17 +90,6 @@ const CollectionCreateForm = Form.create()(
 						{getFieldDecorator('Member_AreaUid', {
 							rules: [{
 								required: true, message: '请选择区域!'
-							}, {
-								validator: (rule, value, callback) => {
-									util.fetch_Post({
-										url: 'http://localhost:2051/client/CheckClientName',
-										data: `name=${value}`,
-										success: (res) => {
-											if(!res)
-											callback();
-										}
-									})
-								}, message: '该名称已被使用！'
 							}],
 						})(
 							<TreeSelect
@@ -121,6 +126,10 @@ const CollectionCreateForm = Form.create()(
 class ClientList extends React.Component {
 	constructor(props) {
 		super(props);
+
+		this.permissionFM = util.getSessionStorate('permission').ClientManage;
+		// this.permissionFM = false;
+
 		this.columns = [{
 			title: '客户名',
 			dataIndex: 'Name',
@@ -146,33 +155,36 @@ class ClientList extends React.Component {
 			dataIndex: 'Memo',
 			width: '15%',
 			render: (text, record) => this.renderColumns(text, record, 'Memo'),
-		}, {
-			title: '操作',
-			dataIndex: 'operation',
-			render: (text, record) => {
-				const { editable } = record;
-				return (
-					<div className="editable-row-operations">
-						{
-							editable ?
-								<span>
-									<a onClick={() => this.save(record.Uid)}>保存</a>
-									<Popconfirm title="确定取消?" onConfirm={() => this.cancel(record.Uid)}>
-										<a>取消</a>
-									</Popconfirm>
-								</span>
-								:
-								<span>
-									<a onClick={() => this.edit(record.Uid)}>编辑</a>
-									<a onClick={() => this.delete(record.Id)}>删除</a>
-									<a onClick={() => this.bindFlowMeter(record.Uid)}>绑定流量计</a>
-									<a onClick={() => this.resetPassword(record.Uid)}>重置密码</a>
-								</span>
-						}
-					</div>
-				);
-			},
-		}];
+		},];
+		if (this.permissionFM) {
+			this.columns.push({
+				title: '操作',
+				dataIndex: 'operation',
+				render: (text, record) => {
+					const { editable } = record;
+					return (
+						<div className="editable-row-operations">
+							{
+								editable ?
+									<span>
+										<a onClick={() => this.save(record.Uid)}>保存</a>
+										<Popconfirm title="确定取消?" onConfirm={() => this.cancel(record.Uid)}>
+											<a>取消</a>
+										</Popconfirm>
+									</span>
+									:
+									<span>
+										<a onClick={() => this.edit(record.Uid)}>编辑</a>
+										<a onClick={() => this.delete(record.Id)}>删除</a>
+										<a onClick={() => this.bindFlowMeter(record.Uid)}>绑定流量计</a>
+										<a onClick={() => this.resetPassword(record.Uid)}>重置密码</a>
+									</span>
+							}
+						</div>
+					);
+				},
+			})
+		}
 		this.cacheData = this.props.cacheData;
 		this.expandDetail = this.expandDetail.bind(this);
 	}
@@ -478,33 +490,39 @@ class ClientList extends React.Component {
 	render() {
 		return (
 			<div className="ClientList">
-				<Button type="primary" onClick={this.showModal}>添加客户</Button>
-				<CollectionCreateForm
-					ref={this.saveFormRef}
-					visible={this.state.visible}
-					onCancel={this.handleCancel}
-					onCreate={this.handleCreate}
-				/>
-				<Modal title="绑定流量计"
-					visible={this.state.visibleFM}
-					onOk={this.handleOk}
-					confirmLoading={this.state.confirmLoadingFM}
-					onCancel={this.handleCancelFM}
-				>
-					<Transfer
-						dataSource={this.state.transferData}
-						showSearch
-						listStyle={{ 'width': '45%' }}
-						rowKey={record => record.FM_Id}
-						filterOption={this.filterFMOption}
-						notFoundContent={'暂无数据'}
-						titles={['未绑定流量计', '已绑定流量计']}
-						searchPlaceholder={'搜索'}
-						targetKeys={this.state.targetKeys}
-						onChange={this.handleTransfChange}
-						render={this.renderTransferItem}
-					/>
-				</Modal>
+				{this.permissionFM ? (
+					<Button type="primary" onClick={this.showModal}>添加客户</Button>
+				) : null}
+				{this.permissionFM ? (
+					<div>
+						<CollectionCreateForm
+							ref={this.saveFormRef}
+							visible={this.state.visible}
+							onCancel={this.handleCancel}
+							onCreate={this.handleCreate}
+						/>
+						<Modal title="绑定流量计"
+							visible={this.state.visibleFM}
+							onOk={this.handleOk}
+							confirmLoading={this.state.confirmLoadingFM}
+							onCancel={this.handleCancelFM}
+						>
+							<Transfer
+								dataSource={this.state.transferData}
+								showSearch
+								listStyle={{ 'width': '45%' }}
+								rowKey={record => record.FM_Id}
+								filterOption={this.filterFMOption}
+								notFoundContent={'暂无数据'}
+								titles={['未绑定流量计', '已绑定流量计']}
+								searchPlaceholder={'搜索'}
+								targetKeys={this.state.targetKeys}
+								onChange={this.handleTransfChange}
+								render={this.renderTransferItem}
+							/>
+						</Modal>
+					</div>
+				) : null}
 				<Table rowKey={data => data.Uid}
 					dataSource={this.state.data}
 					columns={this.columns}

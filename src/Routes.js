@@ -6,6 +6,7 @@ import { DeviceApp, DeviceFMDetail, DevicePMDetail } from './pages/Device';
 import Role from './pages/Role';
 import Home from './pages/Home';
 import { FeedBackApp } from './pages/FeedBack';
+import PasswordUpdateApp from './pages/PasswordUpdateApp';
 const Routes = () => (
     <Router history={hashHistory}>
         <Route path='/' component={Login} />
@@ -18,6 +19,7 @@ const Routes = () => (
             <Route path="/feedback" component={FeedBackApp}></Route>
             <Route path="/role" component={Role}></Route>
             <Route path="/home" component={Home}></Route>
+            <Route path="/Home/passupdate" component={PasswordUpdateApp} breadcrumbName="修改密码"></Route>
         </Route>
         {/* <Route path="devices" component={DeviceApp}>
                 <Route path="/flowmeter" component={FMList}></Route>
