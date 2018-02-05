@@ -1,5 +1,6 @@
 class Util {
     dateFormat(data, trail) {
+        if(!data) return '';
         let d = parseInt(data.substring(6, data.length - trail), 10);
         d = new Date(d);
         let ar_date = [d.getFullYear(), d.getMonth() + 1, d.getDate()];
@@ -88,10 +89,44 @@ class Util {
     }
     // array(对象数组) 设定key值
     arraySetKey(array, key) {
-        // debugger;
         let res = array.map(item => {
             return { ...item, key: item[key] }
         });
+        return res;
+    }
+    //获取父级节点和当前节点的uid [parentUid, childrenUid]
+    getAreas(aid) {
+        //因为区域id只有一个，所以要从区域树查找它的父级区域
+        const areatree = util.getSessionStorate('areatree');
+        const findArea = (areaid, tree) => {
+            let arr = [];
+            //先判断当前节点的id是否等于要查找的id
+            if (tree.id === areaid) {
+                arr = arr.concat(tree.id);
+                return arr;
+            } else if (tree.children) {
+                //有子节点就继续找
+                for (let i = 0; i < tree.children.length; i++) {
+                    let res = findArea(areaid, tree.children[i]);
+                    if (res) {
+                        console.log(res);
+                        arr = arr.concat(tree.id);
+                        arr = arr.concat(res);
+                        return arr;
+                    }
+                }
+            } else {
+                //没有子节点
+                return false;
+            }
+        }
+        let res = [];
+        for (var i = 0; i < areatree.length; i++) {
+            res = findArea(aid, areatree[i]);
+            if (res) {
+                return res;
+            }
+        }
         return res;
     }
 }

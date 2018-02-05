@@ -8,7 +8,6 @@ class HomeMap extends React.Component {
         util.fetch({
             url:'/Area/GetMapData',
             success: (data) => {
-                debugger;
                 let mapEl = document.querySelector("#homeMap");
                 initMap(mapEl, data);
             }

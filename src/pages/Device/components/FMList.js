@@ -283,18 +283,19 @@ class FMList extends React.Component {
 		});
 	}
 	handleEdit(newFlowData) {
-		this.fetch_Post({
+		const that = this;
+		util.fetch_Post({
 			url: 'http://localhost:2051/FlowMeter/ModifyFlowMeter',
 			data: util.objToStr(newFlowData),
 			success: (res) => {
 				if (res) {
 					message.success('修改成功！');
-					this.setState({
+					that.setState({
 						editModalVisible: false,
 						finishEdit: true
 					})
 					//重新加载
-					this.props.onAddDevice();
+					that.props.onAddDevice();
 				} else {
 					message.error('修改失败，请重试！');
 				}
@@ -307,7 +308,7 @@ class FMList extends React.Component {
 		const target = newData.filter(item => key === item.flowmeter.FM_UId)[0];
 		if (target) {
 			delete target.editable;
-			this.fetch_Post({
+			util.fetch_Post({
 				url: 'http://localhost:2051/FlowMeter/ModifyFlowMeter',
 				// data: `FM_Code=${target.flowmeter.FM_Code}&FM_Description=${target.flowmeter.FM_Description}
 				// &FM_UId=${target.flowmeter.FM_UId}&FM_Id=${target.flowmeter.FM_Id}`,
@@ -336,7 +337,7 @@ class FMList extends React.Component {
 		const newData = [...this.state.data];
 		const target = newData.filter(item => key === item.flowmeter.FM_UId)[0];
 		if (target) {
-			this.fetch_Post({
+			util.fetch_Post({
 				url: 'http://localhost:2051/FlowMeter/DeleteFlowMeter',
 				// data: `&FM_UId=${target.flowmeter.FM_UId}&FM_Id=${target.flowmeter.FM_Id}`,
 				data: util.objToStr(target.flowmeter),
@@ -358,21 +359,22 @@ class FMList extends React.Component {
 	}
 	//添加流量计
 	handleAdd(newFlowData) {
-		this.fetch_Post({
+		const that = this;
+		util.fetch_Post({
 			url: 'http://localhost:2051/FlowMeter/AddFlowMeter',
 			data: util.objToStr(newFlowData),
 			success: (res) => {
 				if (res) {
 					message.success('添加成功！');
-					this.setState({
+					that.setState({
 						visible: false,
 						finishAdd: true
 					})
 					//重新加载
-					this.props.onAddDevice();
+					that.props.onAddDevice();
 				} else {
 					message.error('添加失败，请重试！');
-					this.setState({
+					that.setState({
 						visible: false,
 					})
 				}

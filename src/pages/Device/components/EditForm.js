@@ -26,7 +26,6 @@ class NewForm extends React.Component{
                 const lat = util.getSessionStorate('editlat');
                 const uid = util.getSessionStorate('device_uid');
                 Object.assign(values, lng, lat, uid);
-                debugger;
                 this.props.onEditSubmit(values);
                 util.setSessionStorate('editlng', null);
                 util.setSessionStorate('editlat', null);
@@ -85,6 +84,7 @@ class NewForm extends React.Component{
                 for(let i = 0; i < tree.children.length; i++){
                     let res = findArea(areaid, tree.children[i]);
                     if(res){
+                        console.log(res);
                         arr = arr.concat(tree.id);
                         arr = arr.concat(res);
                         return arr;

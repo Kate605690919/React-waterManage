@@ -31,20 +31,26 @@ class DevicePMDetail extends React.Component {
     }
     componentDidMount() {
         this.setState({ loading: true, analysisLoading: true });
+        const that = this;
         // 获取当前设备数据
         this.fetch({
             url: `http://localhost:64915/PressureMeter/Detail?${this._uid}`,
             success: (res) => {
                 // this.getTableData(res.data[0].id);//加载table的数据
                 this.setState({ baseData: res, loading: false });
-                // 获取流量计分析数据
-                this.fetch({
-                    url: `http://localhost:64915/PressureMeter/PressureAnalysis?${this._uid}&time=${util.dateFormat(res[0].pressuremeter.PM_CountLast, 2)}`,
-                    success: (res) => {
-                        // this.getTableData(res.data[0].id);//加载table的数据
-                        this.setState({ analysisData: [res], analysisLoading: false });
-                    }
-                });
+                if (res[0].flowmeter.FM_FlowCountLast) {
+                    // 获取流量计分析数据
+                    this.fetch({
+                        url: `http://localhost:64915/PressureMeter/PressureAnalysis?${this._uid}&time=${util.dateFormat(res[0].pressuremeter.PM_CountLast, 2)}`,
+                        success: (res) => {
+                            // this.getTableData(res.data[0].id);//加载table的数据
+                            this.setState({ analysisData: [res], analysisLoading: false });
+                        }
+                    });
+                } else {
+                    that.setState({ analysisData: [], analysisLoading: false });
+                }
+
             }
         });
         this.getFlowData(defaultDateStr);
@@ -118,7 +124,7 @@ class DevicePMDetail extends React.Component {
         let { routes, params } = this.props;
         let baseData = this.state.baseData[0];
         let DeviceInfo = null;
-        if(baseData) {
+        if (baseData) {
             console.log(baseData.pressuremeter);
             DeviceInfo = (
                 <div className="deviceInfo">
@@ -126,7 +132,7 @@ class DevicePMDetail extends React.Component {
                     <span>{baseData.pressuremeter.PM_Description}</span>
                     <span>{util.dateFormat(baseData.pressuremeter.PM_CountLast, 2)}</span>
                 </div>
-            ); 
+            );
         } else {
             DeviceInfo = <Icon type="loading" />;
         }

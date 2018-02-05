@@ -349,7 +349,6 @@ class QMList extends React.Component {
 	}
 	//添加水质计
 	handleAdd(newQualityData) {
-		debugger;
 		this.fetch_Post({
 			url: 'http://localhost:2051/QualityMeter/AddQualityMeter',
 			data: util.objToStr(newQualityData),

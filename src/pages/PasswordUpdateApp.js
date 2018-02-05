@@ -13,7 +13,6 @@ class UpdateForm extends React.Component{
                 const resetPassword = values.newPassword;
                 this.fetch_Post({
                     url: 'http://localhost:2051/Home/ResetPassword',
-                    // url: 'http://rap2api.taobao.org/app/mock/5151/POST/Home/ResetPassword',
                     data: `uid=${useruid}&origialPassword=${origialPassword}&resetPassword=${resetPassword}`,
                     success: (res) => {
                         if(res){

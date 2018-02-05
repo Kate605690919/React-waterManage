@@ -30,7 +30,6 @@ class Fetch {
      * @param {string} url url，带参数
      */
     fetchSync_Get(url) {
-        debugger;
         return new Promise((resolve, reject) => {
             fetch(url).then((response) => {
                 if (response.status !== 200) {

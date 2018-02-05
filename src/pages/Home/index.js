@@ -40,7 +40,7 @@ const YPMOptions = [{
 class Home extends React.Component {
     constructor(props) {
         super(props);
-        this.permission= util.getSessionStorate('permission').ClientManage;
+        this.permission= util.getSessionStorate('permission');
         // this.permissionFM = false;
 
     }

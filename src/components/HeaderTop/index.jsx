@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router';
+import { Link, message } from 'react-router';
 import './HeaderTop.less';
 import { Button, Icon, Menu } from 'antd';
 import util from '../../util/util';
@@ -34,6 +34,21 @@ class HeaderTop extends React.Component {
     componentWillMount() {
         this._roleName = 'hkAdmin';
     }
+    logout = (e) => {
+        util.fetch_Post({
+            url: 'http://localhost:64915/home/logout',
+            data: `userUid=${util.getSessionStorate('useruid')}`,
+            success: (res) => {
+                if(res) {
+                    util.setSessionStorate('useruid');
+                    util.setSessionStorate('username');
+                    util.setSessionStorate('token');
+                    window.location.hash = '/';
+                }
+                else message.error('退出失败，请重试！')
+            }
+        })
+    }
     render() {
         return (
             <header className="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -61,7 +76,7 @@ class HeaderTop extends React.Component {
                         </li>
                     </ul>
                     <ul className="nav-info-menu">
-                        <li><span> {this._roleName}</span></li>
+                        <li><span style={{'color': 'rgba(255, 255, 255, 0.67)'}}> {this._roleName}</span></li>
                         <li><Link to="/Home/passupdate">修改密码</Link></li>
                         <li><Link to="/"><Icon type="logout" /></Link></li>
                     </ul>
@@ -98,8 +113,8 @@ class HeaderTop extends React.Component {
                             <Menu.Item key="4">职员管理</Menu.Item>
                         </SubMenu> */}
                         <Menu.Item key="5" className>
-                            <span><a href="####" className="ant-menu-itemSelf"><span className="userLogined"> {this._roleName}</span></a></span>
-                            <span><a href="/Home/login" className="ant-menu-itemSelf item-2"><Icon type="logout" /></a></span>
+                            <span><a href="####" className="ant-menu-itemSelf"><span className="userLogined" style={{'color': 'rgba(255, 255, 255, 0.67)'}}> {this._roleName}</span></a></span>
+                            <span><a onClick={this.logout.bind(this)} className="ant-menu-itemSelf item-2"><Icon type="logout" /></a></span>
                         </Menu.Item>
                     </Menu>
                 </div>

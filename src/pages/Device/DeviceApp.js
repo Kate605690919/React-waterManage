@@ -27,6 +27,7 @@ class DeviceApp extends React.Component {
 				break;
 			}
 		}
+		this.radioValue = 'Area';
 		let { FlowMeterView, PressureMeterView, QualityMeterView, ClientView, StaffView, AreaView } = this.permission;
 		this.AllPermission = FlowMeterView || PressureMeterView || QualityMeterView || ClientView || StaffView;
 		// 获取区域树数据
@@ -58,7 +59,7 @@ class DeviceApp extends React.Component {
 		radioValue: this.radioValue,
 	}
 	//获取设备表格数据
-	getTableData(areaUid, radioValue = 'FM') {
+	getTableData(areaUid, radioValue = 'Area') {
 		this.setState({ loading: true });
 		let url;
 		switch (radioValue) {

@@ -1,442 +1,346 @@
 import React from 'react'
-import { Table, Input, Popconfirm, message, Button, Modal } from 'antd';
+import { Table, Popconfirm, Input, message, TreeSelect, Button, Modal, Form, Icon, Radio, Col, Row } from 'antd';
 import util from '../../../util/util';
-import AddForm from './AddForm';
-import EditForm from './EditForm';
+import WaterMap from './WaterMap';
+import AreaForm from './AreaForm';
 
-const EditableCell = ({ editable, value, onChange }) => (
-	<div>
-		{editable
-			? <Input style={{ margin: '-5px 0' }} value={value} onChange={e => onChange(e.target.value)} />
-			: value
-		}
-	</div>
+const TreeNode = TreeSelect.TreeNode;
+const FormItem = Form.Item;
+const RadioGroup = Radio.Group;
+// const Option = Select.Option;
+const renderTreeNodes = (data) => {
+    return data.map((item) => {
+        //dataRef的数据如何使用：因为dataRef是props，给这个treeNode绑定点击事件,onselect事件即可，然后读取自身的这个dataRef即可？之后绑定的时候试一试
+        if (item.children) {
+            return (
+                <TreeNode title={item.text} key={item.id} value={item.id} dataRef={item.id}>
+                    {renderTreeNodes(item.children)}
+                </TreeNode>
+            );
+        }
+        return <TreeNode {...item} dataRef={item} />;
+    });
+};
+const CollectionCreateForm = Form.create()(
+    (props) => {
+        const treeData = util.getLocalStorate('areatree');
+        const TreeNodes = renderTreeNodes(treeData);
+        const { visible, onCancel, onCreate, form } = props;
+        const { getFieldDecorator } = form;
+        const parentUid = util.getAreas(util.getLocalStorate('areaUid'))[0];
+        const handleMap = (point) => {
+            props.form.setFieldsValue({
+                'Ara_Lng': point.lng,
+                'Ara_Lat': point.lat
+            })
+        }
+        return (
+            <Modal
+                visible={visible}
+                title="添加区域"
+                okText="添加"
+                onCancel={onCancel}
+                onOk={onCreate}
+            >
+                <Form layout="vertical">
+                    <FormItem label="选择父节点区域">
+                        {getFieldDecorator('Ara_Up', {
+                            initialValue: parentUid,
+                            rules: [{
+                                required: true, message: '父节点区域!'
+                            }],
+                        })(
+                            <TreeSelect
+                                showSearch
+                                dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                                placeholder="Please select"
+                                allowClear
+                                treeDefaultExpandAll
+                            >
+                                {TreeNodes}
+                            </TreeSelect>
+                            )}
+                    </FormItem>
+                    <FormItem label="区域名称">
+                        {getFieldDecorator('Ara_Name', {
+                            rules: [{
+                                required: true, message: 'Please input your password!',
+                            }],
+                        })(
+                            <Input />
+                            )}
+                    </FormItem>
+                    <FormItem label="区域描述">
+                        {getFieldDecorator('Ara_Description', {
+                            rules: [{
+                                required: true, message: 'Please input your password!',
+                            }],
+                        })(
+                            <Input />
+                            )}
+                    </FormItem>
+                    <FormItem label="是否可用">
+                        {getFieldDecorator('Ara_Enable', {
+                            initialValue: '1',
+                            rules: [{
+                                required: true, message: 'Please input your password!',
+                            }],
+                        })(
+                            <RadioGroup>
+                                <Radio value="0">不可用</Radio>
+                                <Radio value="1">可用</Radio>
+                            </RadioGroup>
+                            )}
+                    </FormItem>
+                    <Row>
+                        <Col className="deviceTree" xs={12} style={{ 'marginBottom': '15px' }} >
+                            <FormItem label="经度">
+                                {getFieldDecorator('Ara_Lng', {
+                                    rules: [{
+                                        required: true, message: 'Please input your E-mail!',
+                                    }],
+                                })(
+                                    <Input type="number" />
+                                    )}
+                            </FormItem>
+                        </Col>
+                        <Col className="deviceTree" xs={12} style={{ 'marginBottom': '15px' }} >
+                            <FormItem label="纬度">
+                                {getFieldDecorator('Ara_Lat', {
+                                    rules: [{
+                                        required: true, message: 'Please input your E-mail!',
+                                    }],
+                                })(
+                                    <Input type="number" />
+                                    )}
+                            </FormItem>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col className="deviceTree" xs={24} style={{ 'marginBottom': '15px' }} >
+                            <WaterMap mapname="editmap" defaultLng={props.defaultLng} defaultLat={props.defaultLat} handleChange={handleMap} />
+                        </Col>
+                    </Row>
+                </Form>
+            </Modal>
+        );
+    }
 );
-const pressuremeterLabelData = [
-	{
-		id: 0,
-		key: 'areaUid',
-		name: '区域选择',
-		type: 'cascader',
-		value: ''
-	},
-	{
-		id: 1,
-		key: "PM_Code",
-		name: '压力计编码',
-		type: 'text',
-		value: ''
-	},
-	// {
-	//     id: 2,
-	//     key: "PM_AlarmNumber",
-	//     name: '报警号码',
-	//     type: 'text',
-	//     value: ''
-	// },
-	// {
-	//     id: 3,
-	//     key: 'PM_AlarmThreshold',
-	//     name: '报警阈值',
-	//     type: 'text',
-	//     value: ''
-	// },
-	// {
-	//     id: 4,
-	//     key: 'PM_AlarmTimeOut',
-	//     name: '超时阈值',
-	//     type: 'text',
-	//     value: ''
-	// },
-	// {
-	//     id: 5,
-	//     key: 'PM_AlarmMode',
-	//     name: '报警模式',
-	//     type: 'radio',
-	//     value: '',
-	//     option: [
-	//         {
-	//             name: '自动',
-	//             value: 1
-	//         },
-	//         {
-	//             name: '默认',
-	//             value: 0
-	//         }
-	//     ]
-	// },
-	// {
-	//     id: 6,
-	//     key: 'PM_Class',
-	//     name: '用户类型',
-	//     type: 'radio',
-	//     value: '',
-	//     option: [
-	//         {
-	//             name: '手抄压力计',
-	//             value: 2
-	//         },
-	//         {
-	//             name: '普通',
-	//             value: 0
-	//         }
-	//     ]
-	// },
-	{
-		id: 7,
-		key: 'PM_Description',
-		name: '压力计描述',
-		type: 'text',
-		value: ''
-	},
-	// {
-	//     id: 8,
-	//     key: 'PM_BatteryAlarmThreshold',
-	//     name: '设备电池报警阈值',
-	//     type: 'text',
-	//     value: ''
-	// },
-	// {
-	//     id: 9,
-	//     key: 'PM_ModemAlarmThreshold',
-	//     name: '通信电池报警阈值',
-	//     type: 'text',
-	//     value: ''
-	// },
-	// {
-	//     id: 10,
-	//     key: 'PM_Enable',
-	//     name: '是否可用',
-	//     type: 'radio',
-	//     value: '',
-	//     option: [
-	//         {
-	//             name: '是',
-	//             value: 1
-	//         },
-	//         {
-	//             name: '否',
-	//             value: 0
-	//         }
-	//     ]
-	// },
-	// {
-	//     id: 11,
-	//     key: 'PM_DeviceAlarmNumber',
-	//     name: '压力计手机号码',
-	//     type: 'text',
-	//     value: ''
-	// },
-	{
-		id: 12,
-		key: 'PM_Lng',
-		name: '经度',
-		type: 'map',
-		value: ''
-	},
-	{
-		id: 13,
-		key: 'PM_Lat',
-		name: '纬度',
-		type: 'map',
-		value: ''
-	}
-]
 class AreaList extends React.Component {
-	constructor(props) {
-		super(props);
+    constructor(props) {
+        super(props);
 
-		this.permissionFM = util.getSessionStorate('permission').PressureMeterManage;
-		// this.permissionFM = false;
+        this.permissionFM = util.getSessionStorate('permission').AreaManage;
+        // this.permissionFM = false;
 
-		this.PMColumns = [{
-			title: '压力计编码',
-			dataIndex: 'pressuremeter.PM_Code',
-			width: '15%',
-			render: (text, record) => <a href={`#/device/pressuremeter/detail/pmUid=${record.pressuremeter.PM_UId}`}>{text}</a>,
-		}, {
-			title: '描述',
-			dataIndex: 'pressuremeter.PM_Description',
-			width: '20%',
-			render: (text, record) => this.renderColumns(text, record, 'pressuremeter.PM_Description')
-		}, {
-			title: '区域',
-			dataIndex: 'area.Ara_Name',
-			width: '20%'
-		}, {
-			title: '更新',
-			dataIndex: 'status.PMS_UpdateDt',
-			width: '15%',
-			render: (text, record) => util.dateFormat(text, 7)
-		},];
-		if (this.permissionFM) {
-			this.PMColumns.push({
-				title: '操作',
-				dataIndex: 'operation',
-				render: (text, record) => {
-					const { editable } = record;
-					return (
-						<div className="editable-row-operations">
-							{
-								editable ?
-									<span>
-										<a onClick={() => this.save(record.pressuremeter.PM_UId)}>保存</a>
-										<Popconfirm title="Sure to cancel?" onConfirm={() => this.cancel(record.pressuremeter.PM_UId)}>
-											<a>取消</a>
-										</Popconfirm>
-									</span>
-									:
-									<span>
-										{/* <a onClick={() => this.edit(record.pressuremeter.PM_UId)}>编辑</a> */}
-										{/* 这里将表格中的单元格编辑改为可以修改设备所有信息 */}
-										<a onClick={() => this.allEdit(record.pressuremeter.PM_UId)}>修改</a>
-										<Popconfirm title="Sure to delete?" onConfirm={() => this.delete(record.pressuremeter.PM_UId)}>
-											<a>删除</a>
-										</Popconfirm>
-									</span>
-							}
-						</div>
-					);
-				},
-			});
-		}
-		this.cacheData = this.props.cacheData;
-	}
+        this.columns = [{
+            title: '编码',
+            dataIndex: 'Ara_Code',
+            width: '15%'
+        }, {
+            title: '区域名称',
+            dataIndex: 'Ara_Name',
+            width: '15%'
+        }, {
+            title: '描述',
+            dataIndex: 'Ara_Description',
+            width: '20%'
+        }, {
+            title: '经度',
+            dataIndex: 'Ara_Lng',
+            width: '20%'
+        }, {
+            title: '纬度',
+            dataIndex: 'Ara_Lat',
+            width: '15%'
+        },];
+        if (this.permissionFM) {
+            this.columns.push({
+                title: '操作',
+                dataIndex: 'operation',
+                render: (text, record) => {
+                    const { editable } = record;
+                    return (
+                        <div className="editable-row-operations">
+                            {
+                                editable ?
+                                    <span>
+                                        <a onClick={() => this.save(record.Ara_UId)}>保存</a>
+                                        <Popconfirm title="Sure to cancel?" onConfirm={() => this.cancel(record.Ara_UId)}>
+                                            <a>取消</a>
+                                        </Popconfirm>
+                                    </span>
+                                    :
+                                    <span>
+                                        {/* <a onClick={() => this.edit(record.pressuremeter.PM_UId)}>编辑</a> */}
+                                        {/* 这里将表格中的单元格编辑改为可以修改设备所有信息 */}
+                                        {/* <a onClick={() => this.edit(record.Ara_UId)}>修改</a> */}
+                                        <a onClick={() => this.bindFlowMeter(record.Ara_UId)}>修改区域</a>
+                                        <Popconfirm title="Sure to delete?" onConfirm={() => this.delete(record.Ara_Id)}>
+                                            <a>删除</a>
+                                        </Popconfirm>
+                                    </span>
+                            }
+                        </div>
+                    );
+                },
+            });
+        }
+        this.cacheData = this.props.cacheData;
+    }
 
-	state = {
-		data: [this.props.tableData],
-		pagination: {},
-		loading: false,
-		visible: false,
-		finishAdd: false,
-		editModalVisible: false,
-		finishEdit: false,
-	}
-	componentWillReceiveProps(nextProps) {
-		debugger;
-		let { tableData, loading, pagination, cacheData } = nextProps;
-		this.cacheData = cacheData;
-		this.setState({
-			data: [tableData],
-			loading,
-			pagination,
-		});
-	}
-	renderColumns(text, record, column) {
-		return (
-			<EditableCell
-				editable={record.editable}
-				value={text}
-				onChange={value => this.handleChange(value, record.pressuremeter.PM_UId, column)}
-			/>
-		);
-	}
-	handleChange(value, key, column) {
-		const newData = [...this.state.data];
-		const target = newData.filter(item => key === item.pressuremeter.PM_UId)[0];
-		if (target) {
-			eval(`target.${column}=value`);
-			this.setState({ data: newData });
-		}
-	}
-	edit(key) {
-		const newData = [...this.state.data];
-		const target = newData.filter(item => key === item.pressuremeter.PM_UId)[0];
-		if (target) {
-			target.editable = true;
-			this.setState({ data: newData });
-		}
-	}
-	//可修改设备所有信息
-	allEdit(key) {
-		const newData = [...this.state.data];
-		const target = newData.filter(item => key === item.pressuremeter.PM_UId)[0];
-		if (target) {
-			this.editTarget = target.pressuremeter;
-			this.AraId = target.area.Ara_UId;
-			util.setSessionStorate('device_uid', { PM_UId: key });
-			this.setState({
-				editModalVisible: true,
-				finishEdit: false,
-			})
-		}
-	}
-	handleEditModalCancel() {
-		this.setState({
-			editModalVisible: false,
-		});
-	}
-	onClose() {
-		this.setState({
-			finishEdit: true
-		})
-	}
-	handleEdit(newMeter) {
-		this.fetch_Post({
-			url: 'http://localhost:2051/PressureMeter/ModifyPressureMeter',
-			data: util.objToStr(newMeter),
-			success: (res) => {
-				if (res) {
-					message.success('修改成功！');
-					this.setState({
-						editModalVisible: false,
-						finishEdit: true
-					})
-					//重新加载
-					this.props.onAddDevice();
-				} else {
-					message.error('修改失败，请重试！');
-				}
-			}
-		})
-	}
-	save(key) {
-		const newData = [...this.state.data];
-		const target = newData.filter(item => key === item.pressuremeter.PM_UId)[0];
-		if (target) {
-			delete target.editable;
-			console.log(target);
-			this.fetch_Post({
-				url: 'http://localhost:2051/PressureMeter/ModifyPressureMeter',
-				data: `PM_Code=${target.pressuremeter.PM_Code}&PM_Description=${target.pressuremeter.PM_Description}
-				&PM_Id=${target.pressuremeter.PM_Id}`,
-				success: (res) => {
-					console.log(res);
-					if (res) message.success('修改成功！');
-					else message.error('修改失败，请重试！');
-				}
-			})
-			this.setState({ data: newData });
-			this.cacheData = JSON.parse(JSON.stringify(newData));
-		}
-	}
-	cancel(key) {
-		const newData = [...this.state.data];
-		const target = newData.filter(item => key === item.pressuremeter.PM_UId)[0];
-		if (target) {
-			Object.assign(target, this.cacheData.filter(item => key === item.pressuremeter.PM_UId)[0]);
-			delete target.editable;
-			this.setState({ data: newData });
-		}
-	}
-	delete(key) {
-		const newData = [...this.state.data];
-		const target = newData.filter(item => key === item.pressuremeter.PM_UId)[0];
-		if (target) {
-			this.fetch_Post({
-				url: 'http://localhost:2051/PressureMeter/DeletePressureMeter',
-				data: util.objToStr(target.pressuremeter),
-				success: (res) => {
-					if (res) message.success('删除成功！');
-					else message.error('删除失败，请重试！');
-				}
-			})
-			this.setState({ data: newData.filter(item => item.pressuremeter.PM_UId !== key) });
-		}
-	}
-	showModal() {
-		this.setState({
-			visible: true,
-			finishAdd: false
-		});
-	}
-	//添加压力计
-	handleAdd(newPressureData) {
-		this.fetch_Post({
-			url: 'http://localhost:2051/PressureMeter/AddPressureMeter',
-			data: util.objToStr(newPressureData),
-			success: (res) => {
-				if (res) {
-					message.success('添加成功！');
-					this.setState({
-						visible: false,
-						finishAdd: true
-					})
-					//重新加载
-					this.props.onAddDevice();
-				} else {
-					message.error('添加失败，请重试！');
-					this.setState({
-						visible: false,
-					})
-				}
-			}
-		})
-	}
-	handleModalCancel() {
-		this.setState({
-			visible: false,
-		});
-	}
-	// post方法封装
-	fetch_Post({ url, data, success }) {
-		fetch(url, {
-			method: 'POST',
-			headers: { "Content-Type": "application/x-www-form-urlencoded" },
-			body: data
-		}).then((response) => {
-			if (response.status !== 200) {
-				throw new Error('Fail to get response with status ' + response.status);
-			}
-			response.json().then((res) => {
-				success(res);
-			}).catch((error) => {
-				console.error(error);
-			});
-		}).catch((error) => {
-			console.error(error);
-		});
-	}
-	render() {
-		return (
-			<div>
-				{this.permissionFM ? (
-					<div style={{ paddingLeft: '20px', paddingBottom: '10px' }}>
-						<Button type="primary" onClick={this.showModal.bind(this)}>添加压力计</Button>
-					</div>
-				) : null}
-				{this.permissionFM ? (
-					<div>
-						<Modal width="60%"
-							title="添加压力计"
-							visible={this.state.visible}
-							// onOk = {this.handleAdd.bind(this)}
-							confirmLoading={this.state.finishAdd}
-							onCancel={this.handleModalCancel.bind(this)}
-							footer={null}
-						>
-							{this.state.finishAdd ?
-								null
-								:
-								<AddForm labelData={pressuremeterLabelData} onAddSubmit={this.handleAdd.bind(this)} defaultLngLat={this.props.defaultLngLat} />
-							}
-						</Modal>
+    state = {
+        data: [this.props.tableData],
+        pagination: {},
+        loading: false,
+        count: this.props.tableData.length,
+        visible: false,
+        detailLoading: false,
+        visibleFM: false,
+        confirmLoadingFM: false,
+        transferData: [],
+        targetKeys: [],
+    }
+    componentWillReceiveProps(nextProps) {
+        let { tableData, loading, pagination, cacheData } = nextProps;
+        this.cacheData = cacheData;
+        this.setState({
+            data: [tableData],
+            loading,
+            pagination,
+            count: [tableData].length
+        });
+    }
 
-						{this.state.finishEdit ?
-							null
-							:
-							<Modal width="60%"
-								title="修改压力计"
-								visible={this.state.editModalVisible}
-								confirmLoading={this.state.finishEdit}
-								onCancel={this.handleEditModalCancel.bind(this)}
-								footer={null}
-								afterClose={() => this.onClose()}
-								maskClosable={false}
-							>
+    // 删除客户
+    delete(Id) {
+        message.loading('删除中...', 0);
+        const that = this;
+        util.fetch_Post({
+            url: 'http://localhost:2051/area/DeleteArea',
+            data: `id=${Id}`,
+            success: (res) => {
+                message.destroy();
+                if (res) {
+                    const areaUid = util.getLocalStorate('areaUid');// 当前areaTree所选中区域Uid
+                    message.success('删除成功！');
+                    that.props.renderTable(areaUid);// 从父组件处获取数据
+                }
+                else {
+                    message.error('删除失败，请重试！');
+                }
+            }
+        })
+    }
+    // 绑定流量计
+    bindFlowMeter(key) {
+        util.setLocalStorate('currentKey', key);
+        // const newData = [...this.state.data];
+        // let target = newData.filter(item => key === item.Uid)[0];
+        this.setState({ visibleFM: true });
 
-								<EditForm labelData={pressuremeterLabelData} onEditSubmit={this.handleEdit.bind(this)} meterData={this.editTarget} areaid={this.AraId} />
-							</Modal>
-						}
-					</div>
-				) : null}
-				<Table rowKey={data => data.pressuremeter.PM_UId}
-					dataSource={this.state.data}
-					columns={this.PMColumns}
-					loading={this.state.loading}
-				/>
-			</div>
-		)
-	}
+    }
+
+    // 添加客户模态框
+    showModal = () => {
+        this.setState({
+            visible: true,
+        });
+    }
+    handleCancel = () => {
+        this.setState({ visible: false });
+    }
+    handleCreate = () => {
+        const form = this.form;
+        form.validateFields((err, values) => {
+            if (err) {
+                return;
+            }
+            message.loading('添加中...,请稍后', 0);
+            let formData = util.objToStr(values);
+            util.fetch_Post({
+                url: 'http://localhost:2051/area/AddArea',
+                data: `${formData}&parentAreaUid=${values.Ara_Up}`,
+                success: (res) => {
+                    message.destroy();
+                    if (res) message.success('添加成功！请跳转到添加区域查看');
+                    else message.error('添加失败，请重试！');
+                }
+            })
+            form.resetFields();
+            this.setState({ visible: false });
+        });
+    }
+    saveFormRef = (form) => {
+        this.form = form;
+    }
+    // 绑定流量计Modal
+    handleCancelFM = () => {
+        this.setState({
+            visibleFM: false,
+            transferData: [],
+            targetKeys: [],
+        });
+    }
+    handleOk = (values) => {
+        const newData = {};
+        Object.assign(newData, this.state.data[0], values)
+        const dataFM = util.objToStr(newData);
+        debugger;
+        util.fetch_Post({
+            url: 'http://localhost:2051/area/ModifyArea',
+            data: dataFM,
+            success: (res) => {
+                if (res) {
+                    message.success('修改成功！');
+                    this.setState({ data: dataFM, visibleFM: false });
+                }
+                else {
+                    message.error('修改失败，请重试！');
+                }
+            }
+        })
+    }
+    render() {
+        return (
+            <div className="ClientList">
+                {this.permissionFM ? (
+                    <Button type="primary" onClick={this.showModal}>添加区域</Button>
+                ) : null}
+                {this.permissionFM ? (
+                    <div>
+                        <CollectionCreateForm
+                            defaultLng={this.state.data[0] ? this.state.data[0].Ara_Lng : null}
+                            defaultLat={this.state.data[0] ? this.state.data[0].Ara_Lat : null}
+                            ref={this.saveFormRef}
+                            visible={this.state.visible}
+                            onCancel={this.handleCancel}
+                            onCreate={this.handleCreate}
+                        />
+                        <Modal title="修改区域"
+                            visible={this.state.visibleFM}
+                            onOk={this.handleOk}
+                            confirmLoading={this.state.confirmLoadingFM}
+                            onCancel={this.handleCancelFM}
+                            footer={null}
+                        >
+                            <AreaForm mapname="editmap"
+                                defaultLng={this.state.data[0] ? this.state.data[0].Ara_Lng : null}
+                                defaultLat={this.state.data[0] ? this.state.data[0].Ara_Lat : null}
+                                data={this.state.data[0]}
+                                handleSubmit={this.handleOk.bind(this)} />
+                            {/* <WaterMap mapname="editmap" defaultLng={this.state.data[0] ? this.state.data[0].Ara_Lng : null} defaultLat={this.state.data[0] ? this.state.data[0].Ara_Lat : null} handleChange={this.handleMap.bind(this)} /> */}
+                        </Modal>
+                    </div>
+                ) : null}
+                <Table rowKey={data => data.Ara_UId}
+                    dataSource={this.state.data}
+                    columns={this.columns}
+                    loading={this.state.loading}
+                />
+            </div>
+        )
+    }
 }
+
 export default AreaList;
